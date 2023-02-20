@@ -20,19 +20,16 @@ listener::listener(boost::asio::io_context &io, tinyxml2::XMLElement *config)
     std::string certification_filepath = config->Attribute("certification");
 }
 
-void listener::async_accept(std::function<void (std::unique_ptr<connection>&&)> handler) {
+void listener::listen() {
     this->_ac.listen();
     LOG(INFO) << "Listening at the local endpoint: " << this->_ac.local_endpoint();
-    this->_async_accept(handler);
 }
 
-void listener::_async_accept(std::function<void (std::unique_ptr<connection>&&)> handler) {
-    std::function<void ()> continue_func = boost::bind(&listener::_async_accept, this);
-    this->_ac.async_accept([continue_func, handler](const boost::system::error_code& error, tcp::socket peer) {
+void listener::async_accept(std::function<void (std::unique_ptr<connection>&&)> handler) {
+    this->_ac.async_accept([handler](const boost::system::error_code& error, tcp::socket peer) {
         if (!error) {
             std::unique_ptr<connection> conn = std::make_unique<unsecure_connection>(std::move(peer));
             handler(std::move(conn));
-            continue_func();
         }
     });
 }
