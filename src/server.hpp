@@ -3,10 +3,11 @@
 
 #include <string>
 #include <memory>
+#include <set>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 #include <boost/property_tree/ptree.hpp>
-#include <set>
+#include <tinyxml2.h>
 
 #include "listener.hpp"
 #include "session.hpp"
@@ -20,8 +21,11 @@ private:
     boost::thread_group _workers;
     int _workers_num;
     boost::property_tree::ptree _config;
+private:
+    void _worker_func();
 public:
-    server(boost::property_tree::ptree config);
+    server(tinyxml2::XMLElement *config);
     void run();
+    void join();
 };
 #endif // __SERVER_H__

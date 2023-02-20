@@ -2,15 +2,17 @@
 
 #include <glog/logging.h>
 #include <gflags/gflags.h>
-#include <boost/property_tree/xml_parser.hpp>
+#include <tinyxml2.h>
 
 int main(int, char* argv[]) {
     google::InitGoogleLogging(argv[0]);
     FLAGS_alsologtostderr = 1;
     LOG(INFO) << "Start.";
-    using namespace boost::property_tree;
-    ptree config;
-    read_xml("myhttpd.config", config);
-    server _server(config);
+    tinyxml2::XMLDocument config_file;
+    config_file.LoadFile("myhttpd.config");
+    auto config = config_file.RootElement();
+    auto server_cfg = config->FirstChildElement("server");
+    server _server(server_cfg);
     _server.run();
+    _server.join();
 }
