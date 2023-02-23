@@ -33,3 +33,5 @@ add_custom_command(
             ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/myhttpd.config
 )
 endif()
+
+add_subdirectory(test)

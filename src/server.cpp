@@ -20,12 +20,23 @@ server::server(tinyxml2::XMLElement *config)
 }
 
 void server::run() {
-    for(auto &lis: this->_listeners){
-        
+    std::set<session> &sessions = this->_sessions;
+    for(std::unique_ptr<listener> &lis: this->_listeners) {
+        lis->listen();
+        lis->async_accept(std::bind(&server::_async_accept_handler, this, std::ref(lis), std::placeholders::_1));
     }
     for(int i = 0; i < this->_workers_num; i++) {
         this->_workers.create_thread(std::bind(&server::_worker_func, this));
     }
+}
+
+void server::_async_accept_handler(std::unique_ptr<listener> &lis, std::unique_ptr<connection> conn) {
+    boost::lock_guard<boost::mutex> lock(this->_sessions_mtx);
+    this->_sessions.insert(session(std::move(conn), [&sessions = this->_sessions, &mtx = this->_sessions_mtx](session &ses) {
+        boost::lock_guard<boost::mutex> lock(mtx);
+        sessions.erase(ses);
+    }));
+    lis->async_accept(std::bind(&server::_async_accept_handler, this, std::ref(lis), std::placeholders::_1));
 }
 
 void server::_worker_func() {

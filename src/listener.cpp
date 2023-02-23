@@ -1,10 +1,9 @@
-#include "listener.hpp"
-#include "unsecure_connection.hpp"
-#include "secure_connection.hpp"
-
 #include <boost/bind.hpp>
 #include <glog/logging.h>
 #include <functional>
+
+#include "listener.hpp"
+#include "connection.hpp"
 
 using namespace boost::asio::ip;
 
@@ -25,7 +24,7 @@ void listener::listen() {
     LOG(INFO) << "Listening at the local endpoint: " << this->_ac.local_endpoint();
 }
 
-void listener::async_accept(std::function<void (std::unique_ptr<connection>&&)> handler) {
+void listener::async_accept(std::function<void (std::unique_ptr<connection>)> handler) {
     this->_ac.async_accept([handler](const boost::system::error_code& error, tcp::socket peer) {
         if (!error) {
             std::unique_ptr<connection> conn = std::make_unique<unsecure_connection>(std::move(peer));
