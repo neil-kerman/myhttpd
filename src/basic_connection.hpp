@@ -1,3 +1,6 @@
+#ifndef BASIC_CONNECTION_HPP
+#define BASIC_CONNECTION_HPP
+
 #include <cstddef>
 
 class basic_connection {
@@ -9,3 +12,5 @@ public:
     virtual void async_wait() = 0;
     virtual std::size_t available() = 0;
 };
+
+#endif // BASIC_CONNECTION_HPP
