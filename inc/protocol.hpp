@@ -4,6 +4,7 @@
 class protocol {
 public:
     virtual ~protocol() {}
+    virtual void set_protocol_upgrad_event_handler();
 };
 
 #endif // __PROTOCOL_H__

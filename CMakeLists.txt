@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(myhttpd VERSION 0.1.0)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 23) 
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/DEBUG")
@@ -15,6 +15,8 @@ find_package(tinyxml2 CONFIG REQUIRED)
 
 set(SRC_LIST)
 file(GLOB SRC_LIST "src/*.cpp")
+
+include_directories("inc")
 
 link_libraries(
     ${Boost_LIBRARIES}

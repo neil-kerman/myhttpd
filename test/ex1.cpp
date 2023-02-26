@@ -1,4 +1,6 @@
 #include <iostream>
+#include <memory>
+#include <set>
 
 class object {
 private:

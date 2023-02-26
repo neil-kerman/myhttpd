@@ -2,7 +2,7 @@
 #define __SERVER_H__
 
 #include <string>
-#include <set>
+#include <map>
 #include <memory>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
@@ -17,8 +17,8 @@ class server {
 private:
     boost::asio::io_context _io;
     boost::asio::executor_work_guard<boost::asio::io_context::executor_type> _work_guard;
-    std::vector<std::unique_ptr<acceptor>> _listeners;
-    std::set<session> _sessions;
+    std::vector<std::unique_ptr<acceptor>> _acceptors;
+    std::map<boost::uuids::uuid, std::unique_ptr<session>> _sessions;
     boost::mutex _sessions_mtx;
     boost::thread_group _workers;
     int _workers_num;

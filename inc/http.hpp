@@ -3,6 +3,10 @@
 
 #include "protocol.hpp"
 
-
+class http: public protocol {
+public:
+    http();
+    virtual ~http();
+};
 
 #endif // __HTTP_H__
