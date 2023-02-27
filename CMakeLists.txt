@@ -14,7 +14,7 @@ find_package(gtest CONFIG REQUIRED)
 find_package(tinyxml2 CONFIG REQUIRED)
 
 set(SRC_LIST)
-file(GLOB SRC_LIST "src/*.cpp")
+file(GLOB_RECURSE SRC_LIST "src/*.cpp")
 
 link_libraries(
     ${Boost_LIBRARIES}
