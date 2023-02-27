@@ -4,6 +4,10 @@ http::http() {
 
 }
 
+void start() {
+    
+}
+
 http::~http() {
     
 }

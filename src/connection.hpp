@@ -2,10 +2,12 @@
 #define BASIC_CONNECTION_HPP
 
 #include <cstddef>
+#include <boost/asio/buffer.hpp>
+#include <boost/system.hpp>
 
-class basic_connection {
+class connection {
 public:
-    virtual ~basic_connection() {}
+    virtual ~connection() {}
     virtual void close() = 0;
     virtual void async_write() = 0;
     virtual void async_read() = 0;

@@ -30,8 +30,15 @@ void server::run() {
             [&mtx = this->_sessions_mtx, &sessions = this->_sessions]
             (std::unique_ptr<basic_connection> conn) {
                 auto lock = boost::make_lock_guard<boost::mutex>(mtx);
-                sessions.insert();
-
+                std::unique_ptr<session> ses = std::make_unique<http>(
+                    std::move(conn), 
+                    [&sessions, &mtx](uuid id) {
+                        auto lock = boost::make_lock_guard<boost::mutex>(mtx);
+                        sessions.erase(id);
+                    }
+                );
+                auto id = ses->get_id();
+                sessions.insert(std::pair<uuid, std::unique_ptr<session>>(id, std::move(ses)));
             }
         );
     }

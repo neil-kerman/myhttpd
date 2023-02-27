@@ -18,7 +18,7 @@ private:
     boost::asio::io_context _io;
     boost::asio::executor_work_guard<boost::asio::io_context::executor_type> _work_guard;
     std::vector<std::unique_ptr<acceptor>> _acceptors;
-    std::map<boost::uuids::uuid, std::unique_ptr<session>> _sessions;
+    std::map<uuid, std::unique_ptr<session>> _sessions;
     boost::mutex _sessions_mtx;
     boost::thread_group _workers;
     int _workers_num;

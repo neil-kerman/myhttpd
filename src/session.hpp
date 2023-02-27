@@ -7,29 +7,25 @@
 #include <boost/asio.hpp>
 
 #include "connection.hpp"
-#include "protocol.hpp"
 
-/* Session terminated event handler*/
-typedef std::function<void (session &ses)> st_handler;
+using boost::uuids::uuid;
 
 class session {
+/* Session terminated event handler*/
+typedef std::function<void (uuid id)> st_handler;
 private:
     boost::uuids::uuid _id;
     st_handler _st_handler;
 protected:
-    std::unique_ptr<basic_connection> _conn;
+    std::unique_ptr<connection> _conn;
 protected:
-    session(
-        std::unique_ptr<basic_connection> conn, 
-        std::unique_ptr<protocol> pro,
-        st_handler st
-    );
+    session(std::unique_ptr<connection> conn, st_handler st);
     void terminate();
 public:
     session(const session &ses) = delete;
-    virtual ~session();
-    void start();
     boost::uuids::uuid get_id();
+    virtual ~session();
+    virtual void start() = 0;
 }; 
 
 #endif // __SESSION_H__

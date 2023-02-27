@@ -16,8 +16,6 @@ find_package(tinyxml2 CONFIG REQUIRED)
 set(SRC_LIST)
 file(GLOB SRC_LIST "src/*.cpp")
 
-include_directories("inc")
-
 link_libraries(
     ${Boost_LIBRARIES}
     glog::glog
