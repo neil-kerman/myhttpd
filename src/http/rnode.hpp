@@ -8,7 +8,7 @@
 
 #include "content.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd {
     namespace asio = boost::asio;
     /* Resource responding event handler */
     typedef std::function<
@@ -24,7 +24,5 @@ namespace myhttpd::http {
         virtual void async_request(resp_handler handler) = 0;
     };
 }
-
-
 
 #endif // __RNODE_H__

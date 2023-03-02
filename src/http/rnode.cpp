@@ -1,6 +1,6 @@
 #include "rnode.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd {
     rnode::rnode(std::string vpath)
     : _vpath(vpath) {}
 

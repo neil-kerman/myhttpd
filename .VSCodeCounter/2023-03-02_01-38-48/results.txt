@@ -1,0 +1,56 @@
+Date : 2023-03-02 01:38:48
+Directory : d:\repo\myhttpd
+Total : 27 files,  407 codes, 13 comments, 130 blanks, all 550 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| C++      |         27 |        407 |         13 |        130 |        550 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                   | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                      |         27 |        407 |         13 |        130 |        550 |
+| src                                                    |         27 |        407 |         13 |        130 |        550 |
+| src (Files)                                            |          6 |        164 |          7 |         32 |        203 |
+| src\connection                                         |          5 |         99 |          4 |         34 |        137 |
+| src\exception                                          |          2 |         12 |          0 |          3 |         15 |
+| src\http                                               |         14 |        132 |          2 |         61 |        195 |
++--------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                               | language | code       | comment    | blank      | total      |
++--------------------------------------------------------+----------+------------+------------+------------+------------+
+| d:\repo\myhttpd\src\acceptor.cpp                       | C++      |         44 |          1 |          9 |         54 |
+| d:\repo\myhttpd\src\acceptor.hpp                       | C++      |         28 |          1 |          4 |         33 |
+| d:\repo\myhttpd\src\connection\connection.hpp          | C++      |         25 |          3 |          7 |         35 |
+| d:\repo\myhttpd\src\connection\insecure_connection.cpp | C++      |         15 |          0 |          6 |         21 |
+| d:\repo\myhttpd\src\connection\insecure_connection.hpp | C++      |         19 |          0 |          6 |         25 |
+| d:\repo\myhttpd\src\connection\secure_connection.cpp   | C++      |         18 |          0 |          9 |         27 |
+| d:\repo\myhttpd\src\connection\secure_connection.hpp   | C++      |         22 |          1 |          6 |         29 |
+| d:\repo\myhttpd\src\exception\config_exception.cpp     | C++      |          5 |          0 |          2 |          7 |
+| d:\repo\myhttpd\src\exception\config_exception.hpp     | C++      |          7 |          0 |          1 |          8 |
+| d:\repo\myhttpd\src\http\content.hpp                   | C++      |         12 |          0 |          5 |         17 |
+| d:\repo\myhttpd\src\http\dynamic_content.cpp           | C++      |          3 |          0 |          2 |          5 |
+| d:\repo\myhttpd\src\http\dynamic_content.hpp           | C++      |          8 |          0 |          5 |         13 |
+| d:\repo\myhttpd\src\http\file_content.cpp              | C++      |          3 |          0 |          2 |          5 |
+| d:\repo\myhttpd\src\http\file_content.hpp              | C++      |          8 |          0 |          5 |         13 |
+| d:\repo\myhttpd\src\http\filesystem.hpp                | C++      |          8 |          0 |          5 |         13 |
+| d:\repo\myhttpd\src\http\header.cpp                    | C++      |          3 |          0 |          2 |          5 |
+| d:\repo\myhttpd\src\http\header.hpp                    | C++      |         17 |          0 |          4 |         21 |
+| d:\repo\myhttpd\src\http\http_session.cpp              | C++      |          9 |          0 |          8 |         17 |
+| d:\repo\myhttpd\src\http\http_session.hpp              | C++      |         22 |          1 |          5 |         28 |
+| d:\repo\myhttpd\src\http\resource.cpp                  | C++      |          3 |          0 |          3 |          6 |
+| d:\repo\myhttpd\src\http\resource.hpp                  | C++      |          5 |          0 |          3 |          8 |
+| d:\repo\myhttpd\src\http\rnode.cpp                     | C++      |          9 |          0 |          7 |         16 |
+| d:\repo\myhttpd\src\http\rnode.hpp                     | C++      |         22 |          1 |          5 |         28 |
+| d:\repo\myhttpd\src\server.cpp                         | C++      |         35 |          4 |          8 |         47 |
+| d:\repo\myhttpd\src\server.hpp                         | C++      |         27 |          0 |          4 |         31 |
+| d:\repo\myhttpd\src\session.hpp                        | C++      |         12 |          1 |          4 |         17 |
+| d:\repo\myhttpd\src\startup.cpp                        | C++      |         18 |          0 |          3 |         21 |
+| Total                                                  |          |        407 |         13 |        130 |        550 |
++--------------------------------------------------------+----------+------------+------------+------------+------------+

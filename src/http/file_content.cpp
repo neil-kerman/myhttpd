@@ -1,5 +1,5 @@
 #include "file_content.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd {
     
 }
