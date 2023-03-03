@@ -8,10 +8,8 @@
 #include <boost/uuid/uuid.hpp>
 #include <tinyxml2.h>
 
-#include "acceptor.hpp"
-#include "session.hpp"
-#include "http/resource.hpp"
-#include "connection/connection.hpp"
+#include "network/acceptor.hpp"
+#include "client/session.hpp"
 
 namespace myhttpd {
     class server {

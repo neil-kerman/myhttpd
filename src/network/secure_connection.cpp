@@ -1,16 +1,16 @@
 #include "secure_connection.hpp"
 
 namespace myhttpd {
-    secure_connection::secure_connection(boost::asio::ssl::context &ctx, boost::asio::ip::tcp::socket soc) 
+    secure_connection::secure_connection(boost::asio::ssl::context &ctx, boost::asio::ip::tcp::socket soc)
     : _soc(std::move(soc), ctx) {}
 
     secure_connection::~secure_connection() {}
 
-    void secure_connection::async_write(boost::asio::const_buffer &buf, write_handler handler) {
+    void secure_connection::async_write_some(boost::asio::const_buffer &buf, write_handler handler) {
         this->_soc.async_write_some(buf, handler);
     }
 
-    void secure_connection::async_read(const boost::asio::mutable_buffer &buf, read_handler handler) {
+    void secure_connection::async_read_some(const boost::asio::mutable_buffer &buf, read_handler handler) {
         this->_soc.async_read_some(buf, handler);
     }
 
@@ -22,6 +22,10 @@ namespace myhttpd {
         using boost::asio::ssl::stream;
         using boost::asio::ip::tcp;
         this->_soc.async_handshake(stream<tcp::socket>::server, handler);
+    }
+
+    boost::asio::ip::tcp::endpoint secure_connection::get_endpoint() {
+        return this->_soc.lowest_layer().remote_endpoint();
     }
 }
 

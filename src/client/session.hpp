@@ -1,8 +1,9 @@
 #ifndef __SESSION_H__
 #define __SESSION_H__
 
-namespace myhttpd {
+#include <functional>
 
+namespace myhttpd {
 
     class session {
     public:

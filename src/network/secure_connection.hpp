@@ -16,13 +16,15 @@ namespace myhttpd {
     private:
         boost::asio::ssl::stream<boost::asio::ip::tcp::socket> _soc;
     public:
-        secure_connection(boost::asio::ssl::context &ctx, boost::asio::ip::tcp::socket);
+        secure_connection(boost::asio::ssl::context &ctx, boost::asio::ip::tcp::socket soc);
         virtual ~secure_connection();
-        virtual void async_write(boost::asio::const_buffer &buf, write_handler handler);
-        virtual void async_read(const boost::asio::mutable_buffer &buf, read_handler handler);
+        virtual void async_write_some(boost::asio::const_buffer &buf, write_handler handler);
+        virtual void async_read_some(const boost::asio::mutable_buffer &buf, read_handler handler);
         virtual void async_wait(boost::asio::socket_base::wait_type type, wait_handler handler);
+        virtual boost::asio::ip::tcp::endpoint get_endpoint();
         void async_handshake(handshake_handler handler);
     };
+
 }
 
 #endif // SECURE_CONNECTION_HPP

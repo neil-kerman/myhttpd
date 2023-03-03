@@ -8,16 +8,16 @@
 
 namespace myhttpd {
 
-    typedef boost::asio::ip::tcp::socket ordinary_soc;
     class insecure_connection: public connection {
     private:
         boost::asio::ip::tcp::socket _soc;
     public:
-        insecure_connection(ordinary_soc soc);
+        insecure_connection(boost::asio::ip::tcp::socket soc);
         virtual ~insecure_connection();
-        virtual void async_write(boost::asio::const_buffer &buf, write_handler handler);
-        virtual void async_read(const boost::asio::mutable_buffer &buf, read_handler handler);
+        virtual void async_write_some(boost::asio::const_buffer &buf, write_handler handler);
+        virtual void async_read_some(const boost::asio::mutable_buffer &buf, read_handler handler);
         virtual void async_wait(boost::asio::socket_base::wait_type type, wait_handler handler);
+        virtual boost::asio::ip::tcp::endpoint get_endpoint();
     };
 }
 

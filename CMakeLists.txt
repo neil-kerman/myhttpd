@@ -7,7 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/DEBUG")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/RELEASE")
 
-find_package(Boost COMPONENTS context)
+find_package(Boost COMPONENTS system context regex)
+find_package(openssl)
 find_package(glog CONFIG REQUIRED)
 find_package(gflags CONFIG REQUIRED)
 find_package(gtest CONFIG REQUIRED)
@@ -16,11 +17,15 @@ find_package(tinyxml2 CONFIG REQUIRED)
 set(SRC_LIST)
 file(GLOB_RECURSE SRC_LIST "src/*.cpp")
 
+include_directories("src")
+
 link_libraries(
     ${Boost_LIBRARIES}
     glog::glog
     gflags::gflags
     tinyxml2::tinyxml2
+    OpenSSL::SSL
+    OpenSSL::Crypto
 )
 
 add_executable(${PROJECT_NAME} ${SRC_LIST})
@@ -29,7 +34,7 @@ if(CMAKE_BUILD_TYPE AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
 add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_SOURCE_DIR}/src/myhttpd.config
+            ${CMAKE_SOURCE_DIR}/resource/default.config
             ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/myhttpd.config
 )
 endif()

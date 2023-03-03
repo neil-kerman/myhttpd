@@ -14,8 +14,7 @@ int main(int, char* argv[]) {
     tinyxml2::XMLDocument config_file;
     config_file.LoadFile("myhttpd.config");
     auto config = config_file.RootElement();
-    auto server_cfg = config->FirstChildElement("myhttpd-config");
-    myhttpd::server _server(server_cfg);
+    myhttpd::server _server(config);
     _server.start();
     _server.event_loop();
 }

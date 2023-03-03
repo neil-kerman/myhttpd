@@ -3,7 +3,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 
 #include "server.hpp"
-#include "http/http_session.hpp"
+#include "client/http_session.hpp"
 
 using namespace boost::asio::ip;
 
@@ -32,12 +32,15 @@ namespace myhttpd {
                 /* New connection accept event handler */
                 [&sessions = this->_sessions]
                 (std::unique_ptr<connection> conn) {
-                    auto ses = std::make_unique<http_session>(std::move(conn));
                     boost::uuids::uuid id = boost::uuids::random_generator()();
-                    ses->start([id, &sessions]() {
+                    sessions.insert(
+                        std::pair<boost::uuids::uuid, std::unique_ptr<session>>(
+                            id, std::make_unique<http_session>(std::move(conn))
+                        )
+                    );
+                    sessions[id]->start([id, &sessions]() {
                         sessions.erase(id);
                     });
-                    sessions.insert(std::pair<boost::uuids::uuid, std::unique_ptr<session>>(id, std::move(ses)));
                 }
             );
         }
