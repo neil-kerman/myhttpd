@@ -14,10 +14,11 @@ find_package(gflags CONFIG REQUIRED)
 find_package(gtest CONFIG REQUIRED)
 find_package(tinyxml2 CONFIG REQUIRED)
 
+configure_file(config.hpp.in config.hpp)
+include_directories(${PROJECT_BINARY_DIR} "src")
+
 set(SRC_LIST)
 file(GLOB_RECURSE SRC_LIST "src/*.cpp")
-
-include_directories("src")
 
 link_libraries(
     ${Boost_LIBRARIES}
@@ -35,7 +36,7 @@ add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_SOURCE_DIR}/resource/default.config
-            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/myhttpd.config
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/${PROJECT_NAME}.config
 )
 endif()
 

@@ -16,7 +16,7 @@ namespace myhttpd {
                 )
             );
             this->_tls_conns[id]->async_handshake(
-                [id, &conns = this->_tls_conns, handler = this->_nca_handler](const boost::system::error_code &error) {
+                [id, &conns = this->_tls_conns, handler = this->_nca_handler](connection::error_code error) {
                     if(!error) {
                         handler(std::move(conns[id]));
                     } else {

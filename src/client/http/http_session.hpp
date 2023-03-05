@@ -6,25 +6,34 @@
 #include <array>
 #include <boost/regex.hpp>
 
-#include "session.hpp"
+#include "http_transceiver_1_1.hpp"
+#include "client/session.hpp"
 #include "network/connection.hpp"
+#include "client/http/resource.hpp"
 
 namespace myhttpd {
 
     class http_session: public session {
+
     private:
         std::unique_ptr<connection> _conn;
+
+        std::unique_ptr<http_transceiver> _transceiver;
+
         terminated_handler _terminated_handler;
-        std::list<std::array<char, 4096>> _buffers;
+
+        resource &_resource;
+        
     private:
-        //void _header_read_handler(const boost::system::error_code &code);
         void receive_request();
-        //void receive_header();
-        //void receive_body();
+        
     public:
-        http_session(std::unique_ptr<connection> conn);
+        http_session(std::unique_ptr<connection> conn, resource &res);
+
         virtual ~http_session();
+
         virtual void start(terminated_handler handler);
+
     };
 }
 

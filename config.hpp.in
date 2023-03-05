@@ -1,0 +1,6 @@
+#define PROJECT_NAME
+
+#define MAJOR_VERSION
+#define MINOR_VERSION
+
+#define CONFIG_FILE_PATH 

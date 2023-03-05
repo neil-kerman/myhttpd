@@ -7,19 +7,28 @@ namespace myhttpd {
 
     insecure_connection::~insecure_connection() {}
 
-    void insecure_connection::async_write_some(boost::asio::const_buffer &buf, write_handler handler) {
-        this->_soc.async_write_some(buf, handler);
+    void insecure_connection::async_write_some(const char *buf, std::size_t size, write_handler handler) {
+        this->_soc.async_write_some(boost::asio::buffer(buf, size), [handler](const boost::system::error_code &code, std::size_t bytes_transferred) {
+            error_code ecode = (!code) ? error_code::success : error_code::error;
+            handler(ecode, bytes_transferred);
+        });
     }
 
-    void insecure_connection::async_read_some(const boost::asio::mutable_buffer &buf, read_handler handler) {
-        this->_soc.async_read_some(buf, handler);
+    void insecure_connection::async_read_some(char *buf, std::size_t size, read_handler handler) {
+        this->_soc.async_read_some(boost::asio::buffer(buf, size), [handler](const boost::system::error_code &code, std::size_t bytes_transferred) {
+            error_code ecode = (!code) ? error_code::success : error_code::error;
+            handler(ecode, bytes_transferred);
+        });
     }
 
-    void insecure_connection::async_wait(boost::asio::socket_base::wait_type type, wait_handler handler) {
-        this->_soc.async_wait(type, handler);
+    void insecure_connection::async_wait(wait_type type, wait_handler handler) {
+        this->_soc.async_wait(type, [handler](const boost::system::error_code &code) {
+            error_code ecode = (!code) ? error_code::success : error_code::error;
+            handler(ecode);
+        });
     }
 
-    boost::asio::ip::tcp::endpoint insecure_connection::get_endpoint() {
+    connection::endpoint insecure_connection::get_remote_endpoint() {
         return this->_soc.remote_endpoint(); 
     }
 }

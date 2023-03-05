@@ -3,7 +3,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 
 #include "server.hpp"
-#include "client/http_session.hpp"
+#include "client/http/http_session.hpp"
 
 using namespace boost::asio::ip;
 
@@ -14,7 +14,9 @@ namespace myhttpd {
     }
 
     server::server(tinyxml2::XMLElement *config)
-    : _work_guard(this->_io.get_executor()) {
+    : _work_guard(this->_io.get_executor()), _resource(this->_create_resource(config)) {
+        auto http_config = config->FirstChildElement("http");
+
         auto acs_cfg = config->FirstChildElement("acceptors");
         auto ac_cfg = acs_cfg->FirstChildElement();
         //The memory of XMLElement objects are managed by the XMLDocument object which created themslevs,
@@ -30,12 +32,12 @@ namespace myhttpd {
         for(auto &lis: this->_acceptors) {
             lis->start_async_accept(
                 /* New connection accept event handler */
-                [&sessions = this->_sessions]
+                [&sessions = this->_sessions, &res = this->_resource]
                 (std::unique_ptr<connection> conn) {
                     boost::uuids::uuid id = boost::uuids::random_generator()();
                     sessions.insert(
                         std::pair<boost::uuids::uuid, std::unique_ptr<session>>(
-                            id, std::make_unique<http_session>(std::move(conn))
+                            id, std::make_unique<http_session>(std::move(conn), std::ref(res))
                         )
                     );
                     sessions[id]->start([id, &sessions]() {
