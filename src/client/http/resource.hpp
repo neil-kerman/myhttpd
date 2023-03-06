@@ -1,6 +1,6 @@
 #include <memory>
 #include <functional>
-#include <list>
+#include <map>
 #include <tinyxml2.h>
 
 #include "rnode.hpp"
@@ -11,18 +11,13 @@ namespace myhttpd {
     class resource {
     
     public:
-        enum error_code {
-            success = 0,
-            error = -1,
-        };
-
-        typedef std::function<void (error_code code, std::unique_ptr<http_response> rsp)> request_handler;
+        typedef std::function<void (std::unique_ptr<http_response> rsp)> request_handler;
 
     private:
-        std::list<std::unique_ptr<rnode>> _rnodes;
+        std::map<std::string ,std::unique_ptr<rnode>> _rnodes;
             
     public:
-        void async_request(std::unique_ptr<http_response> req, request_handler handler);
+        void async_request(std::unique_ptr<http_request> req, request_handler handler);
 
         void config(tinyxml2::XMLElement *config);
     };

@@ -36,6 +36,7 @@ build
 out
 .vs
 .vscode
+.VSCodeCounter
 
 #Others
 CMakeSettings.json

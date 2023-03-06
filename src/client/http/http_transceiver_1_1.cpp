@@ -86,8 +86,12 @@ namespace myhttpd {
         
     }
 
-    void http_transceiver_1_1::_send_handler(connection::error_code code, std::size_t bytes_transferred) {
+    void http_transceiver_1_1::_header_send_handler(connection::error_code code, std::size_t bytes_transferred) {
         
+    }
+
+    void http_transceiver_1_1::_content_send_handler(connection::error_code code, std::size_t bytes_transferred) {
+
     }
 
     void http_transceiver_1_1::async_receive(receive_handler handler) {
@@ -100,14 +104,14 @@ namespace myhttpd {
     }
 
     void http_transceiver_1_1::async_send(std::unique_ptr<http_response> response, send_handler handler) {
-        std::strstream header;
-        header << "HTTP/1.1 ";
+        std::size_t header_size = sizeof("HTTP/")
+
 
     }
 
     http_transceiver_1_1::http_transceiver_1_1(std::unique_ptr<connection> &conn) 
     : _conn(conn) {
-        auto &buf = this->_header_receive_buffer;
+		auto& buf = this->_header_receive_buffer;
         buf.push_back(std::array<char, BUFFER_BLOCK_SIZE>());
         this->_conn->async_read_some(
             buf.back().data(), 

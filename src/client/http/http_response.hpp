@@ -1,12 +1,15 @@
 #include <map>
 #include <string>
+#include <memory>
+
+#include "http_content.hpp"
 
 namespace myhttpd {
 
     struct http_response {
 
     private:
-        int status;
+        int _status;
 
         std::map<std::string, std::string> _attributes;
 
@@ -19,5 +22,10 @@ namespace myhttpd {
 
         void set_attribute(std::string name, std::string value);
 
+        std::shared_ptr<http_content>& get_content();
+
+        void set_contnet(std::shared_ptr<http_content> content);
+
+        std::string get_header();
     };
 }

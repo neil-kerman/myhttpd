@@ -1,6 +1,7 @@
 #include <memory>
 #include <list>
 #include <array>
+#include <boost/regex.hpp>
 
 #include "http_transceiver.hpp"
 #include "network/connection.hpp"
@@ -11,6 +12,9 @@
 namespace myhttpd {
 
     class http_transceiver_1_1: public http_transceiver {
+
+    private:
+        
 
     private:
         std::unique_ptr<connection> &_conn;
@@ -33,7 +37,9 @@ namespace myhttpd {
 
         void _content_receive_handler(connection::error_code code, std::size_t bytes_transferred);
 
-        void _send_handler(connection::error_code code, std::size_t bytes_transferred);
+        void _header_send_handler(connection::error_code code, std::size_t bytes_transferred);
+
+        void _content_send_handler(connection::error_code code, std::size_t bytes_transferred);
 
     public:
         http_transceiver_1_1(std::unique_ptr<connection> &conn);
