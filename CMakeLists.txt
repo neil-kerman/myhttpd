@@ -11,8 +11,8 @@ find_package(Boost COMPONENTS system context regex)
 find_package(openssl)
 find_package(glog CONFIG REQUIRED)
 find_package(gflags CONFIG REQUIRED)
-find_package(gtest CONFIG REQUIRED)
 find_package(tinyxml2 CONFIG REQUIRED)
+
 
 configure_file(config.hpp.in config.hpp)
 include_directories(${PROJECT_BINARY_DIR} "src")
@@ -39,5 +39,11 @@ add_custom_command(
             ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/${PROJECT_NAME}.config
 )
 endif()
+
+include(CTest)
+
+enable_testing()
+
+find_package(gtest CONFIG REQUIRED)
 
 add_subdirectory(test)
