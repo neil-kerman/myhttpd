@@ -1,3 +1,6 @@
+#ifndef LINKED_BUFFER_HPP
+#define LINKED_BUFFER_HPP
+
 #include <list>
 #include <array>
 #include <cstddef>
@@ -87,5 +90,11 @@ namespace myhttpd {
             }
             return data_blocks;
         }
+
+        std::list<block> get_data() {
+            return this->get_data(this->_size);
+        }
     };
 }
+
+#endif // LINKED_BUFFER_HPP

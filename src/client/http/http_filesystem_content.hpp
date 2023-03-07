@@ -1,3 +1,6 @@
+#ifndef HTTP_FILESYSTEM_CONTENT_HPP
+#define HTTP_FILESYSTEM_CONTENT_HPP
+
 #include <string>
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
@@ -24,3 +27,5 @@ namespace myhttpd {
         virtual std::size_t get_size();
     };
 }
+
+#endif // HTTP_FILESYSTEM_CONTENT_HPP

@@ -1,0 +1,6 @@
+#ifndef HTTP_MIME_TYPES_HPP
+#define HTTP_MIME_TYPES_HPP
+
+
+
+#endif // HTTP_MIME_TYPES_HPP

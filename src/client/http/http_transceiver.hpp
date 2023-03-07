@@ -1,3 +1,6 @@
+#ifndef HTTP_TRANSCEIVER_HPP
+#define HTTP_TRANSCEIVER_HPP
+
 #include <functional>
 #include <memory>
 
@@ -25,3 +28,5 @@ namespace myhttpd {
         virtual void async_send(std::unique_ptr<http_message> msg, send_handler handler) = 0;
     };
 }
+
+#endif // HTTP_TRANSCEIVER_HPP

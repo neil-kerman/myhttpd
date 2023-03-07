@@ -1,3 +1,6 @@
+#ifndef RNODE_HPP
+#define RNODE_HPP
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -19,3 +22,5 @@ namespace myhttpd {
 
     };
 }
+
+#endif // RNODE_HPP

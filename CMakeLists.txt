@@ -14,7 +14,7 @@ find_package(gflags CONFIG REQUIRED)
 find_package(tinyxml2 CONFIG REQUIRED)
 
 
-configure_file(config.hpp.in config.hpp)
+configure_file(src/config.hpp.in config.hpp)
 include_directories(${PROJECT_BINARY_DIR} "src")
 
 set(SRC_LIST)

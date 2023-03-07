@@ -1,3 +1,6 @@
+#ifndef HTTP_TRANSCEIVER_1_1_HPP
+#define HTTP_TRANSCEIVER_1_1_HPP
+
 #include <memory>
 #include <list>
 #include <array>
@@ -6,9 +9,7 @@
 #include "http_transceiver.hpp"
 #include "http_message.hpp"
 #include "network/connection.hpp"
-#include "http_rnrn_match.hpp"
-
-#define BUFFER_BLOCK_SIZE (1 << 12)
+#include "util/linked_buffer.hpp"
 
 namespace myhttpd {
 
@@ -24,26 +25,20 @@ namespace myhttpd {
             bool match(const char value);
 
             void reset();
-
         };
 
     private:
         std::unique_ptr<connection> &_conn;
 
-        std::list<receive_handler> _receive_requests;
+        linked_buffer<(1 << 12)> _header_receive_buffer;
 
-        std::list<std::unique_ptr<http_message>> _inbox;
-
-        std::list<std::unique_ptr<http_message>> _outbox;
-
-        std::list<std::array<char, BUFFER_BLOCK_SIZE>> _header_receive_buffer;
-
-        std::unique_ptr<http_message> _receiving_message;
+        std::unique_ptr<http_message> _receiving_message = NULL;
 
         line_detecter match;
-        std::size_t match_ptr = 0;
-        std::size_t _buffer_counter = 0;
-        std::size_t _buffer_offset = 0;
+
+        receive_handler _receive_handler;
+
+        send_handler _send_handler;
 
     private:
         void _header_receive_handler(connection::error_code code, std::size_t bytes_transferred);
@@ -64,3 +59,5 @@ namespace myhttpd {
         virtual void async_send(std::unique_ptr<http_message> msg, send_handler handler);
     };
 }
+
+#endif // HTTP_TRANSCEIVER_1_1_HPP

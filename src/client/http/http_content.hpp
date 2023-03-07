@@ -1,3 +1,6 @@
+#ifndef HTTP_CONTENT_HPP
+#define HTTP_CONTENT_HPP
+
 #include <cstddef>
 
 namespace myhttpd {
@@ -11,3 +14,5 @@ namespace myhttpd {
         virtual std::size_t get_size() = 0;
     };
 }
+
+#endif // HTTP_CONTENT_HPP

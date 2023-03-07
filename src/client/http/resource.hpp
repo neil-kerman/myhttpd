@@ -1,3 +1,6 @@
+#ifndef RESOURCE_HPP
+#define RESOURCE_HPP
+
 #include <memory>
 #include <functional>
 #include <map>
@@ -22,3 +25,5 @@ namespace myhttpd {
         void config(tinyxml2::XMLElement *config);
     };
 }
+
+#endif // RESOURCE_HPP

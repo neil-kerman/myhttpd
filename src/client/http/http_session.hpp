@@ -1,5 +1,5 @@
-#ifndef __HTTP_H__
-#define __HTTP_H__
+#ifndef HTTP_SESSION_HPP
+#define HTTP_SESSION_HPP
 
 #include <memory>
 #include <list>
@@ -37,4 +37,5 @@ namespace myhttpd {
     };
 }
 
-#endif // __HTTP_H__
+
+#endif // HTTP_SESSION_HPP

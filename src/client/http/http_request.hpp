@@ -1,3 +1,6 @@
+#ifndef HTTP_REQUEST_HPP
+#define HTTP_REQUEST_HPP
+
 #include <string>
 
 namespace myhttpd {
@@ -10,3 +13,5 @@ namespace myhttpd {
         
     };
 }
+
+#endif // HTTP_REQUEST_HPP

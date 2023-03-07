@@ -16,8 +16,8 @@ namespace myhttpd {
     }
 
     void http_session::receive_request() {
-        this->_transceiver->async_receive([&](http_transceiver::error_code code, std::unique_ptr<http_request> request) {
-            
+        this->_transceiver->async_receive([&](http_transceiver::error_code code, std::unique_ptr<http_message> request) {
+            LOG(INFO) << request->header.front();
             this->receive_request();
         });
     }
