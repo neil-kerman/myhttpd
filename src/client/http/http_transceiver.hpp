@@ -1,8 +1,7 @@
 #include <functional>
 #include <memory>
 
-#include "http_request.hpp"
-#include "http_response.hpp"
+#include "http_message.hpp"
 
 namespace myhttpd {
     
@@ -14,7 +13,7 @@ namespace myhttpd {
             error = -1,
         };
 
-        typedef std::function<void (error_code code, std::unique_ptr<http_request> req)> receive_handler;
+        typedef std::function<void (error_code code, std::unique_ptr<http_message> msg)> receive_handler;
 
         typedef std::function<void (error_code code)> send_handler;
 
@@ -23,6 +22,6 @@ namespace myhttpd {
 
         virtual void async_receive(receive_handler handler) = 0;
 
-        virtual void async_send(std::unique_ptr<http_response> response, send_handler handler) = 0;
+        virtual void async_send(std::unique_ptr<http_message> msg, send_handler handler) = 0;
     };
 }
