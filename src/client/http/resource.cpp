@@ -3,9 +3,9 @@
 #include "resource.hpp"
 #include "filesystem_rnode.hpp"
 
-namespace myhttpd {
+namespace myhttpd::http {
 
-    void resource::async_request(std::unique_ptr<http_request> req, request_handler handler) {
+    void resource::async_request(std::unique_ptr<request> req, request_handler handler) {
         
     }
 

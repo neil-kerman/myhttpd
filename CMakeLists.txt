@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/DEBUG")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/RELEASE")
 
-find_package(Boost COMPONENTS system context regex)
+find_package(Boost COMPONENTS system context regex filesystem)
 find_package(openssl)
 find_package(glog CONFIG REQUIRED)
 find_package(gflags CONFIG REQUIRED)

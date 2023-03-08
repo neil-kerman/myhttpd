@@ -5,20 +5,20 @@
 #include <memory>
 #include <string>
 
-#include "http_request.hpp"
-#include "http_response.hpp"
+#include "request.hpp"
+#include "response.hpp"
 
-namespace myhttpd {
+namespace myhttpd::http {
 
     class rnode {
 
     public:
-        typedef std::function<void (std::unique_ptr<http_response> rsp)> request_handler;
+        typedef std::function<void (std::unique_ptr<response> rsp)> request_handler;
 
     public:
         virtual ~rnode() {}
 
-        virtual void async_request(std::string url, std::unique_ptr<http_request> req, request_handler handler) = 0;
+        virtual void async_request(std::string url, std::unique_ptr<request> req, request_handler handler) = 0;
 
     };
 }

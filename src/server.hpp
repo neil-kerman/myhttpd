@@ -24,10 +24,9 @@ namespace myhttpd {
 
         std::map<boost::uuids::uuid, std::unique_ptr<session>> _sessions;
 
-        resource _resource;
+        http::resource _resource;
 
     private:
-        resource _create_resource(tinyxml2::XMLElement *config);
 
     public:
         server(tinyxml2::XMLElement *config);

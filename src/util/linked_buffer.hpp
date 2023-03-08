@@ -74,18 +74,14 @@ namespace myhttpd {
         std::list<block> get_data(std::size_t size) {
             std::list<block> data_blocks;
             if (size <= this->_size) {
-                auto first_block_size = (size > (BlockSize - this->_offset)) ? BlockSize - this->_offset : size;
-                auto full_blocks = (size - this->_offset) / BlockSize;
-                auto last_block_size = size - (full_blocks * BlockSize) - first_block_size;
+                auto remaminder_size = size;
+                auto block_base_offset = this->_offset;
                 auto it = this->_blocks.begin();
-                data_blocks.push_back(block{ it->data() + this->_offset, first_block_size });
-                it++;
-                for (std::size_t i = 0; i < full_blocks; i++) {
-                    data_blocks.push_back(block{ it->data(), BlockSize });
-                    it++;
-                }
-                if (last_block_size != 0) {
-                    data_blocks.push_back(block{ it->data(), last_block_size });
+                while (remaminder_size != 0) {
+                    auto block_size = (remaminder_size < BlockSize) ? remaminder_size : BlockSize;
+                    data_blocks.push_back(block{ it->data() + block_base_offset, block_size });
+                    remaminder_size -= block_size;
+                    block_base_offset -= block_base_offset;
                 }
             }
             return data_blocks;

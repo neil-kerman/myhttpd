@@ -9,26 +9,41 @@ namespace myhttpd {
 
     void insecure_connection::async_write_some(const char *buf, std::size_t size, write_handler handler) {
         this->_soc.async_write_some(boost::asio::buffer(buf, size), [handler](const boost::system::error_code &code, std::size_t bytes_transferred) {
-            error_code ecode = (!code) ? error_code::success : error_code::error;
-            handler(ecode, bytes_transferred);
+            if (!code) {
+                handler(success, bytes_transferred);
+            } else if (code == boost::asio::error::operation_aborted) {
+                handler(canceled, bytes_transferred);
+            } else {
+                handler(error, bytes_transferred);
+            }
         });
     }
 
     void insecure_connection::async_read_some(char *buf, std::size_t size, read_handler handler) {
         this->_soc.async_read_some(boost::asio::buffer(buf, size), [handler](const boost::system::error_code &code, std::size_t bytes_transferred) {
-            error_code ecode = (!code) ? error_code::success : error_code::error;
-            handler(ecode, bytes_transferred);
+            if (!code) {
+                handler(success, bytes_transferred);
+            } else if (code == boost::asio::error::operation_aborted) {
+                handler(canceled, bytes_transferred);
+            } else {
+                handler(error, bytes_transferred);
+            }
         });
     }
 
     void insecure_connection::async_wait(wait_type type, wait_handler handler) {
         this->_soc.async_wait(type, [handler](const boost::system::error_code &code) {
-            error_code ecode = (!code) ? error_code::success : error_code::error;
-            handler(ecode);
+            if (!code) {
+                handler(success);
+            } else if (code == boost::asio::error::operation_aborted) {
+                handler(canceled);
+            } else {
+                handler(error);
+            }
         });
     }
 
-    connection::endpoint insecure_connection::get_remote_endpoint() {
-        return this->_soc.remote_endpoint(); 
+    void insecure_connection::cancel() {
+        this->_soc.cancel();
     }
 }
