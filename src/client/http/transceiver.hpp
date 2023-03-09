@@ -18,7 +18,10 @@ namespace myhttpd::http {
             error,
         };
 
-        typedef boost::asio::socket_base::wait_type wait_type;
+        enum wait_type {
+            wait_receive = boost::asio::socket_base::wait_read,
+            wait_send = boost::asio::socket_base::wait_write,
+        };
 
         typedef std::function<void(error_code code, std::unique_ptr<message> msg)> receive_handler;
 

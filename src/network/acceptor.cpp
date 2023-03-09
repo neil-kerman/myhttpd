@@ -19,15 +19,14 @@ namespace myhttpd {
                 [id, &conns = this->_tls_conns, handler = this->_nca_handler](connection::error_code error) {
                     if(!error) {
                         handler(std::move(conns[id]));
+                        conns.erase(id);
                     } else {
-
+                        conns.erase(id);
                     }
                 }
             );
             using namespace std::placeholders;
             this->_ac.async_accept(std::bind(&acceptor::_accept_handler_tls, this, _1, _2));
-        } else {
-            
         }
     }
 
@@ -36,8 +35,6 @@ namespace myhttpd {
             this->_nca_handler(std::make_unique<insecure_connection>(std::move(peer)));
             using namespace std::placeholders;
             this->_ac.async_accept(std::bind(&acceptor::_accept_handler, this, _1, _2));
-        } else {
-
         }
     }
 
@@ -51,10 +48,10 @@ namespace myhttpd {
             std::string key_filepath = config->Attribute("key_file");
             ctx.use_certificate_file(crt_filepath, context::file_format::pem);
             ctx.use_private_key_file(key_filepath, context::file_format::pem);
-            return std::move(ctx);
+            return ctx;
         } else {
             auto ctx = context(context::tlsv12_server);
-            return std::move(ctx);
+            return ctx;
         }
     }
 

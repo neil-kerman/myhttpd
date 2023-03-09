@@ -10,9 +10,10 @@
 
 #include "network/acceptor.hpp"
 #include "client/session.hpp"
-#include "client/http/resource.hpp"
+#include "client/session_factory.hpp"
 
 namespace myhttpd {
+
     class server {
 
     private:
@@ -24,9 +25,12 @@ namespace myhttpd {
 
         std::map<boost::uuids::uuid, std::unique_ptr<session>> _sessions;
 
-        http::resource _resource;
+        std::map<std::string, std::unique_ptr<myhttpd::session_factory>> _session_factories;
 
-    private:
+    public:
+        void _init_acceptors(tinyxml2::XMLElement* config);
+
+        void _init_session_factories(tinyxml2::XMLElement* config);
 
     public:
         server(tinyxml2::XMLElement *config);

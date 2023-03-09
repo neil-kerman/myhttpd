@@ -15,10 +15,13 @@ find_package(tinyxml2 CONFIG REQUIRED)
 
 
 configure_file(src/config.hpp.in config.hpp)
-include_directories(${PROJECT_BINARY_DIR} "src")
+include_directories(
+    ${PROJECT_BINARY_DIR} 
+    "./src"
+)
 
 set(SRC_LIST)
-file(GLOB_RECURSE SRC_LIST "src/*.cpp")
+file(GLOB_RECURSE SRC_LIST "./src/*.cpp")
 
 link_libraries(
     ${Boost_LIBRARIES}
@@ -29,6 +32,7 @@ link_libraries(
     OpenSSL::Crypto
 )
 
+
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
 if(CMAKE_BUILD_TYPE AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
@@ -37,6 +41,15 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_SOURCE_DIR}/resource/default.config
             ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/${PROJECT_NAME}.config
+)
+endif()
+
+if(CMAKE_BUILD_TYPE AND (CMAKE_BUILD_TYPE STREQUAL "Release"))
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_SOURCE_DIR}/resource/default.config
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}/${PROJECT_NAME}.config
 )
 endif()
 

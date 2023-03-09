@@ -14,6 +14,25 @@ namespace myhttpd::http {
 		std::list<std::string> header;
 
 		std::unique_ptr<content> content;
+
+	public:
+		enum type {
+			request,
+			response,
+		};
+
+	public:
+		type get_type();
+
+		std::string get_method();
+
+		std::string get_version();
+
+		std::string get_url();
+
+		std::string get_status();
+
+		std::string get_first_attribute(std::string name);
 	};
 }
 

@@ -13,13 +13,15 @@ namespace myhttpd {
     public:
         enum error_code {
             success = 0,
-            canceled,
+            canceled = boost::asio::error::operation_aborted,
             error,
         };
 
-        typedef boost::asio::socket_base::wait_type wait_type;
+        enum wait_type {
+            wait_read = boost::asio::socket_base::wait_read,
+            wait_write = boost::asio::socket_base::wait_write,
+        };
 
-        typedef boost::asio::ip::tcp::endpoint endpoint;
 
         /* Wait event handler */
         typedef std::function<

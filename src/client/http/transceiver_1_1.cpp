@@ -130,9 +130,27 @@ namespace myhttpd::http {
     }
 
     void transceiver_1_1::async_wait(wait_type type, wait_handler handler) {
+        connection::wait_type type_;
+        auto lam = [handler](connection::error_code code) {
+            if (!code) {
+                handler(success);
+            } else if (code == connection::error_code::canceled) {
+                handler(canceled);
+            } else if (code == connection::error_code::error) {
+                handler(error);
+            }
+        };
+        if (type == wait_type::wait_receive) {
+            type_ = connection::wait_type::wait_read;
+            this->_conn->async_wait(type_, lam);
+        } else if (type == wait_type::wait_send) {
+            type_ = connection::wait_type::wait_write;
+            this->_conn->async_wait(type_, lam);
+        }
     }
 
     void transceiver_1_1::cancel() {
+        this->_conn->cancel();
     }
 
     transceiver_1_1::transceiver_1_1(std::unique_ptr<connection> &conn) 

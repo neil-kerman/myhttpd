@@ -5,7 +5,7 @@
 #include <boost/asio.hpp>
 
 #include "rnode.hpp"
-#include "request.hpp"
+#include "message.hpp"
 
 namespace myhttpd::http {
 
@@ -17,7 +17,7 @@ namespace myhttpd::http {
     public:
         filesystem_rnode(std::string path);
 
-        void async_request(std::string url, std::unique_ptr<request> req, request_handler handler);
+        void async_request(std::string url, std::unique_ptr<message> req, request_handler handler);
     };
 }
 

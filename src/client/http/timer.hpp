@@ -1,3 +1,6 @@
+#ifndef TIMER_HPP
+#define TIMER_HPP
+
 #include <functional>
 #include <cstddef>
 #include <boost/asio.hpp>
@@ -27,3 +30,5 @@ namespace myhttpd {
         void async_timeout(unsigned int seconds, timeout_handler handler);
     };
 }
+
+#endif // TIMER_HPP
