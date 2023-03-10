@@ -15,9 +15,14 @@ namespace myhttpd::http {
         std::string _path;
 
     public:
+        virtual bool exists(std::string url);
+
+        virtual void async_request(std::string url, std::unique_ptr<message> req, request_handler handler);
+
+    public:
         filesystem_rnode(std::string path);
 
-        void async_request(std::string url, std::unique_ptr<message> req, request_handler handler);
+        virtual ~filesystem_rnode();
     };
 }
 

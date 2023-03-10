@@ -84,8 +84,8 @@ namespace myhttpd::http {
             std::bind(&session::_wait_handler, this, std::placeholders::_1));
     }
 
-    session::session(std::unique_ptr<connection> conn, boost::asio::io_context& ctx)
-        : _conn(std::move(conn)), _transceiver(std::make_unique<transceiver_1_1>(this->_conn)), _timer(ctx) {
+    session::session(std::unique_ptr<connection> conn, resource &resource, boost::asio::io_context& ctx)
+        : _conn(std::move(conn)), _transceiver(std::make_unique<transceiver_1_1>(this->_conn)), _resource(resource),_timer(ctx) {
     }
 
     session::~session() {}

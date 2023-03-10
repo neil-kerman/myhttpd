@@ -19,8 +19,9 @@ namespace myhttpd::http{
     private:
         boost::asio::io_context& _ctx;
 
-        session_config _session_config;
+        resource _resource;
 
+        session_config _session_config;
 
     public:
         virtual std::unique_ptr<myhttpd::session> 

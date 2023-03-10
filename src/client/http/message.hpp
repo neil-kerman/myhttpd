@@ -13,7 +13,7 @@ namespace myhttpd::http {
 
 		std::list<std::string> header;
 
-		std::unique_ptr<content> content;
+		std::shared_ptr<content> content;
 
 	public:
 		enum type {
@@ -22,17 +22,25 @@ namespace myhttpd::http {
 		};
 
 	public:
-		type get_type();
+        inline message::type get_type() {
+            if (this->header.front().starts_with("HTTP")) {
+                return type::response;
+            } else {
+                return type::request;
+            }
+        }
 
-		std::string get_method();
-
-		std::string get_version();
-
-		std::string get_url();
-
-		std::string get_status();
-
-		std::string get_first_attribute(std::string name);
+        inline std::string get_version() {
+            auto& title = this->header.front();
+            if (this->get_type() == type::request) {
+                auto offset = title.find(' ', 0) + 1;
+                offset = title.find(' ', offset) + 1;
+                return title.substr(offset, title.size() - offset - 2);
+            } else {
+                auto size = title.find(' ', 0);
+                return title.substr(0, size);
+            }
+        }
 	};
 }
 

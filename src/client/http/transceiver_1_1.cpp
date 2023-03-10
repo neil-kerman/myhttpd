@@ -61,7 +61,6 @@ namespace myhttpd::http {
                     if (line != "\r\n") {
                         this->_receiving_message->header.push_back(std::move(line));
                     } else {
-                        this->_receiving_message->header.push_back(std::move(line));
                         this->_receive_handler(success, std::move(this->_receiving_message));
                         this->_header_receive_buffer.commit(bytes_transferred);
                         this->_header_receive_buffer.consume(offset);

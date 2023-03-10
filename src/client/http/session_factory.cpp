@@ -12,7 +12,8 @@ namespace myhttpd::http {
 
     session_factory::session_factory(tinyxml2::XMLElement* config, boost::asio::io_context& ctx)
     : _ctx(ctx){
-
+        auto res_config = config->FirstChildElement("resource");
+        this->_resource.config(res_config);
     }
 
     session_factory::~session_factory() {}

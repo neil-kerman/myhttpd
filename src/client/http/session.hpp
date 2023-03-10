@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "client/session.hpp"
+#include "resource.hpp"
 #include "timer.hpp"
 #include "transceiver_1_1.hpp"
 #include "network/connection.hpp"
@@ -13,6 +14,9 @@
 namespace myhttpd::http {
 
     class session: public myhttpd::session {
+
+    private:
+        resource& _resource;
 
     private:
         std::unique_ptr<connection> _conn;
@@ -49,7 +53,7 @@ namespace myhttpd::http {
         virtual void start(terminated_handler handler);
         
     public:
-        session(std::unique_ptr<connection> conn, boost::asio::io_context &ctx);
+        session(std::unique_ptr<connection> conn, resource &resource, boost::asio::io_context &ctx);
 
         virtual ~session();
     };

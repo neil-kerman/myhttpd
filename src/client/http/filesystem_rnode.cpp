@@ -5,11 +5,18 @@
 
 namespace myhttpd::http {
 
+	bool filesystem_rnode::exists(std::string url) {
+		std::string abs_path = this->_path + url;
+		return boost::filesystem::exists(abs_path);
+	}
+
+	void filesystem_rnode::async_request(std::string url, std::unique_ptr<message> req, request_handler handler) {
+		
+	}
+
 	filesystem_rnode::filesystem_rnode(std::string path) 
 	: _path(path) {}
 
-	void filesystem_rnode::async_request(std::string url, std::unique_ptr<message> req, request_handler handler) {
-		std::string absolute_path;
-		
+	filesystem_rnode::~filesystem_rnode() {
 	}
 }
