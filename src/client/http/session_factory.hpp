@@ -13,7 +13,7 @@ namespace myhttpd::http{
 
     public:
         struct session_config {
-            unsigned int keepalive_time;
+            unsigned int keepalive_time = 30;
         };
 
     private:
@@ -25,7 +25,7 @@ namespace myhttpd::http{
 
     public:
         virtual std::unique_ptr<myhttpd::session> 
-            create_session(std::unique_ptr<myhttpd::connection> conn);
+            create_session(std::unique_ptr<myhttpd::network::connection> conn);
 
     public:
         session_factory(tinyxml2::XMLElement* config, boost::asio::io_context& ctx);

@@ -8,7 +8,6 @@
 #include <list>
 
 #include "rnode.hpp"
-#include "message.hpp"
 
 namespace myhttpd::http {
 
@@ -20,10 +19,10 @@ namespace myhttpd::http {
     private:
         std::map<std::string ,std::unique_ptr<rnode>> _rnodes;
 
-        std::list<std::string> _default;
-            
+        std::string _default;
+
     public:
-        void async_request(std::unique_ptr<message> req, request_handler handler);
+        void async_request(std::unique_ptr<request> req, request_handler handler);
 
         void config(tinyxml2::XMLElement *config);
     };

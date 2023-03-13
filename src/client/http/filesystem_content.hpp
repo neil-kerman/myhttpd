@@ -7,10 +7,10 @@
 
 #include "content.hpp"
 
-
 using namespace boost::interprocess;
 
 namespace myhttpd::http {
+
     class filesystem_content: public content {
 
     private:
@@ -19,13 +19,12 @@ namespace myhttpd::http {
         boost::interprocess::mapped_region _region;
 
     public:
+        virtual void async_wait_ready(wait_handler handler);
+
+    public:
         filesystem_content(std::string path);
 
         virtual ~filesystem_content();
-
-        virtual const char* get_ptr();
-        
-        virtual std::size_t get_size();
     };
 }
 

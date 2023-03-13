@@ -3,13 +3,9 @@
 #include "filesystem_content.hpp"
 
 namespace myhttpd::http {
-    
-    const char* filesystem_content::get_ptr() {
-        return this->get_ptr();
-    }
 
-    std::size_t filesystem_content::get_size() {
-        return this->get_size();
+    void filesystem_content::async_wait_ready(wait_handler handler) {
+        handler(error_code::successful, this->_region.get_address(), this->_region.get_size());
     }
 
     filesystem_content::filesystem_content(std::string path)

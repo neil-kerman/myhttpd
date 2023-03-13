@@ -6,7 +6,7 @@
 #include "client/session.hpp"
 #include "resource.hpp"
 #include "timer.hpp"
-#include "transceiver_1_1.hpp"
+#include "transceiver.hpp"
 #include "network/connection.hpp"
 #include "resource.hpp"
 
@@ -19,13 +19,12 @@ namespace myhttpd::http {
         resource& _resource;
 
     private:
-        std::unique_ptr<connection> _conn;
+        transceiver _transceiver;
 
-        std::unique_ptr<transceiver> _transceiver;
+        boost::asio::deadline_timer _timer;
 
         terminated_handler _terminated_handler;
 
-        timer _timer;
     private:
         bool _transceiver_receive_busy = false;
 
@@ -38,22 +37,24 @@ namespace myhttpd::http {
         bool _terminating_required = false;
 
     private:
+        void _set_timer();
+
         void _terminate();
 
     private:
-        void _timeout_handler(timer::status st);
+        void _timeout_handler(const asio_error_code& error);
 
-        void _wait_handler(transceiver::error_code code);
+        void _wait_handler(const asio_error_code &error);
 
-        void _receive_handler(transceiver::error_code code, std::unique_ptr<message> request);
+        void _receive_handler(const asio_error_code& error, std::unique_ptr<message> request);
 
-        void _send_handler(transceiver::error_code code);
+        void _send_handler(const asio_error_code& error);
 
     public:
         virtual void start(terminated_handler handler);
         
     public:
-        session(std::unique_ptr<connection> conn, resource &resource, boost::asio::io_context &ctx);
+        session(std::unique_ptr<myhttpd::network::connection> conn, resource &resource, boost::asio::io_context &ctx);
 
         virtual ~session();
     };

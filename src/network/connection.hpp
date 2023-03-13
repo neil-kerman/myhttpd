@@ -1,5 +1,5 @@
-#ifndef BASIC_CONNECTION_HPP
-#define BASIC_CONNECTION_HPP
+#ifndef CONNECTION_HPP
+#define CONNECTION_HPP
 
 #include <cstddef>
 #include <functional>
@@ -7,43 +7,56 @@
 #include <boost/asio/buffer.hpp>
 #include <boost/system.hpp>
 
-namespace myhttpd {
+#include "alias.hpp"
+
+namespace myhttpd::network {
             
     class connection {
+
     public:
-        enum error_code {
-            success = 0,
-            canceled = boost::asio::error::operation_aborted,
-            error,
+        struct mutable_buffer {
+            void* data;
+            const std::size_t size;
         };
 
-        enum wait_type {
-            wait_read = boost::asio::socket_base::wait_read,
-            wait_write = boost::asio::socket_base::wait_write,
+        struct const_buffer {
+            const void* data;
+            const std::size_t size;
         };
-
-
-        /* Wait event handler */
-        typedef std::function<
-                    void (error_code code)
-                > wait_handler;
 
         /* Read event handler */
         typedef std::function<
-                    void (error_code code, std::size_t bytes_transferred)
+                    void (const asio_error_code& error, std::size_t bytes_transferred)
                 > read_handler;
 
         /* Write event handler */
         typedef std::function<
-                    void (error_code code, std::size_t bytes_transferred)
+                    void (const asio_error_code& error, std::size_t bytes_transferred)
                 > write_handler;
 
+        /* Receive event handler */
+        typedef std::function<
+                    void(const asio_error_code& error, std::size_t bytes_transferred)
+                > receive_handler;
+
+        /* send event handler */
+        typedef std::function<
+                    void(const asio_error_code& error, std::size_t bytes_transferred)
+                > send_handler;
+
+        /* Wait event handler */
+        typedef std::function<void (const asio_error_code&code)> wait_handler;
+
     public:
-        virtual void async_read_some(char *buf, std::size_t size, read_handler handler) = 0;
+        virtual void async_read_some(mutable_buffer buf, read_handler handler) = 0;
 
-        virtual void async_write_some(const char *buf, std::size_t size, write_handler handler) = 0;
+        virtual void async_write_some(const_buffer buf, write_handler handler) = 0;
 
-        virtual void async_wait(wait_type type, wait_handler handler) = 0;
+        virtual void async_receive(mutable_buffer buf, receive_handler handler) = 0;
+
+        virtual void async_send(const_buffer buf, send_handler handler) = 0;
+
+        virtual void async_wait(socket_wait_type type, wait_handler handler) = 0;
 
         virtual void cancel() = 0;
 
@@ -52,4 +65,4 @@ namespace myhttpd {
     };
 }
 
-#endif // BASIC_CONNECTION_HPP
+#endif // CONNECTION_HPP

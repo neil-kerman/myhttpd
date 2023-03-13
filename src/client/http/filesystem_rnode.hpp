@@ -5,7 +5,6 @@
 #include <boost/asio.hpp>
 
 #include "rnode.hpp"
-#include "message.hpp"
 
 namespace myhttpd::http {
 
@@ -17,7 +16,7 @@ namespace myhttpd::http {
     public:
         virtual bool exists(std::string url);
 
-        virtual void async_request(std::string url, std::unique_ptr<message> req, request_handler handler);
+        virtual void async_request(std::string url, std::unique_ptr<request> req, request_handler handler);
 
     public:
         filesystem_rnode(std::string path);

@@ -10,12 +10,9 @@ namespace myhttpd {
     class timer {
     
     public:
-        enum status {
-            canceled,
-            timeout,
-        };
+        typedef boost::system::error_code error_code;
 
-        typedef std::function<void(status st)> timeout_handler;
+        typedef std::function<void(const error_code & error_code)> timeout_handler;
 
     private:
         boost::asio::deadline_timer _t;

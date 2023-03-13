@@ -3,6 +3,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 
 #include "server.hpp"
+#include "network/acceptor_factory.hpp"
 #include "client/http/session.hpp"
 #include "client/http/session_factory.hpp"
 
@@ -21,7 +22,7 @@ namespace myhttpd {
         //Thus no need to delete it in this scope.
         while (ac_cfg) {
             /* Create acceptors */
-            this->_acceptors.push_back(std::make_unique<acceptor>(this->_io, ac_cfg));
+            this->_acceptors.push_back(network::acceptor_facory::create_acceptor(ac_cfg, this->_io));
             ac_cfg = ac_cfg->NextSiblingElement();
         }
     }
@@ -41,20 +42,27 @@ namespace myhttpd {
     }
 
     void server::start() {
-        for(auto &lis: this->_acceptors) {
-            lis->start_async_accept(
-                /* New connection accept event handler */
-                [&sessions = this->_sessions, &factories = this->_session_factories]
-                (std::unique_ptr<connection> conn) {
-                    boost::uuids::uuid id = boost::uuids::random_generator()();
-                    auto &fac = factories["http"];
-                    auto ses = fac->create_session(std::move(conn));
-                    sessions.insert(std::pair<boost::uuids::uuid, std::unique_ptr<session>>(id, std::move(ses)));
-                    sessions[id]->start([id, &sessions]() {
+        this->_accept_handlers.clear();
+        this->_accept_handlers.reserve(this->_acceptors.size());
+        auto ac_it = this->_acceptors.begin();
+        for (int i = 0; i < this->_acceptors.size(); i++) {
+            auto handler = [&handlers = this->_accept_handlers, handler_id = i, &ac = (*ac_it), 
+                &sessions = this->_sessions, &factories = this->_session_factories]
+            (const asio_error_code& error, std::unique_ptr<network::connection> conn) {
+                boost::uuids::uuid id = boost::uuids::random_generator()();
+                auto& fac = factories["http"];
+                auto ses = fac->create_session(std::move(conn));
+                sessions.insert(std::pair<boost::uuids::uuid, std::unique_ptr<session>>(id, std::move(ses)));
+                sessions[id]->start(
+                    [id, &sessions]() {
                         sessions.erase(id);
-                    });
-                }
-            );
+                    }
+                );
+                ac->async_accept(handlers[handler_id]);
+            };
+            this->_accept_handlers.push_back(handler);
+            (*ac_it)->async_accept(handler);
+            ac_it++;
         }
     }
 }

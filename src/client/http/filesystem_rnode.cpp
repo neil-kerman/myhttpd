@@ -10,7 +10,7 @@ namespace myhttpd::http {
 		return boost::filesystem::exists(abs_path);
 	}
 
-	void filesystem_rnode::async_request(std::string url, std::unique_ptr<message> req, request_handler handler) {
+	void filesystem_rnode::async_request(std::string url, std::unique_ptr<request> req, request_handler handler) {
 		
 	}
 
