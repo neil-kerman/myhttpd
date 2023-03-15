@@ -5,6 +5,8 @@
 #include <functional>
 #include <boost/system.hpp>
 
+#include "network/connection.hpp"
+
 namespace myhttpd::http {
 
     class content {
@@ -15,9 +17,11 @@ namespace myhttpd::http {
             error,
         };
 
-        typedef std::function<void(const error_code error, void *data, std::size_t size)> wait_handler;
+        typedef std::function<void(const asio_error_code &error, network::connection::const_buffer buf)> wait_handler;
 
     public:
+        virtual std::size_t get_size() = 0;
+
         virtual void async_wait_ready(wait_handler handler) = 0;
 
     public:

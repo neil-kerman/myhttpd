@@ -1,9 +1,10 @@
-#include "config.hpp"
-#include "server.hpp"
-
+#define GLOG_NO_ABBREVIATED_SEVERITIES
 #include <glog/logging.h>
 #include <gflags/gflags.h>
 #include <tinyxml2.h>
+
+#include "config.hpp"
+#include "server.hpp"
 
 void glog_init(const char *arg) {
     google::InitGoogleLogging(arg);

@@ -1,11 +1,12 @@
+#define GLOG_NO_ABBREVIATED_SEVERITIES
 #include <glog/logging.h>
 #include <gflags/gflags.h>
 #include <boost/uuid/uuid_generators.hpp>
 
 #include "server.hpp"
 #include "network/acceptor_factory.hpp"
-#include "client/http/session.hpp"
-#include "client/http/session_factory.hpp"
+#include "session/http/session.hpp"
+#include "session/http/session_factory.hpp"
 
 using namespace boost::asio::ip;
 

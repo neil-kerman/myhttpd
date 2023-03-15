@@ -14,22 +14,26 @@ namespace myhttpd::http {
     private:
         bool _is_ready = false;
 
-        error_code _error;
+        asio_error_code _error;
 
         std::shared_ptr<std::vector<char>> _data;
 
         std::list<wait_handler> _wait_list;
 
     public:
-        void deliver(error_code);
+        void deliver(const asio_error_code& error);
 
     public:
+        virtual std::size_t get_size();
+
         virtual void async_wait_ready(wait_handler handler);
 
     public:
+        transmitting_content() = delete;
+
         transmitting_content(std::shared_ptr<std::vector<char>> data);
 
-        virtual ~transmitting_content();
+        virtual ~transmitting_content() = default;
     };
 }
 

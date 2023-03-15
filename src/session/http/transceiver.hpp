@@ -22,8 +22,11 @@ namespace myhttpd::http {
         typedef std::function<void(const asio_error_code& error_code)> send_handler;
 
         typedef std::function<void(const asio_error_code& error_code)> wait_handler;
-
+#ifdef __UNIT_TEST__
+    public:
+#else
     private:
+#endif
         class header_detecter {
 
         private:
@@ -35,19 +38,30 @@ namespace myhttpd::http {
             void reset();
         };
 
+#ifdef __UNIT_TEST__
+    public:
+#else
     private:
-        std::unique_ptr<myhttpd::network::connection> _conn;
+#endif
+        std::unique_ptr<myhttpd::network::connection> &_conn;
 
-        linked_buffer<(1 << 12)> _header_receive_buffer;
+        linked_buffer<128> _header_receive_buffer;
 
-        std::vector<char> _header_sending_buffer;
-
-        header_detecter match;
+        header_detecter _match;
 
         receive_handler _receive_handler;
 
+#ifdef __UNIT_TEST__
+    public:
+#else
     private:
-        void _header_receive_handler(const asio_error_code &error, std::size_t bytes_transferred);
+#endif
+        std::string _take_header(std::size_t size);
+
+        std::size_t _get_content_length(std::unique_ptr<message> &msg);
+
+    private:
+        void _header_receive_handler(const asio_error_code& error, std::size_t bytes_transferred);
 
     public:
         void async_receive(receive_handler handler);
@@ -59,7 +73,7 @@ namespace myhttpd::http {
         void cancel();
 
     public:
-        transceiver(std::unique_ptr<myhttpd::network::connection> conn);
+        transceiver(std::unique_ptr<myhttpd::network::connection> &conn);
     };
 }
 

@@ -9,8 +9,8 @@
 #include <tinyxml2.h>
 
 #include "network/acceptor.hpp"
-#include "client/session.hpp"
-#include "client/session_factory.hpp"
+#include "session/session.hpp"
+#include "session/session_factory.hpp"
 
 namespace myhttpd {
 

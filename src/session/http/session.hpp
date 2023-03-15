@@ -3,13 +3,11 @@
 
 #include <memory>
 
-#include "client/session.hpp"
+#include "session/session.hpp"
 #include "resource.hpp"
-#include "timer.hpp"
 #include "transceiver.hpp"
 #include "network/connection.hpp"
 #include "resource.hpp"
-
 
 namespace myhttpd::http {
 
@@ -19,6 +17,8 @@ namespace myhttpd::http {
         resource& _resource;
 
     private:
+        std::unique_ptr<myhttpd::network::connection> _conn;
+
         transceiver _transceiver;
 
         boost::asio::deadline_timer _timer;
@@ -49,6 +49,8 @@ namespace myhttpd::http {
         void _receive_handler(const asio_error_code& error, std::unique_ptr<message> request);
 
         void _send_handler(const asio_error_code& error);
+
+        void _resource_request_handler(std::shared_ptr<message> rsp);
 
     public:
         virtual void start(terminated_handler handler);

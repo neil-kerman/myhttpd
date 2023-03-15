@@ -24,6 +24,14 @@ namespace myhttpd::network {
         this->_stream.async_wait(type, handler);
     }
 
+    connection::endpoint tcp_connection::get_local_enpoint() {
+        return this->_stream.local_endpoint();
+    }
+
+    connection::endpoint tcp_connection::get_remote_endpoint() {
+        return this->_stream.local_endpoint();
+    }
+
     void tcp_connection::cancel() {
         this->_stream.cancel();
     }

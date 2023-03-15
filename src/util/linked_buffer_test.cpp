@@ -27,7 +27,7 @@ TEST(get_available_block, only_returns_the_last_block) {
     buf._capacity = 50;
     auto b1 = buf.get_available_block();
     auto b2 = buf.get_available_block();
-    EXPECT_EQ(b1.base, b2.base);
+    EXPECT_EQ(b1.data, b2.data);
     EXPECT_EQ(b1.size, b2.size);
 }
 

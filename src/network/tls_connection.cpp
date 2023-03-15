@@ -24,6 +24,14 @@ namespace myhttpd::network {
         this->_stream.next_layer().async_wait(type, handler);
     }
 
+    connection::endpoint tls_connection::get_local_enpoint() {
+        return this->_stream.next_layer().local_endpoint();
+    }
+
+    connection::endpoint tls_connection::get_remote_endpoint() {
+        return this->_stream.next_layer().remote_endpoint();
+    }
+
     void tls_connection::cancel() {
         this->_stream.next_layer().cancel();
     }

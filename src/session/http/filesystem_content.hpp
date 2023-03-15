@@ -19,12 +19,16 @@ namespace myhttpd::http {
         boost::interprocess::mapped_region _region;
 
     public:
+        virtual std::size_t get_size();
+
         virtual void async_wait_ready(wait_handler handler);
 
     public:
+        filesystem_content() = delete;
+
         filesystem_content(std::string path);
 
-        virtual ~filesystem_content();
+        virtual ~filesystem_content() = default;
     };
 }
 

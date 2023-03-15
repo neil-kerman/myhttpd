@@ -20,7 +20,7 @@ namespace myhttpd {
     
     public:
         struct block {
-            char* base;
+            void* data;
             std::size_t size;
         };
 

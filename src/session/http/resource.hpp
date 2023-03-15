@@ -22,7 +22,7 @@ namespace myhttpd::http {
         std::string _default;
 
     public:
-        void async_request(std::unique_ptr<request> req, request_handler handler);
+        void async_request(std::unique_ptr<message> req, request_handler handler);
 
         void config(tinyxml2::XMLElement *config);
     };

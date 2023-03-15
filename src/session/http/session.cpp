@@ -2,11 +2,12 @@
 #include <functional>
 
 #include "session.hpp"
+#include "const_content.hpp"
 
 namespace myhttpd::http {
     void session::_set_timer() {
         this->_timer_busy = true;
-        this->_timer.expires_from_now(boost::posix_time::seconds(3));
+        this->_timer.expires_from_now(boost::posix_time::seconds(30));
         this->_timer.async_wait(std::bind(&session::_timeout_handler, this, std::placeholders::_1));
     }
 
@@ -46,10 +47,18 @@ namespace myhttpd::http {
         }
     }
 
+    void session::_resource_request_handler(std::shared_ptr<message> rsp) {
+
+        this->_transceiver_send_busy = true;
+
+        this->_transceiver.async_send(rsp, std::bind(&session::_send_handler, this, std::placeholders::_1));
+    }
+
     void session::_receive_handler(const asio_error_code& error, std::unique_ptr<message> request) {
         this->_transceiver_receive_busy = false;
         if (!error) {
-            
+            this->_resource.async_request(std::move(request), 
+                std::bind(&session::_resource_request_handler, this, std::placeholders::_1));
         } else {
             this->_terminate();
         }
@@ -66,7 +75,7 @@ namespace myhttpd::http {
             this->_terminate();
         }
     }
-
+    
     void session::start(terminated_handler handler) {
         this->_terminated_handler = handler;
         this->_set_timer();
@@ -76,10 +85,12 @@ namespace myhttpd::http {
     }
 
     session::session(std::unique_ptr<myhttpd::network::connection> conn, resource &resource, boost::asio::io_context& ctx)
-        : _transceiver(std::move(conn)), _resource(resource), _timer(ctx) {
+    : _conn(std::move(conn)), _transceiver(this->_conn), _resource(resource), _timer(ctx) {
+        
     }
 
-    session::~session() {}
-
+    session::~session() {
+        
+    }
 }
 

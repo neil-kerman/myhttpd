@@ -4,7 +4,7 @@
 #include <tinyxml2.h>
 #include <boost/asio.hpp>
 
-#include "client/session_factory.hpp"
+#include "session/session_factory.hpp"
 #include "resource.hpp"
 
 namespace myhttpd::http{

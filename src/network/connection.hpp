@@ -24,6 +24,8 @@ namespace myhttpd::network {
             const std::size_t size;
         };
 
+        typedef boost::asio::ip::tcp::endpoint endpoint;
+
         /* Read event handler */
         typedef std::function<
                     void (const asio_error_code& error, std::size_t bytes_transferred)
@@ -57,6 +59,10 @@ namespace myhttpd::network {
         virtual void async_send(const_buffer buf, send_handler handler) = 0;
 
         virtual void async_wait(socket_wait_type type, wait_handler handler) = 0;
+
+        virtual endpoint get_local_enpoint() = 0;
+
+        virtual endpoint get_remote_endpoint() = 0;
 
         virtual void cancel() = 0;
 
