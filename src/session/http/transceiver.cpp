@@ -106,7 +106,7 @@ namespace myhttpd::http {
     std::string transceiver::_take_header(std::size_t size) {
         std::string header;
         header.reserve(size);
-        auto buf_blocks = this->_header_receive_buffer.get_data();
+        auto buf_blocks = this->_header_receive_buffer.get_data(size);
         std::size_t remainder_size = size;
         for (auto& blk : buf_blocks) {
             if (blk.size < remainder_size) {

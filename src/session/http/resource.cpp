@@ -14,6 +14,9 @@ namespace myhttpd::http {
 
     void resource::async_request(std::unique_ptr<message> req, request_handler handler) {
         std::string url = get_url(*req);
+        if (url == "/" || url == "") {
+            url = this->_default;
+        }
         for (auto& rnode : this->_rnodes) {
             if (url.starts_with(rnode.first)) {
                 auto sub_url = url.substr(rnode.first.size(), url.size() - rnode.first.size());
@@ -27,6 +30,7 @@ namespace myhttpd::http {
     }
 
     void resource::config(tinyxml2::XMLElement* config) {
+        this->_default = config->Attribute("default");
         auto nodes = config->FirstChildElement("rnodes");
         auto node = nodes->FirstChildElement();
         while (node) {

@@ -78,10 +78,12 @@ namespace myhttpd {
                 auto block_base_offset = this->_offset;
                 auto it = this->_blocks.begin();
                 while (remaminder_size != 0) {
-                    auto block_size = (remaminder_size < BlockSize) ? remaminder_size : BlockSize;
+                    auto block_size = (remaminder_size < BlockSize - block_base_offset) ? 
+                        remaminder_size : BlockSize - block_base_offset;
                     data_blocks.push_back(block{ it->data() + block_base_offset, block_size });
                     remaminder_size -= block_size;
                     block_base_offset -= block_base_offset;
+                    it++;
                 }
             }
             return data_blocks;

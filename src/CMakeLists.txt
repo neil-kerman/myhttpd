@@ -6,13 +6,9 @@ include_directories(
 )
 
 add_subdirectory(network)
-
 add_subdirectory(session)
-
 add_subdirectory(exception)
-
 add_subdirectory(util)
-
 add_subdirectory(const)
 
 configure_file(config.hpp.in config.hpp)
@@ -37,9 +33,7 @@ add_custom_command(
             ${CMAKE_CURRENT_SOURCE_DIR}/default.config
             ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/${PROJECT_NAME}.config
 )
-endif()
-
-if(CMAKE_BUILD_TYPE AND (CMAKE_BUILD_TYPE STREQUAL "Release"))
+else()
 add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
