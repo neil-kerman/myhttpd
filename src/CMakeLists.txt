@@ -24,6 +24,7 @@ target_link_libraries(
     ${Boost_LIBRARIES}
     network
     http
+    const
     glog::glog
     gflags::gflags
     tinyxml2::tinyxml2
