@@ -7,6 +7,6 @@ My graduation design, a simple web server based on asio.
 - glog  
 ## How to build
 Download the source code and get into its directory, 
-then run the command below: 
+then ues commands below: 
 - `cmake -S . -B build -DBUILD_UNIT_TESTS=OFF`
 - `cmake --build .`
