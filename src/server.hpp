@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <list>
 #include <memory>
 #include <boost/asio.hpp>
 #include <boost/uuid/uuid.hpp>
