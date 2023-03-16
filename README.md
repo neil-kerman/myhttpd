@@ -3,6 +3,7 @@ My graduation design, a simple web server based on asio.
 ## Dependent libraries
 - boost.asio[ssl]
 - boost.filesystem
+- boost.interprocess
 - tinyxml2
 - glog  
 ## How to build
