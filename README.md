@@ -4,6 +4,7 @@ My graduation design, a simple web server based on asio.
 - boost.asio[ssl]
 - boost.filesystem
 - boost.interprocess
+- boost.uuid
 - tinyxml2
 - glog  
 ## How to build
