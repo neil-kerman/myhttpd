@@ -12,6 +12,6 @@ Download the source code and get into its directory,
 then ues commands below:
 ```
 mkdir build
-cmake -S . -B build
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
