@@ -25,6 +25,8 @@ namespace myhttpd::http {
 
         terminated_handler _terminated_handler;
 
+        int _counter = 0;
+
     private:
         bool _transceiver_receive_busy = false;
 

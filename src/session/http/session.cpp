@@ -50,7 +50,9 @@ namespace myhttpd::http {
     void session::_resource_request_handler(std::shared_ptr<message> rsp) {
 
         this->_transceiver_send_busy = true;
-
+        rsp->insert_attribute("counter", std::to_string(this->_counter));
+        this->_counter++;
+        rsp->insert_attribute("connection", "keep-alive");
         this->_transceiver.async_send(rsp, std::bind(&session::_send_handler, this, std::placeholders::_1));
     }
 

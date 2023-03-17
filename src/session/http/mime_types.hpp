@@ -7,6 +7,10 @@
 
 namespace myhttpd::http {
 
-    extern static const std::unordered_map<std::string, std::string> mime_types;
+    class mime_types {
+
+    public:
+        static const std::unordered_map<std::string, std::string>& get_table();
+    };
 }
 #endif // HTTP_MIME_TYPES_HPP

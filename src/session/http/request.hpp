@@ -1,10 +1,13 @@
 #ifndef REQUEST_HPP
 #define REQUEST_HPP
 
+#include "message.hpp"
+
 namespace myhttpd::http {
 
-    class request {
+    class request: public message {
 
+    
     };
 }
 
