@@ -2,6 +2,7 @@
 
 #include "resource.hpp"
 #include "filesystem_rnode.hpp"
+#include "const/error_page.hpp"
 
 namespace myhttpd::http {
 

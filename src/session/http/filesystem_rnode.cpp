@@ -2,6 +2,8 @@
 
 #include "filesystem_content.hpp"
 #include "filesystem_rnode.hpp"
+#include "const/error_page.hpp"
+#include "const_content.hpp"
 
 namespace myhttpd::http {
 
@@ -17,6 +19,8 @@ namespace myhttpd::http {
 			rsp->set_content(std::make_shared<filesystem_content>(this->_path + url));
 		} else {
 			rsp->set_title("HTTP/1.1 404 Not Found");
+			rsp->set_content(std::make_shared<const_content>(page_404_html, (std::size_t)page_404_html_size));
+			rsp->insert_attribute("content-type", "text/html");
 		}
 		handler(rsp);
 	}
