@@ -4,8 +4,16 @@ set(CMAKE_CXX_STANDARD 20)
 
 option(BUILD_UNIT_TESTS OFF)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/DEBUG")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/RELEASE")
+if(CMAKE_BUILD_TYPE)
+    set(build_type)
+    string(TOUPPER ${CMAKE_BUILD_TYPE} build_type)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${build_type} ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
+    set(runtime_output_dir ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
+endif()
+
+if(MSVC)
+    add_compile_options(-D_WIN32_WINNT=0x0601)
+endif()
 
 find_package(Boost COMPONENTS system context filesystem)
 find_package(OpenSSL)

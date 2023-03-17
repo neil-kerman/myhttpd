@@ -1,6 +1,5 @@
 #define GLOG_NO_ABBREVIATED_SEVERITIES
 #include <glog/logging.h>
-#include <gflags/gflags.h>
 #include <tinyxml2.h>
 
 #include "config.hpp"

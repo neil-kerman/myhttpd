@@ -5,6 +5,15 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
+link_libraries(
+    ${Boost_LIBRARIES}
+    glog::glog
+    gflags::gflags
+    tinyxml2::tinyxml2
+    OpenSSL::SSL 
+    OpenSSL::Crypto
+)
+
 add_subdirectory(network)
 add_subdirectory(session)
 add_subdirectory(exception)
@@ -13,31 +22,24 @@ add_subdirectory(const)
 
 configure_file(config.hpp.in config.hpp)
 
-add_executable(${PROJECT_NAME} "startup.cpp" "server.cpp")
+set(sources)
+
+file(GLOB sources "*.cpp")
+
+add_executable(${PROJECT_NAME} ${sources})
 
 target_link_libraries(
     ${PROJECT_NAME}
-    ${Boost_LIBRARIES}
     network
     http
     const
-    glog::glog
-    gflags::gflags
-    tinyxml2::tinyxml2
 )
 
-if(CMAKE_BUILD_TYPE AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
-add_custom_command(
-    TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_CURRENT_SOURCE_DIR}/default.config
-            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/${PROJECT_NAME}.config
-)
-else()
-add_custom_command(
-    TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_CURRENT_SOURCE_DIR}/default.config
-            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}/${PROJECT_NAME}.config
-)
+if(runtime_output_dir)
+    add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${CMAKE_CURRENT_SOURCE_DIR}/default.config
+                ${runtime_output_dir}/${PROJECT_NAME}.config
+    )
 endif()
