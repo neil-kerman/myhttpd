@@ -23,9 +23,7 @@ add_subdirectory(const)
 configure_file(config.hpp.in config.hpp)
 
 set(sources)
-
 file(GLOB sources "*.cpp")
-
 add_executable(${PROJECT_NAME} ${sources})
 
 target_link_libraries(
