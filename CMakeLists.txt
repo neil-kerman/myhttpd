@@ -9,6 +9,7 @@ if(CMAKE_BUILD_TYPE)
     string(TOUPPER ${CMAKE_BUILD_TYPE} build_type)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${build_type} ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
     set(runtime_output_dir ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
+    set(home_dir ${runtime_output_dir}/../)
 endif()
 
 if(WIN32)
@@ -36,3 +37,4 @@ if(BUILD_UNIT_TESTS)
 endif()
 
 add_subdirectory(src)
+add_subdirectory(auxiliary)
