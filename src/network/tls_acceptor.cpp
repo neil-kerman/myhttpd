@@ -37,8 +37,4 @@ namespace myhttpd::network {
         this->_raw_acceptor.listen();
         DLOG(INFO) << "A tls_acceptor created, which listening at the local endpoint: " << address << ":" << port;
     }
-
-    tls_acceptor::~tls_acceptor() {
-
-    }
 }

@@ -36,7 +36,7 @@ namespace myhttpd::network {
     public:
         tls_connection(boost::asio::ssl::stream<boost::asio::ip::tcp::socket> _stream);
 
-        virtual ~tls_connection();
+        virtual ~tls_connection() = default;
     };
 }
 

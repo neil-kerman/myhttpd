@@ -43,9 +43,6 @@ namespace myhttpd::network {
     tls_connection::tls_connection(boost::asio::ssl::stream<boost::asio::ip::tcp::socket> stream)
     : _stream(std::move(stream)) {
     }
-
-    tls_connection::~tls_connection() {
-    }
 }
 
 

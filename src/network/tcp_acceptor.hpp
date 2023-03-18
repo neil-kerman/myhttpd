@@ -19,7 +19,7 @@ namespace myhttpd::network {
     public:
         tcp_acceptor(std::string address, int port, boost::asio::io_context &ctx);
 
-        virtual ~tcp_acceptor();
+        virtual ~tcp_acceptor() = default;
     };
 }
 

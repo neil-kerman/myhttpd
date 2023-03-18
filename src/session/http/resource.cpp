@@ -1,17 +1,10 @@
 
-
 #include "resource.hpp"
 #include "filesystem_rnode.hpp"
 #include "const/error_page.hpp"
+#include "const_content.hpp"
 
 namespace myhttpd::http {
-
-    std::string get_url(message& msg) {
-        auto& title = msg.get_title();
-        auto offset = title.find(' ') + 1;
-        auto size = title.find(' ', offset) - offset;
-        return title.substr(offset, size);
-    }
 
     std::string get_suffix(std::string url) {
         auto offset = url.find_last_of('.');
@@ -22,21 +15,37 @@ namespace myhttpd::http {
         }
     }
 
-    void resource::async_request(std::unique_ptr<message> req, request_handler handler) {
-        std::string url = get_url(*req);
-        if (url == "/" || url == "") {
-            url = this->_default;
+    void resource::async_request(std::shared_ptr<request> req, request_handler handler) {
+        if (req->get_url() == "/") {
+            req->set_url(this->_default);
         }
+        auto url = req->get_url();
+        std::string longest_match_rnode;
+        auto longest_match_size = longest_match_rnode.size();
         for (auto& rnode : this->_rnodes) {
             if (url.starts_with(rnode.first)) {
-                auto sub_url = url.substr(rnode.first.size(), url.size() - rnode.first.size());
-                rnode.second->async_request(sub_url, std::move(req), handler);
-                return;
+                if (rnode.first.size() > longest_match_size) {
+                    longest_match_rnode = rnode.first;
+                }
             }
         }
-        auto rsp = std::make_shared<message>();
-        rsp->set_title("HTTP/1.1 404 Not Found");
-        handler(rsp);
+        if (longest_match_rnode.empty()) {
+            auto rsp = std::make_shared<response>();
+            rsp->set_status(404);
+            rsp->set_content(std::make_shared<const_content>(page_404_html, page_404_html_size));
+            handler(rsp);
+        } else {
+            auto rnode_it = this->_rnodes.find(longest_match_rnode);
+            auto sub_url = url.substr(rnode_it->first.size(), url.size() - rnode_it->first.size());
+            rnode_it->second->async_request(req, 
+                [handler](std::shared_ptr<response> rsp) {
+                    if (!rsp->has_content() && rsp->get_status() >= 400) { 
+                        rsp->set_content(std::make_shared<const_content>(page_404_html, page_404_html_size));
+                    }
+                    handler(rsp);
+                }
+            );
+        }
     }
 
     void resource::config(tinyxml2::XMLElement* config) {

@@ -30,7 +30,7 @@ namespace myhttpd::http{
     public:
         session_factory(tinyxml2::XMLElement* config, boost::asio::io_context& ctx);
 
-        virtual ~session_factory();
+        virtual ~session_factory() = default;
     };
 }
 

@@ -132,7 +132,7 @@ namespace myhttpd::http {
     }
 
     std::string transceiver::_to_string_header(const std::shared_ptr<message>& msg) {
-        auto& title = msg->get_title();
+        auto title = msg->get_title();
         std::size_t size = title.size() + 4;
         for (auto attr = msg->begin_attribute(); attr != msg->end_attribute(); attr++) {
             size += attr->first.size() + attr->second.size() + 4;

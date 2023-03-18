@@ -43,7 +43,4 @@ namespace myhttpd::network {
     tcp_connection::tcp_connection(boost::asio::ip::tcp::socket stream)
     : _stream(std::move(stream)) {
     }
-
-    tcp_connection::~tcp_connection() {
-    }
 }

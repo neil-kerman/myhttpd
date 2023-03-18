@@ -35,7 +35,7 @@ namespace myhttpd::network {
     public:
         tcp_connection(boost::asio::ip::tcp::socket stream);
 
-        virtual ~tcp_connection();
+        virtual ~tcp_connection() = default;
     };
 }
 

@@ -48,19 +48,16 @@ namespace myhttpd::http {
     }
 
     void session::_resource_request_handler(std::shared_ptr<message> rsp) {
-
-        this->_transceiver_send_busy = true;
-        rsp->insert_attribute("counter", std::to_string(this->_counter));
-        this->_counter++;
         rsp->insert_attribute("connection", "keep-alive");
+        this->_transceiver_send_busy = true;
         this->_transceiver.async_send(rsp, std::bind(&session::_send_handler, this, std::placeholders::_1));
     }
 
-    void session::_receive_handler(const asio_error_code& error, std::unique_ptr<message> request) {
+    void session::_receive_handler(const asio_error_code& error, std::unique_ptr<message> msg) {
         this->_transceiver_receive_busy = false;
         if (!error) {
-            this->_resource.async_request(std::move(request), 
-                std::bind(&session::_resource_request_handler, this, std::placeholders::_1));
+            auto req = std::make_shared<request>(std::move(*msg));
+            this->_resource.async_request(req, std::bind(&session::_resource_request_handler, this, std::placeholders::_1));
         } else {
             this->_terminate();
         }

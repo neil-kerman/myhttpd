@@ -69,7 +69,7 @@ namespace myhttpd::network {
         virtual bool is_open() = 0;
 
     public:
-        virtual ~connection() {}
+        virtual ~connection() = default;
     };
 }
 

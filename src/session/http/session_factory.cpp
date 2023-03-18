@@ -14,6 +14,4 @@ namespace myhttpd::http {
         auto res_config = config->FirstChildElement("resource");
         this->_resource.config(res_config);
     }
-
-    session_factory::~session_factory() {}
 }

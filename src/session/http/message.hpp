@@ -21,8 +21,6 @@ namespace myhttpd::http {
 
         std::shared_ptr<content> _content = nullptr;
 
-        std::string _buffer;
-
     private:
         inline std::string _to_lower_case(const std::string str) {
             std::string result = str;
@@ -89,23 +87,7 @@ namespace myhttpd::http {
         }
 
     public:
-        virtual network::connection::const_buffer write_to_buffer() {
-            std::size_t size = this->_title.size() + 4;
-            for (auto& attr : this->_attributes) {
-                size += attr.first.size() + attr.second.size() + 4;
-            }
-            auto& buf = this->_buffer;
-            buf.clear();
-            buf.reserve(size);
-            buf.append(this->_title).append("\r\n");
-            for (auto& attr : this->_attributes) {
-                buf.append(attr.first).append(": ").append(attr.second).append("\r\n");
-            }
-            buf.append("\r\n");
-            return { buf.data(), buf.size() };
-        }
-
-        virtual std::string& get_title() {
+        virtual std::string get_title() {
             return this->_title;
         }
 
@@ -129,7 +111,7 @@ namespace myhttpd::http {
         }
         
         message(message&& msg) noexcept
-        : _attributes(std::move(msg._attributes)), _content(std::move(msg._content)) {
+        : _title(std::move(msg._title)), _attributes(std::move(msg._attributes)), _content(msg._content) {
         } 
 
         virtual ~message() = default;

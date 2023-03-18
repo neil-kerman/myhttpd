@@ -25,8 +25,4 @@ namespace myhttpd::network {
         this->_raw_acceptor.listen();
         DLOG(INFO) << "A tcp_acceptor created, which listening at the local endpoint: " << address << ":" << port;
     }
-
-    tcp_acceptor::~tcp_acceptor() {
-
-    }
 }

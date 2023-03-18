@@ -16,9 +16,8 @@ link_libraries(
 
 configure_file(config.hpp.in config.hpp)
 
-set(server_sources)
-file(GLOB sources "*.cpp")
-add_executable(server ${sources})
+file(GLOB server_sources "./*.cpp")
+add_executable(server ${server_sources})
 unset(server_sources)
 
 add_subdirectory(network)

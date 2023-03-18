@@ -18,7 +18,7 @@ namespace myhttpd::network {
         virtual void async_accept(accept_handler handler) = 0;
 
     public:
-        virtual ~acceptor() {}
+        virtual ~acceptor() = default;
     };
 }
 

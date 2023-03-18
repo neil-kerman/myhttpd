@@ -12,6 +12,6 @@ function(create_resources dir output)
     endforeach()
 endfunction()
 
-create_resources("error_page" ${CMAKE_CURRENT_BINARY_DIR}/const.c)
+create_resources("error_page" ${CMAKE_CURRENT_BINARY_DIR}/error_page.c)
 
-add_library(const ${CMAKE_CURRENT_BINARY_DIR}/const.c)
+add_library(const ${CMAKE_CURRENT_BINARY_DIR}/error_page.c)

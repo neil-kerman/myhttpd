@@ -24,7 +24,7 @@ namespace myhttpd::network {
     public:
         tls_acceptor(std::string address, int port, boost::asio::io_context &ctx, boost::asio::ssl::context tls_ctx);
 
-        virtual ~tls_acceptor();
+        virtual ~tls_acceptor() = default;
     };
 }
 

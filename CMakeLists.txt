@@ -37,9 +37,10 @@ if(BUILD_UNIT_TESTS)
     include(CTest)
 endif()
 
+add_custom_target(myhttpd ALL)
+
 add_subdirectory(src)
 add_subdirectory(auxiliary)
 
-add_custom_target(myhttpd ALL)
 add_dependencies(myhttpd server)
 add_dependencies(myhttpd auxiliary)
