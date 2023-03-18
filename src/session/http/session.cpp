@@ -90,9 +90,5 @@ namespace myhttpd::http {
     : _conn(std::move(conn)), _transceiver(this->_conn), _resource(resource), _timer(ctx) {
         
     }
-
-    session::~session() {
-        
-    }
 }
 

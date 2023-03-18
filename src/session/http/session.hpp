@@ -60,7 +60,7 @@ namespace myhttpd::http {
     public:
         session(std::unique_ptr<myhttpd::network::connection> conn, resource &resource, boost::asio::io_context &ctx);
 
-        virtual ~session();
+        virtual ~session() = default;
     };
 }
 

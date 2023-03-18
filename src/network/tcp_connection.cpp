@@ -36,6 +36,10 @@ namespace myhttpd::network {
         this->_stream.cancel();
     }
 
+    bool tcp_connection::is_open() {
+        return this->_stream.is_open();
+    }
+
     tcp_connection::tcp_connection(boost::asio::ip::tcp::socket stream)
     : _stream(std::move(stream)) {
     }

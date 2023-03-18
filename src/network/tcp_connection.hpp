@@ -30,6 +30,8 @@ namespace myhttpd::network {
 
         virtual void cancel();
 
+        virtual bool is_open();
+
     public:
         tcp_connection(boost::asio::ip::tcp::socket stream);
 

@@ -36,6 +36,10 @@ namespace myhttpd::network {
         this->_stream.next_layer().cancel();
     }
 
+    bool tls_connection::is_open() {
+        return this->_stream.next_layer().is_open();
+    }
+
     tls_connection::tls_connection(boost::asio::ssl::stream<boost::asio::ip::tcp::socket> stream)
     : _stream(std::move(stream)) {
     }

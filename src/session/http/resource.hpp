@@ -21,6 +21,8 @@ namespace myhttpd::http {
 
         std::string _default;
 
+        std::unordered_map<std::string, std::string> _mimedb = { {"default", "application/octet-stream"} };
+
     public:
         void async_request(std::unique_ptr<message> req, request_handler handler);
 

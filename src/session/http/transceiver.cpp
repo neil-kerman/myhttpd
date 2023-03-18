@@ -1,3 +1,4 @@
+#include "transceiver.hpp"
 #include <string>
 #include <functional>
 #include <vector>
@@ -103,7 +104,7 @@ namespace myhttpd::http {
         }
     }
 
-    std::string transceiver::_take_header(std::size_t size) {
+    const std::string transceiver::_take_header(const std::size_t size) {
         std::string header;
         header.reserve(size);
         auto buf_blocks = this->_header_receive_buffer.get_data(size);
@@ -121,13 +122,29 @@ namespace myhttpd::http {
         return header;
     }
 
-    std::size_t transceiver::_get_content_length(std::unique_ptr<message> &msg) {
+    std::size_t transceiver::_get_content_length(const std::unique_ptr<message> &msg) {
         auto cl_attr = msg->find_attribute("content-length");
         if (cl_attr != msg->end_attribute()) {
             return (std::size_t)std::stoll(cl_attr->second);
         } else {
             return 0;
         }
+    }
+
+    std::string transceiver::_to_string_header(const std::shared_ptr<message>& msg) {
+        auto& title = msg->get_title();
+        std::size_t size = title.size() + 4;
+        for (auto attr = msg->begin_attribute(); attr != msg->end_attribute(); attr++) {
+            size += attr->first.size() + attr->second.size() + 4;
+        }
+        std::string buf;
+        buf.reserve(size);
+        buf.append(title).append("\r\n");
+        for (auto attr = msg->begin_attribute(); attr != msg->end_attribute(); attr++) {
+            buf.append(attr->first).append(": ").append(attr->second).append("\r\n");
+        }
+        buf.append("\r\n");
+        return buf;
     }
 
     void transceiver::async_receive(receive_handler handler) {
@@ -170,8 +187,9 @@ namespace myhttpd::http {
         if (msg->find_attribute("content-length") == msg->end_attribute() && msg->has_content()) {
             msg->insert_attribute("content-length", std::to_string(msg->get_content()->get_size()));
         }
-        this->_conn->async_send(msg->write_to_buffer(), 
-            [msg, &conn = this->_conn, handler](const asio_error_code& error, std::size_t bytes_transferred) {
+        auto header = this->_to_string_header(msg);
+        this->_conn->async_send({header.data(), header.size()},
+            [msg, &conn = this->_conn, handler, header](const asio_error_code& error, std::size_t bytes_transferred) {
                 if (!error) {
                     if (msg->has_content()) {
                         msg->get_content()->async_wait_ready(
@@ -186,6 +204,8 @@ namespace myhttpd::http {
                     } else {
                         handler(error);
                     }
+                } else {
+                    handler(error);
                 }
             }
         );

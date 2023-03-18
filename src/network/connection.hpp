@@ -66,6 +66,8 @@ namespace myhttpd::network {
 
         virtual void cancel() = 0;
 
+        virtual bool is_open() = 0;
+
     public:
         virtual ~connection() {}
     };

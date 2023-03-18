@@ -24,7 +24,7 @@ namespace myhttpd::http {
         std::string _buffer;
 
     private:
-        inline std::string _to_lower_case(std::string str) {
+        inline std::string _to_lower_case(const std::string str) {
             std::string result = str;
             for (auto& c : result) {
                 if (c >= 64 && c <= 90) {
@@ -34,7 +34,7 @@ namespace myhttpd::http {
             return result;
         }
 
-        inline void _extract(std::string raw_header) {
+        inline void _extract(const std::string raw_header) {
             auto& raw = raw_header;
             auto title_size = raw.find('\r', 0);
             this->set_title(std::string(raw_header.substr(0, title_size)));
@@ -52,14 +52,6 @@ namespace myhttpd::http {
         }
 
     public:
-        inline std::string& get_title() {
-            return this->_title;
-        }
-
-        inline void set_title(std::string title) {
-            this->_title = title;
-        }
-
         inline void insert_attribute(std::string name, std::string value) {
             this->_attributes.insert(std::pair<std::string, std::string>(this->_to_lower_case(name), value));
         }
@@ -96,7 +88,8 @@ namespace myhttpd::http {
             return this->_content != nullptr;
         }
 
-        inline network::connection::const_buffer write_to_buffer() {
+    public:
+        virtual network::connection::const_buffer write_to_buffer() {
             std::size_t size = this->_title.size() + 4;
             for (auto& attr : this->_attributes) {
                 size += attr.first.size() + attr.second.size() + 4;
@@ -112,17 +105,25 @@ namespace myhttpd::http {
             return { buf.data(), buf.size() };
         }
 
+        virtual std::string& get_title() {
+            return this->_title;
+        }
+
+        virtual void set_title(std::string title) {
+            this->_title = title;
+        }
+
     public:
         message() 
         : _content(nullptr) {
         }
 
-        message(std::string header)
+        message(const std::string header)
         : _content(nullptr) {
             this->_extract(header);
         }
 
-        message(std::string header, std::shared_ptr<content> content)
+        message(const std::string header, std::shared_ptr<content> content)
         : _content(content) {
             this->_extract(header);
         }
@@ -130,6 +131,8 @@ namespace myhttpd::http {
         message(message&& msg) noexcept
         : _attributes(std::move(msg._attributes)), _content(std::move(msg._content)) {
         } 
+
+        virtual ~message() = default;
     };
 }
 

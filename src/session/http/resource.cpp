@@ -13,6 +13,15 @@ namespace myhttpd::http {
         return title.substr(offset, size);
     }
 
+    std::string get_suffix(std::string url) {
+        auto offset = url.find_last_of('.');
+        if (offset == std::string::npos) {
+            return "default";
+        } else {
+            return url.substr(offset);
+        }
+    }
+
     void resource::async_request(std::unique_ptr<message> req, request_handler handler) {
         std::string url = get_url(*req);
         if (url == "/" || url == "") {
@@ -52,6 +61,17 @@ namespace myhttpd::http {
 
             }
             node = node->NextSiblingElement();
+        }
+
+        tinyxml2::XMLDocument mimedb_doc;
+        mimedb_doc.LoadFile("../config/myhttpd.mimedb.xml");
+        auto mime_types = mimedb_doc.RootElement();
+        auto mime_type = mime_types->FirstChildElement();
+        while (mime_type) {
+            auto suffix = mime_type->Attribute("suffix");
+            auto type = mime_type->Attribute("type");
+            this->_mimedb.insert(std::pair<std::string, std::string>(suffix, type));
+            mime_type = mime_type->NextSiblingElement();
         }
     }
 }

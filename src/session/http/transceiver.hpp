@@ -56,9 +56,11 @@ namespace myhttpd::http {
 #else
     private:
 #endif
-        std::string _take_header(std::size_t size);
+        const std::string _take_header(const std::size_t size);
 
-        std::size_t _get_content_length(std::unique_ptr<message> &msg);
+        static std::size_t _get_content_length(const std::unique_ptr<message> &msg);
+
+        static std::string _to_string_header(const std::shared_ptr<message>& msg);
 
     private:
         void _header_receive_handler(const asio_error_code& error, std::size_t bytes_transferred);

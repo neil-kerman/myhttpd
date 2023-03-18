@@ -1,9 +1,18 @@
 cmake_minimum_required(VERSION 3.0.0)
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/myhttpd.config 
-    DESTINATION ${runtime_output_dir}
-)
+add_custom_target(auxiliary)
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/web-root 
-    DESTINATION ${home_dir}
+add_custom_command(
+    TARGET auxiliary PRE_BUILD
+    COMMAND
+        ${CMAKE_COMMAND} -E copy_directory 
+        ${CMAKE_CURRENT_SOURCE_DIR}/config 
+        ${home_dir}/config
+    COMMAND
+        ${CMAKE_COMMAND} -E copy_directory 
+        ${CMAKE_CURRENT_SOURCE_DIR}/web-root 
+        ${home_dir}/web-root
+    COMMENT
+        "Copy auxiliay files."
+    VERBATIM
 )

@@ -14,22 +14,22 @@ link_libraries(
     OpenSSL::Crypto
 )
 
+configure_file(config.hpp.in config.hpp)
+
+set(server_sources)
+file(GLOB sources "*.cpp")
+add_executable(server ${sources})
+unset(server_sources)
+
 add_subdirectory(network)
 add_subdirectory(session)
-add_subdirectory(exception)
 add_subdirectory(util)
 add_subdirectory(const)
 
-configure_file(config.hpp.in config.hpp)
-
-set(sources)
-file(GLOB sources "*.cpp")
-add_executable(${PROJECT_NAME} ${sources})
-
 target_link_libraries(
-    ${PROJECT_NAME}
-    network
-    http
-    const
+    server
+        network
+        http
+        const
 )
 
