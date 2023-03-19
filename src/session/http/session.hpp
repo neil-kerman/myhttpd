@@ -2,6 +2,7 @@
 #define HTTP_SESSION_HPP
 
 #include <memory>
+#include <unordered_map>
 
 #include "session/session.hpp"
 #include "resource.hpp"
@@ -25,7 +26,8 @@ namespace myhttpd::http {
 
         terminated_handler _terminated_handler;
 
-        int _counter = 0;
+    private:
+        bool _keep_alive = false;
 
     private:
         bool _transceiver_receive_busy = false;
@@ -39,20 +41,32 @@ namespace myhttpd::http {
         bool _terminating_required = false;
 
     private:
-        void _set_timer();
-
-        void _terminate();
-
-    private:
         void _timeout_handler(const asio_error_code& error);
 
         void _wait_handler(const asio_error_code &error);
 
-        void _receive_handler(const asio_error_code& error, std::unique_ptr<message> request);
+        void _receive_handler(const asio_error_code& error, std::shared_ptr<message> request);
 
         void _send_handler(const asio_error_code& error);
 
-        void _resource_request_handler(std::shared_ptr<message> rsp);
+        void _request_resource_handler(std::shared_ptr<response> rsp);
+    
+    private:
+        void _set_timer();
+
+        void _wait();
+
+        void _receive();
+
+        void _do_pre_process(std::shared_ptr<message> msg);
+
+        void _request_resource(std::shared_ptr<request> req);
+
+        void _do_post_process(std::shared_ptr<response> rsp);
+
+        void _send(std::shared_ptr<response> rsp);
+
+        void _terminate();
 
     public:
         virtual void start(terminated_handler handler);

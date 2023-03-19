@@ -22,11 +22,13 @@ namespace myhttpd::http {
         typedef std::function<void(const asio_error_code& error_code)> send_handler;
 
         typedef std::function<void(const asio_error_code& error_code)> wait_handler;
+
 #ifdef __UNIT_TEST__
     public:
 #else
     private:
 #endif
+
         class header_detecter {
 
         private:
@@ -43,9 +45,10 @@ namespace myhttpd::http {
 #else
     private:
 #endif
+
         std::unique_ptr<myhttpd::network::connection> &_conn;
 
-        linked_buffer<128> _header_receive_buffer;
+        linked_buffer<1024> _header_receive_buffer;
 
         header_detecter _match;
 
@@ -56,6 +59,7 @@ namespace myhttpd::http {
 #else
     private:
 #endif
+
         const std::string _take_header(const std::size_t size);
 
         static std::size_t _get_content_length(const std::unique_ptr<message> &msg);

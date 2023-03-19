@@ -23,6 +23,11 @@ namespace myhttpd::http {
 
         std::unordered_map<std::string, std::string> _mimedb = { {"default", "application/octet-stream"} };
 
+        std::map<unsigned, std::shared_ptr<content>> _error_pages;
+
+    private:
+        std::shared_ptr<content> _get_error_page(unsigned status);
+
     public:
         void async_request(std::shared_ptr<request> req, request_handler handler);
 

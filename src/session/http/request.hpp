@@ -55,38 +55,18 @@ namespace myhttpd::http {
 
         static const std::string& _method_to_string(method met) {
 
-            static const std::string method_options_str = "OPTIONS";
-            static const std::string method_get_str = "GET";
-            static const std::string method_head_str = "HEAD";
-            static const std::string method_post_str = "POST";
-            static const std::string method_put_str = "PUT";
-            static const std::string method_delete_str = "DELETE";
-            static const std::string method_trace_str = "TRACE";
-            static const std::string method_connect_str = "CONNECT";
-            static const std::string method_unknown_str = "CONNECT";
-
             switch (met) {
-            case method::OPTIONS:
-                return method_options_str;
-            case method::GET:
-                return method_get_str;
-            case method::HEAD:
-                return method_head_str;
-            case method::POST:
-                return method_post_str;
-            case method::PUT:
-                return method_put_str;
-            case method::DELETE:
-                return method_delete_str;
-            case method::TRACE:
-                return method_trace_str;
-            case method::CONNECT:
-                return method_connect_str;
-            default:
-                return method_unknown_str;
+            case method::OPTIONS: return "OPTIONS";
+            case method::GET: return "GET";
+            case method::HEAD: return "HEAD";
+            case method::POST: return "POST";
+            case method::PUT: return "PUT";
+            case method::DELETE: return "DELETE";
+            case method::TRACE: return "TRACE";
+            case method::CONNECT: return "CONNECT";
+            default: return "UNKNOWN";
             }
         }
-
 
         void _extract_title() {
             auto title = message::get_title();

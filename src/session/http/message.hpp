@@ -22,7 +22,7 @@ namespace myhttpd::http {
         std::shared_ptr<content> _content = nullptr;
 
     private:
-        inline std::string _to_lower_case(const std::string str) {
+        static inline std::string _to_lower_case(const std::string str) {
             std::string result = str;
             for (auto& c : result) {
                 if (c >= 64 && c <= 90) {
@@ -50,6 +50,10 @@ namespace myhttpd::http {
         }
 
     public:
+        static inline bool assert_attribute(std::multimap<std::string, std::string>::iterator attr, std::string value) {
+            return (_to_lower_case(attr->second) == _to_lower_case(value));
+        }
+
         inline void insert_attribute(std::string name, std::string value) {
             this->_attributes.insert(std::pair<std::string, std::string>(this->_to_lower_case(name), value));
         }
@@ -83,7 +87,7 @@ namespace myhttpd::http {
         }
 
         inline bool has_content() {
-            return this->_content != nullptr;
+            return (this->_content != nullptr);
         }
 
     public:
