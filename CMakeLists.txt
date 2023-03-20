@@ -4,6 +4,12 @@ set(CMAKE_CXX_STANDARD 20)
 
 option(BUILD_UNIT_TESTS OFF)
 
+option(PERFORMANCE_LOGGING ON)
+
+if(PERFORMANCE_LOGGING)
+    add_compile_definitions(PERFORMANCE_LOGGING)
+endif()
+
 if(CMAKE_BUILD_TYPE)
     set(build_type)
     string(TOUPPER ${CMAKE_BUILD_TYPE} build_type)

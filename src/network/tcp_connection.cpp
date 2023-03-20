@@ -1,4 +1,5 @@
 #include <boost/asio/buffer.hpp>
+#include <boost/asio.hpp>
 
 #include "tcp_connection.hpp"
 
@@ -13,11 +14,11 @@ namespace myhttpd::network {
     }
 
     void tcp_connection::async_receive(mutable_buffer buf, receive_handler handler) {
-        this->_stream.async_receive(boost::asio::buffer(buf.data, buf.size), handler);
+        boost::asio::async_read(this->_stream, boost::asio::buffer(buf.data, buf.size), handler);
     }
 
     void tcp_connection::async_send(const_buffer buf, send_handler handler) {
-        this->_stream.async_send(boost::asio::buffer(buf.data, buf.size), handler);
+        boost::asio::async_write(this->_stream, boost::asio::buffer(buf.data, buf.size), handler);
     }
 
     void tcp_connection::async_wait(socket_wait_type type, wait_handler handler) {

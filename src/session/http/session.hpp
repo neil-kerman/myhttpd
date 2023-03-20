@@ -1,8 +1,14 @@
 #ifndef HTTP_SESSION_HPP
 #define HTTP_SESSION_HPP
 
+#define PERFORMANCE_LOGGING
+
 #include <memory>
 #include <unordered_map>
+#ifdef PERFORMANCE_LOGGING
+#include <chrono>
+#define TIME_POINT(name, time) this->_time
+#endif
 
 #include "session/session.hpp"
 #include "resource.hpp"
@@ -25,6 +31,20 @@ namespace myhttpd::http {
         boost::asio::deadline_timer _timer;
 
         terminated_handler _terminated_handler;
+
+#ifdef PERFORMANCE_LOGGING
+
+        std::map<std::string, std::chrono::steady_clock::time_point> _time_points;
+
+        inline void _add_time_point(std::string name) {
+            this->_time_points.insert(
+                std::pair<std::string, std::chrono::steady_clock::time_point>(
+                    name, std::chrono::high_resolution_clock::now()
+                )
+            );
+        }
+
+#endif
 
     private:
         bool _keep_alive = false;
@@ -74,7 +94,11 @@ namespace myhttpd::http {
     public:
         session(std::unique_ptr<myhttpd::network::connection> conn, resource &resource, boost::asio::io_context &ctx);
 
+#ifdef PERFORMANCE_LOGGING
+        virtual ~session();
+#else
         virtual ~session() = default;
+#endif
     };
 }
 
