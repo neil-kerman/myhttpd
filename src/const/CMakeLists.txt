@@ -11,7 +11,6 @@ execute_process(
     "${CMAKE_CURRENT_BINARY_DIR}/error_page"
 )
     
-
 if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/error_page_c")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/error_page_c")
 endif()
