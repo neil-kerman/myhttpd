@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(myhttpd VERSION 0.1.0)
 
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 20)
-
-
 option(BUILD_UNIT_TESTS OFF)
 option(PERFORMANCE_LOGGING ON)
 
@@ -44,6 +40,9 @@ if(BUILD_UNIT_TESTS)
     enable_testing()
     include(CTest)
 endif()
+
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 20)
 
 add_custom_target(myhttpd ALL)
 
