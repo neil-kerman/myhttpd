@@ -27,12 +27,14 @@ error_codes = (
     {"code":505, "text":"Http Version Not Supported"}
 )
 
-tem_page_file = open("error_page_template.html", "r")
+tem_page_file = open(sys.argv[1], "r")
 tem_page = tem_page_file.read()
 tem_page_file.close()
 
-for error_code in error_codes:
-    content = tem_page.format(error_code["code"], error_code["text"])
-    open("")
+outdir = sys.argv[2]
 
-tem_page.format()
+for error_code in error_codes:
+    outfile = open(outdir + ("/page_{code}.html".format(code = error_code["code"])), "w")
+    content = tem_page.format(code = error_code["code"], text = error_code["text"])
+    outfile.write(content)
+    outfile.close()

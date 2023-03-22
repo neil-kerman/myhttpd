@@ -26,6 +26,10 @@ namespace myhttpd::http {
         std::map<unsigned, std::shared_ptr<content>> _error_pages;
 
     private:
+        void _error_pages_init();
+
+        void _mimedb_init();
+
         std::shared_ptr<content> _get_error_page(unsigned status);
 
     public:

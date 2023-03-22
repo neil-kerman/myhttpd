@@ -1,17 +1,32 @@
 cmake_minimum_required(VERSION 3.0.0)
 
-function(create_resources dir output)
-    file(WRITE ${output} "")
-    file(GLOB bins ${dir}/*)
-    foreach(bin ${bins})
-        string(REGEX MATCH "([^/]+)$" filename ${bin})
-        string(REGEX REPLACE "\\.| |-" "_" filename ${filename})
-        file(READ ${bin} filedata HEX)
-        string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1," filedata ${filedata})
-        file(APPEND ${output} "const unsigned char ${filename}[] = {${filedata}};\nconst unsigned long long ${filename}_size = sizeof(${filename});\n")
-    endforeach()
-endfunction()
+if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/error_page")
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/error_page")
+endif()
 
-create_resources("error_page" ${CMAKE_CURRENT_BINARY_DIR}/error_page.c)
+execute_process(
+    COMMAND "python"
+    "${CMAKE_CURRENT_SOURCE_DIR}/error_page_gen.py" 
+    "${CMAKE_CURRENT_SOURCE_DIR}/error_page_template.html" 
+    "${CMAKE_CURRENT_BINARY_DIR}/error_page"
+)
+    
 
-add_library(const ${CMAKE_CURRENT_BINARY_DIR}/error_page.c)
+if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/error_page_c")
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/error_page_c")
+endif()
+
+file(GLOB error_pages "${CMAKE_CURRENT_BINARY_DIR}/error_page/*")
+
+foreach(error_page ${error_pages})
+    execute_process(
+        COMMAND "python" 
+        "${CMAKE_CURRENT_SOURCE_DIR}/to_c_array.py"
+        "${error_page}"
+        "${CMAKE_CURRENT_BINARY_DIR}/error_page_c"
+    )
+endforeach()
+
+file(GLOB error_pages_c_arrey "${CMAKE_CURRENT_BINARY_DIR}/error_page_c/*.c")
+
+add_library(const ${error_pages_c_arrey})
