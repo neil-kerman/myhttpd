@@ -16,6 +16,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
 ## TODO list
-1. Complete GET/POST method, CGI support
-2. MQTT support
-3. FastCGI suppurt
+1. Complete GET/POST method
+2. CGI support
+3. MQTT support
+4. FastCGI suppurt
