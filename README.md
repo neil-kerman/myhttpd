@@ -8,6 +8,7 @@ My graduation design, a simple web server based on asio.
 - tinyxml2
 - glog  
 ## How to build
+Before build this project, make sure you have installed: cmake, a C++20 supported compiler and python.
 Download the source code and get into its directory, 
 then ues commands below:
 ```
@@ -17,6 +18,6 @@ cmake --build build
 ```
 ## TODO list
 1. Complete GET/POST method
-2. CGI support
-3. MQTT support
-4. FastCGI suppurt
+2. CGI
+3. MQTT
+4. FastCGI
