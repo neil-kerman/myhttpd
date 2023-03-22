@@ -1,5 +1,5 @@
 # myhttpd
-My graduation design, a simple web server based on asio.  
+My graduation design, a simple toy web server based on asio.  
 ## Dependent libraries
 - boost.asio[ssl]
 - boost.filesystem
@@ -8,7 +8,8 @@ My graduation design, a simple web server based on asio.
 - tinyxml2
 - glog  
 ## How to build
-Before build this project, make sure you have installed: cmake, a C++20 supported compiler and python.
+Before build this project, make sure you have installed: cmake, a C++20 supported compiler and python. 
+
 Download the source code and get into its directory, 
 then ues commands below:
 ```
