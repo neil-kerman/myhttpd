@@ -1,9 +1,7 @@
 #ifndef ERROR_PAGE_HPP
 #define ERROR_PAGE_HPP
 
-namespace myhttpd::http {
-
-    extern "C" const unsigned char page_400_html[];
+    /*extern "C" const unsigned char page_400_html[];
 
     extern "C" const unsigned long long page_400_html_size;
 
@@ -17,13 +15,13 @@ namespace myhttpd::http {
 
     extern "C" const unsigned char page_403_html[];
 
-    extern "C" const unsigned long long page_403_html_size;
+    extern "C" const unsigned long long page_403_html_size;*/
 
     extern "C" const unsigned char page_404_html[];
 
     extern "C" const unsigned long long page_404_html_size;
 
-    extern "C" const unsigned char page_405_html[];
+    /*extern "C" const unsigned char page_405_html[];
 
     extern "C" const unsigned long long page_405_html_size;
 
@@ -97,8 +95,7 @@ namespace myhttpd::http {
 
     extern "C" const unsigned char page_505_html[];
 
-    extern "C" const unsigned long long page_505_html_size;
+    extern "C" const unsigned long long page_505_html_size;*/
 
-}
 
 #endif // ERROR_PAGE_HPP

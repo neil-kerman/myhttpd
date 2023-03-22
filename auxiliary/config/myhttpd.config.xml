@@ -5,11 +5,10 @@
         <!--<tls address="0.0.0.0" port="443" tls_version="tls1.3" cert_file="server.crt" key_file="server.key"/>-->
     </acceptors>
     <http>
-        <host name="localhost">
-            <resource default="/index.html">
+        <resource default="/index.html">
+            <rnodes>
                 <filesystem virtual_path="/" physical_path="../web-root"/>
-                <fcgi virtual_path="/app"/>
-            </resource>
-        </host>
+            </rnodes>
+        </resource>
     </http>
 </config>
