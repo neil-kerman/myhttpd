@@ -15,3 +15,7 @@ mkdir build
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
+##TODO list
+1.Complete GET/POST method, CGI support
+2.MQTT support
+3.FastCGI suppurt
