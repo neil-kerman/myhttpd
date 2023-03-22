@@ -5,8 +5,9 @@
 
 #include <memory>
 #include <unordered_map>
-#ifdef PERFORMANCE_LOGGING
 #include <chrono>
+#include <format>
+#ifdef PERFORMANCE_LOGGING
 #define TIME_POINT(name, time) this->_time
 #endif
 
