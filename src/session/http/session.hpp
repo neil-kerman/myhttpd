@@ -1,7 +1,6 @@
 #ifndef HTTP_SESSION_HPP
 #define HTTP_SESSION_HPP
 
-#define PERFORMANCE_LOGGING
 
 #include <memory>
 #include <unordered_map>
