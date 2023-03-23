@@ -1,7 +1,8 @@
 # myhttpd
 My graduation design, a simple toy web server based on asio.  
 ## Dependent libraries
-- boost
+- boost(asio, filesystem, interprocess, uuid)
+- OpenSSL
 - tinyxml2
 - glog
 ## How to build
