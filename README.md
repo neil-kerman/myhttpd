@@ -17,5 +17,4 @@ cmake --build build
 ## TODO list
 1. Complete GET/POST method
 2. CGI
-3. MQTT
 4. FastCGI
