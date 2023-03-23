@@ -17,4 +17,4 @@ cmake --build build
 ```
 ## TODO list
 1. Complete GET/POST method
-2. FastCGI
+2. WSGI
