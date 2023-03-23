@@ -1,7 +1,8 @@
 # myhttpd
 My graduation design, a simple toy web server based on asio.  
 ## Dependent libraries
-- boost
+- boost(asio, filesystem, interprocess, uuid)
+- OpenSSL
 - tinyxml2
 - glog
 ## How to build
@@ -16,5 +17,4 @@ cmake --build build
 ```
 ## TODO list
 1. Complete GET/POST method
-2. CGI
-4. FastCGI
+2. FastCGI
