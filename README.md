@@ -1,8 +1,10 @@
 # myhttpd
-My graduation design, a simple toy web server based on asio.  
+My graduation design, a simple toy web server based on asio.
+WSGI application can run on this server.
 ## Dependent libraries
-- boost(asio, filesystem, interprocess, uuid)
+- boost
 - OpenSSL
+- Python3
 - tinyxml2
 - glog
 ## How to build
@@ -17,4 +19,3 @@ cmake --build build
 ```
 ## TODO list
 1. Complete GET/POST method
-2. WSGI
