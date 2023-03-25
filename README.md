@@ -1,5 +1,5 @@
 # myhttpd
-My graduation design, a simple toy web server based on asio and support WSGI python application.
+My graduation design, a simple toy web server based on ASIO and supports WSGI python application.
 ## Dependent libraries
 - Boost
 - OpenSSL
