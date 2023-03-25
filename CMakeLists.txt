@@ -1,8 +1,13 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.25)
 project(myhttpd VERSION 0.1.0)
 
 option(BUILD_UNIT_TESTS OFF)
 option(PERFORMANCE_LOGGING ON)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(BUILD_SHARED_LIBS ON)
 
 if(PERFORMANCE_LOGGING)
     add_compile_definitions(PERFORMANCE_LOGGING)
@@ -29,8 +34,9 @@ if(MSVC)
     add_compile_options(-D_WIN32_WINNT=0x0601)
 endif()
 
-find_package(Boost COMPONENTS system context filesystem)
-find_package(OpenSSL)
+find_package(OpenSSL REQUIRED)
+find_package(Python3 COMPONENTS Interpreter Development Development.Module Development.Embed REQUIRED)
+find_package(Boost COMPONENTS context filesystem python310 REQUIRED)
 find_package(glog CONFIG REQUIRED)
 find_package(gflags CONFIG REQUIRED)
 find_package(tinyxml2 CONFIG REQUIRED)
@@ -40,9 +46,6 @@ if(BUILD_UNIT_TESTS)
     enable_testing()
     include(CTest)
 endif()
-
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 20)
 
 add_custom_target(myhttpd ALL)
 

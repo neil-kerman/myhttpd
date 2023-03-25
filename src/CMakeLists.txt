@@ -1,17 +1,18 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.25)
 
 include_directories(
+    ${Boost_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
 )
+
+message("boost include dir: ${Boost_LIBRARIES}")
 
 link_libraries(
     ${Boost_LIBRARIES}
     glog::glog
     gflags::gflags
     tinyxml2::tinyxml2
-    OpenSSL::SSL 
-    OpenSSL::Crypto
 )
 
 configure_file(config.hpp.in config.hpp)
@@ -19,6 +20,8 @@ configure_file(config.hpp.in config.hpp)
 file(GLOB server_sources "./*.cpp")
 add_executable(server ${server_sources})
 unset(server_sources)
+
+add_dependencies(server auxiliary)
 
 add_subdirectory(network)
 add_subdirectory(session)

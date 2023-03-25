@@ -1,6 +1,7 @@
 
 #include "resource.hpp"
 #include "filesystem_rnode.hpp"
+#include "wsgi_rnode.hpp"
 #include "const/error_page.hpp"
 #include "const_content.hpp"
 
@@ -30,6 +31,7 @@ namespace myhttpd::http {
     }
 
     void resource::async_request(std::shared_ptr<request> req, request_handler handler) {
+
         if (req->get_url() == "/") {
             req->set_url(this->_default);
         }
@@ -40,19 +42,18 @@ namespace myhttpd::http {
             if (url.starts_with(rnode.first)) {
                 if (rnode.first.size() > longest_match_size) {
                     longest_match_rnode = rnode.first;
+                    longest_match_size = rnode.first.size();
                 }
             }
         }
         auto rnode_it = this->_rnodes.find(longest_match_rnode);
         auto sub_url = url.substr(rnode_it->first.size(), url.size() - rnode_it->first.size());
+        req->set_url(sub_url);
         rnode_it->second->async_request(req,
             [req, handler, this](std::shared_ptr<response> rsp) {
                 if (!rsp->has_content() && rsp->get_status() >= 400) {
                     rsp->set_content(this->_get_error_page(rsp->get_status()));
                     rsp->insert_attribute("content-type", this->_mimedb[".html"]);
-                }
-                if (!rsp->contains_attribute("content-type")) {
-                    rsp->insert_attribute("content-type", this->_mimedb[get_suffix(req->get_url())]);
                 }
                 handler(rsp);
             }
@@ -70,14 +71,18 @@ namespace myhttpd::http {
         auto node = nodes->FirstChildElement();
         while (node) {
             std::string type = node->Name();
-            std::string vpath = node->Attribute("virtual_path");
-            std::string ppath = node->Attribute("physical_path");
             if (type == "filesystem") {
+                std::string vpath = node->Attribute("virtual_path");
+                std::string ppath = node->Attribute("physical_path");
                 this->_rnodes.insert(
                     std::pair<std::string, std::unique_ptr<rnode>>(vpath, std::make_unique<filesystem_rnode>(ppath))
                 );
-            } else {
-
+            } else if(type == "wsgi") {
+                std::string vpath = node->Attribute("virtual_path");
+                std::string module_path = node->Attribute("module_path");
+                this->_rnodes.insert(
+                    std::pair<std::string, std::unique_ptr<rnode>>(vpath, std::make_unique<wsgi_rnode>(module_path, vpath))
+                );
             }
             node = node->NextSiblingElement();
         }

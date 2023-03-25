@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.25)
 
 if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/error_page")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/error_page")
@@ -28,4 +28,4 @@ endforeach()
 
 file(GLOB error_pages_c_arrey "${CMAKE_CURRENT_BINARY_DIR}/error_page_c/*.c")
 
-add_library(const ${error_pages_c_arrey})
+add_library(const STATIC ${error_pages_c_arrey})

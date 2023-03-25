@@ -27,6 +27,8 @@ namespace myhttpd::http {
 
         std::string _url;
 
+        std::string _query_string;
+
         std::string _version;
 
     private:
@@ -53,7 +55,31 @@ namespace myhttpd::http {
             }
         }
 
-        static const std::string& _method_to_string(method met) {
+        void _extract_title() {
+            auto title = message::get_title();
+            std::size_t offset = 0;
+            auto size = title.find(' ', 0);
+            auto method_str = title.substr(0, size);
+            this->_method = this->_method_parse(method_str);
+            offset = size + 1;
+            if (title.find('?') != std::string::npos) {
+                size = title.find('?', offset) - offset;
+                this->_url = title.substr(offset, size);
+                offset += size + 1;
+                size = title.find(' ', offset) - offset;
+                this->_query_string = title.substr(offset, size);
+                offset += size + 1;
+            } else {
+                size = title.find(' ', offset) - offset;
+                this->_url = title.substr(offset, size);
+                offset += size + 1;
+            }
+            size = title.find('\r', offset) - offset;
+            this->_version = title.substr(offset, size);
+        }
+
+    public:
+        static const std::string& method_to_string(method met) {
 
             static const std::string method_options_str = "OPTIONS";
             static const std::string method_get_str = "GET";
@@ -87,20 +113,6 @@ namespace myhttpd::http {
             }
         }
 
-        void _extract_title() {
-            auto title = message::get_title();
-            std::size_t offset = 0;
-            auto size = title.find(' ', 0);
-            auto method_str = title.substr(0, size);
-            this->_method = this->_method_parse(method_str);
-            offset = size + 1;
-            size = title.find(' ', offset) - offset;
-            this->_url = title.substr(offset, size);
-            offset += size + 1;
-            size = title.find('\r', offset) - offset;
-            this->_version = title.substr(offset, size);
-        }
-
     public:
         inline std::string get_version() {
             return this->_version;
@@ -126,11 +138,23 @@ namespace myhttpd::http {
             this->_url = url;
         }
 
+        inline std::string get_query_string() {
+            return this->_query_string;
+        }
+            
+        inline void set_query_string(std::string value) {
+            this->_query_string = value;
+        }
+
     public:
         virtual std::string get_title() {
             std::string title;
             std::size_t size = 0;
-            return (this->_method + " " + this->_url + " " + this->_version);
+            if (this->_query_string.empty()) {
+                return (this->_method + " " + this->_url + " " + this->_version);
+            } else {
+                return (this->_method + " " + this->_url + "?" + this->_query_string + " " + this->_version);
+            }
         }
 
         virtual void set_title(std::string title) {

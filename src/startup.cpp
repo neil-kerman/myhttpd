@@ -2,7 +2,6 @@
 #include <tinyxml2.h>
 #include <boost/filesystem.hpp>
 
-#include "config.hpp"
 #include "server.hpp"
 
 void glog_init(const char *arg) {
