@@ -1,5 +1,5 @@
 # myhttpd
-My graduation design, a simple toy web server based on asio.
+My graduation design, a simple toy web server based on asio. 
 WSGI application can run on this server.
 ## Dependent libraries
 - boost
