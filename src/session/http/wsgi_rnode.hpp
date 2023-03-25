@@ -37,7 +37,6 @@ namespace myhttpd::http {
         std::string _virtual_path;
 
         std::shared_ptr<boost::python::api::object_attribute> _application = nullptr;
-        //boost::python::api::object_attribute _application;
 
     public:
         virtual void async_request(std::shared_ptr<request> req, request_handler handler);

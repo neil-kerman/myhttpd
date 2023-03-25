@@ -1,6 +1,7 @@
 ﻿#include <Python.h>
 #include <boost/python/exec.hpp>
 #include <boost/python/dict.hpp>
+#include <boost/python/list.hpp>
 #include <filesystem>
 #include <boost/bind.hpp>
 #include <glog/logging.h>
@@ -22,13 +23,22 @@ namespace myhttpd::http {
         header["SERVER_NAME"] = "localhost";
         header["SERVER_PORT"] = "80";
         header["QUERY_STRING"] = object(req->get_query_string());
-        header["CONTENT_TYPE"] = "";
+        if (req->has_content()) {
+            if (req->contains_attribute("content-type")) {
+                header["CONTENT_TYPE"] = object(req->find_attribute("content-type")->second);
+            } else {
+                header["CONTENT_TYPE"] = "text/plain";
+            }
+        }
         header["SERVER_PROTOCOL"] = "http";
-        header["wsgi.version"] = exec_statement("(1, 0)");
-        header["wsgi.input"] = exec_statement("bytearray()");
+        list version;
+        version.insert(0, 0);
+        version.insert(0, 1);
+        header["wsgi.version"] = import("builtins").attr("tuple")(version);
+        header["wsgi.input"] = import("builtins").attr("bytearray")();
         header["wsgi.errors"];
-        header["wsgi.multithread"] = exec_statement("False");
-        header["wsgi.run_once"] = exec_statement("False");
+        header["wsgi.multithread"] = object(false);
+        header["wsgi.run_once"] = object(false);
 
         try {
             auto rsp = std::make_shared<http::response>();

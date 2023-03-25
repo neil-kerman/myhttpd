@@ -48,7 +48,9 @@ namespace myhttpd::http {
         }
         auto rnode_it = this->_rnodes.find(longest_match_rnode);
         auto sub_url = url.substr(rnode_it->first.size(), url.size() - rnode_it->first.size());
-        req->set_url(sub_url);
+        if (longest_match_rnode != "/") {
+            req->set_url(sub_url);
+        }
         rnode_it->second->async_request(req,
             [req, handler, this](std::shared_ptr<response> rsp) {
                 if (!rsp->has_content() && rsp->get_status() >= 400) {

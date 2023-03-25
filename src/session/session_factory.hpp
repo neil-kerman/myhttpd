@@ -16,7 +16,7 @@ namespace myhttpd {
         virtual std::unique_ptr<session> create_session(std::unique_ptr<myhttpd::network::connection> conn) = 0;
 
     public:
-        virtual ~session_factory() {}
+        virtual ~session_factory() = default;
     };
 }
 

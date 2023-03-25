@@ -8,8 +8,8 @@
         <resource host="bodeak.one" default="/index.html">
             <rnodes>
                 <filesystem virtual_path="/" physical_path="../web-root"/>
-                <wsgi virtual_path="/app" module_path="../wsgi-root/adder/adder"/>
                 <filesystem virtual_path="/static" physical_path="../wsgi-root/adder/app/static"/>
+                <wsgi virtual_path="/app" module_path="../wsgi-root/adder/adder"/>
             </rnodes>
         </resource>
     </http>

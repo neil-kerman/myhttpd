@@ -45,23 +45,23 @@ namespace myhttpd::http {
         auto t0 = this->_time_points["timeout_t0"];
         auto t1 = this->_time_points["timeout_t1"];
         std::chrono::duration<double, std::milli> dur = t1 - t0;
-        DLOG(INFO) << "timeout time spendt: " << dur.count() << "ms";
+        LOG(INFO) << "timeout time spendt: " << dur.count() << "ms";
         t0 = this->_time_points["wait_t0"];
         t1 = this->_time_points["wait_t1"];
         dur = t1 - t0;
-        DLOG(INFO) << "wait time spendt: " << dur.count() << "ms";
+        LOG(INFO) << "wait time spendt: " << dur.count() << "ms";
         t0 = this->_time_points["receive_t0"];
         t1 = this->_time_points["receive_t1"];
         dur = t1 - t0;
-        DLOG(INFO) << "receive time spendt: " << dur.count() << "ms";
+        LOG(INFO) << "receive time spendt: " << dur.count() << "ms";
         t0 = this->_time_points["request_resource_t0"];
         t1 = this->_time_points["request_resource_t1"];
         dur = t1 - t0;
-        DLOG(INFO) << "request resource time spendt: " << dur.count() << "ms";
+        LOG(INFO) << "request resource time spendt: " << dur.count() << "ms";
         t0 = this->_time_points["send_t0"];
         t1 = this->_time_points["send_t1"];
         dur = t1 - t0;
-        DLOG(INFO) << "send time spendt: " << dur.count() << "ms";
+        LOG(INFO) << "send time spendt: " << dur.count() << "ms";
 #endif
         this->_transceiver_send_busy = false;
         if (!error) {
@@ -161,7 +161,7 @@ namespace myhttpd::http {
 #ifdef PERFORMANCE_LOGGING
             auto t1 = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double, std::milli> dur = t1 - t0;
-            DLOG(INFO) << "session delete time spendt: " << dur.count() << "ms";
+            LOG(INFO) << "session delete time spendt: " << dur.count() << "ms";
 #endif
         } else {
             if (this->_transceiver_receive_busy || this->_transceiver_send_busy ||
@@ -194,7 +194,7 @@ namespace myhttpd::http {
         auto t0 = this->_time_points["ses-start"];
         auto t1 = this->_time_points["ses-stop"];
         std::chrono::duration<double, std::milli> dur = t1 - t0;
-        DLOG(INFO) << "Session time sepent: " << dur.count() << "ms";
+        LOG(INFO) << "Session time sepent: " << dur.count() << "ms";
     }
 #endif
 }

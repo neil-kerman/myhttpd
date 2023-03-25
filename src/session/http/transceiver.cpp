@@ -77,7 +77,7 @@ namespace myhttpd::http {
                         auto buf = std::make_shared<std::vector<char>>();
                         buf->reserve(content_length);
                         auto content = std::make_shared<transmitting_content>(buf);
-                        if (content_length <= this->_header_receive_buffer.size()) {
+                        if (this->_header_receive_buffer.size() != 0) {
 
                         } else {
 

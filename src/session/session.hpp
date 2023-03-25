@@ -10,7 +10,7 @@ namespace myhttpd {
         /* Session terminated event handler*/
         typedef std::function<void ()> terminated_handler;
     public:
-        virtual ~session() {};
+        virtual ~session() = default;
         virtual void start(terminated_handler handler) = 0;
     }; 
 }
