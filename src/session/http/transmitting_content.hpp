@@ -26,6 +26,8 @@ namespace myhttpd::http {
     public:
         virtual std::size_t get_size();
 
+        virtual const void* get_data();
+
         virtual void async_wait_ready(wait_handler handler);
 
     public:

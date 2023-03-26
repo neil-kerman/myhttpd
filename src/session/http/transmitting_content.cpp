@@ -16,6 +16,10 @@ namespace myhttpd::http {
         return this->_data->size();
     }
 
+    const void* transmitting_content::get_data() {
+        return this->_data->data();
+    }
+
     void transmitting_content::async_wait_ready(wait_handler handler) {
         if (this->_is_ready) {
             handler(this->_error, {this->_data->data(), this->_data->size()});

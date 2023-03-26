@@ -38,6 +38,9 @@ namespace myhttpd::http {
 
         std::shared_ptr<boost::python::api::object_attribute> _application = nullptr;
 
+    private:
+        void _call_application(std::shared_ptr<request> req, request_handler handler);
+
     public:
         virtual void async_request(std::shared_ptr<request> req, request_handler handler);
 

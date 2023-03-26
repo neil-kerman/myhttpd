@@ -12,6 +12,10 @@ namespace myhttpd::http {
         return this->_size;
     }
 
+    const void* const_content::get_data() {
+        return nullptr;
+    }
+
     void const_content::async_wait_ready(wait_handler handler) {
         asio_error_code error;
         handler(error, { this->_data, this->_size });

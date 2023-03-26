@@ -8,6 +8,10 @@ namespace myhttpd::http {
         return this->_region.get_size();
     }
 
+    const void* filesystem_content::get_data() {
+        return nullptr;
+    }
+
     void filesystem_content::async_wait_ready(wait_handler handler) {
         asio_error_code error;
         handler(error, { this->_region.get_address(), this->_region.get_size() });

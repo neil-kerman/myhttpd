@@ -77,14 +77,30 @@ namespace myhttpd::http {
                         auto buf = std::make_shared<std::vector<char>>();
                         buf->reserve(content_length);
                         auto content = std::make_shared<transmitting_content>(buf);
+                        msg->set_content(content);
                         if (this->_header_receive_buffer.size() != 0) {
-
-                        } else {
-
+                            auto bufed_data_size = this->_header_receive_buffer.size();
+                            auto size_to_fetch = (bufed_data_size < content_length) ? bufed_data_size : content_length;
+                            auto blks = this->_header_receive_buffer.get_data(size_to_fetch);
+                            std::size_t offset = 0;
+                            for (auto &blk : blks) {
+                                std::memcpy(buf->data() + offset, blk.data, blk.size);
+                                offset += blk.size;
+                            }
+                            content_length -= size_to_fetch;
+                            if (content_length != 0) {
+                                this->_conn->async_receive({buf->data() + offset, content_length}, 
+                                    [content](const asio_error_code& error, std::size_t bytes_transferred) {
+                                        content->deliver(error);
+                                    }
+                                );
+                            } else {
+                                asio_error_code error_;
+                                content->deliver(error_);
+                            }
                         }
-                    } else {
-                        this->_receive_handler(error, std::move(msg));
                     }
+                    this->_receive_handler(error, std::move(msg));
                     return;
                 }
             }

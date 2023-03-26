@@ -14,7 +14,7 @@
 
 namespace myhttpd::http {
 
-    void wsgi_rnode::async_request(std::shared_ptr<request> req, request_handler handler) {
+    void wsgi_rnode::_call_application(std::shared_ptr<request> req, request_handler handler) {
         using namespace boost::python;
         auto header = dict();
         header["REQUEST_METHOD"] = object(request::method_to_string(req->get_method()));
@@ -23,6 +23,35 @@ namespace myhttpd::http {
         header["SERVER_NAME"] = "localhost";
         header["SERVER_PORT"] = "80";
         header["QUERY_STRING"] = object(req->get_query_string());
+        header["GATEWAY_INTERFACE"] = "WSGI/1.0";
+        header["SERVER_PROTOCOL"] = "http";
+        if (req->contains_attribute("content-language")) {
+            header["CONTENT_LENGTH"] = object(req->find_attribute("content-language")->second);
+        }
+        if (req->contains_attribute("accept")) {
+            header["HTTP_ACCEPT"] = object(req->find_attribute("accept")->second);
+        }
+        if (req->contains_attribute("accept-charset")) {
+            header["HTTP_ACCEPT_CHARSET"] = object(req->find_attribute("accept-charset")->second);
+        }
+        if (req->contains_attribute("accept-encoding")) {
+            header["HTTP_ACCEPT_ENCODING"] = object(req->find_attribute("accept-encoding")->second);
+        }
+        if (req->contains_attribute("accept-language")) {
+            header["HTTP_ACCEPT_LANGUAGE"] = object(req->find_attribute("accept-language")->second);
+        }
+        if (req->contains_attribute("forward")) {
+            header["HTTP_FORWARDED"] = object(req->find_attribute("forward")->second);
+        }
+        if (req->contains_attribute("user-agent")) {
+            header["HTTP_USER_AGENT"] = object(req->find_attribute("user-agent")->second);
+        }
+        if (req->contains_attribute("referer")) {
+            header["HTTP_REFERER"] = object(req->find_attribute("referer")->second);
+        }
+        if (req->contains_attribute("cookie")) {
+            header["HTTP_COOKIE"] = object(req->find_attribute("cookie")->second);
+        }
         if (req->has_content()) {
             if (req->contains_attribute("content-type")) {
                 header["CONTENT_TYPE"] = object(req->find_attribute("content-type")->second);
@@ -30,12 +59,20 @@ namespace myhttpd::http {
                 header["CONTENT_TYPE"] = "text/plain";
             }
         }
-        header["SERVER_PROTOCOL"] = "http";
         list version;
         version.insert(0, 0);
         version.insert(0, 1);
         header["wsgi.version"] = import("builtins").attr("tuple")(version);
-        header["wsgi.input"] = import("builtins").attr("bytearray")();
+        if (req->has_content()) {
+            auto bytes = import("builtins").attr("bytes")();
+            auto content = req->get_content();
+            auto raw_bytearray = PyBytes_FromStringAndSize((const char*)(content->get_data()), content->get_size());
+            handle<> ha(raw_bytearray);
+            object bytearray(ha);
+            header["wsgi.input"] = bytearray;
+        } else {
+            header["wsgi.input"] = import("builtins").attr("bytearray")();
+        }
         header["wsgi.errors"];
         header["wsgi.multithread"] = object(false);
         header["wsgi.run_once"] = object(false);
@@ -58,7 +95,7 @@ namespace myhttpd::http {
                         }
                     )
                 )
-            );
+                );
             if (rsp->contains_attribute("content-length")) {
                 auto bytes = ((object)rsp_content.attr("content"));
                 std::size_t size = PyBytes_Size(bytes.ptr());
@@ -76,6 +113,20 @@ namespace myhttpd::http {
         }
         catch (boost::python::error_already_set const&) {
             PyErr_Print();
+        }
+    }
+
+    void wsgi_rnode::async_request(std::shared_ptr<request> req, request_handler handler) {
+        if (req->has_content()) {
+            req->get_content()->async_wait_ready(
+                [this, req, handler](const asio_error_code &error, network::connection::const_buffer) {
+                    if (!error) {
+                        this->_call_application(req, handler);
+                    }
+                }
+            );
+        } else {
+            this->_call_application(req, handler);
         }
     }
 
