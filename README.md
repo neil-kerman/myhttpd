@@ -17,4 +17,4 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
 ## TODO list
-1. Complete GET/POST method
+Configuration error check
