@@ -1,6 +1,8 @@
 #include <glog/logging.h>
 #include <functional>
-#include <chrono>
+#ifdef PERFORMANCE_LOGGING
+    #include <chrono>
+#endif
 #include <boost/date_time.hpp>
 #include <boost/format.hpp>
 
