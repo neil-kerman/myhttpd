@@ -34,8 +34,6 @@ if(MSVC)
     add_compile_options(-D_WIN32_WINNT=0x0601)
 endif()
 
-set(Python3_USE_STATIC_LIBS FALSE)
-
 find_package(OpenSSL REQUIRED)
 find_package(Python3 COMPONENTS Interpreter Development Development.Module Development.Embed REQUIRED)
 find_package(Boost COMPONENTS context filesystem python310 REQUIRED)

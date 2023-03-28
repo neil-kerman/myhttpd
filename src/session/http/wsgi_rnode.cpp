@@ -139,6 +139,7 @@ namespace myhttpd::http {
 
         try {
             auto sys = boost::python::import("sys");
+            boost::python::import("builtins").attr("print")(boost::python::object(sys.attr("prefix")));
             sys.attr("path").attr("append")(boost::python::str(path.string()));
             this->_application = std::make_shared<boost::python::api::object_attribute>(
                 boost::python::import(boost::python::str(module_name.string() + ".wsgi")).attr("application")
