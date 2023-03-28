@@ -30,6 +30,8 @@ namespace myhttpd::http {
 
         void _mimedb_init();
 
+        void _rnodes_init(tinyxml2::XMLElement* config);
+
         std::shared_ptr<content> _get_error_page(unsigned status);
 
     public:

@@ -88,6 +88,7 @@ namespace myhttpd::http {
                                 offset += blk.size;
                             }
                             content_length -= size_to_fetch;
+                            this->_header_receive_buffer.consume(size_to_fetch);
                             if (content_length != 0) {
                                 this->_conn->async_receive({buf->data() + offset, content_length}, 
                                     [content](const asio_error_code& error, std::size_t bytes_transferred) {

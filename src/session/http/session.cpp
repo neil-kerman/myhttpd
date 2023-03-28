@@ -1,6 +1,8 @@
 #include <glog/logging.h>
 #include <functional>
 #include <chrono>
+#include <boost/date_time.hpp>
+#include <boost/format.hpp>
 
 #include "session.hpp"
 #include "const_content.hpp"
@@ -62,6 +64,7 @@ namespace myhttpd::http {
         t1 = this->_time_points["send_t1"];
         dur = t1 - t0;
         LOG(INFO) << "send time spendt: " << dur.count() << "ms";
+        this->_time_points.clear();
 #endif
         this->_transceiver_send_busy = false;
         if (!error) {
@@ -132,7 +135,26 @@ namespace myhttpd::http {
     }
 
     void session::_do_post_process(std::shared_ptr<response> rsp) {
-        std::string datetime = std::format("{0:%a}, {0:%d} {0:%b} {0:%Y} {0:%H}:{0:%M}:{0:%S} GMT", std::chrono::utc_clock::now());
+
+        boost::posix_time::ptime utc_datetime = boost::posix_time::second_clock::universal_time();
+        auto date = utc_datetime.date();
+        std::string day_of_week_str = date.day_of_week().as_short_string();
+        auto days_of_month = date.day().as_number();
+        std::string month_str = date.month().as_short_string();
+        auto years = date.year();
+        auto hours = utc_datetime.time_of_day().hours();
+        auto minuts = utc_datetime.time_of_day().minutes();
+        auto seconds = utc_datetime.time_of_day().seconds();
+
+        std::string datetime = boost::str(boost::format("%s, %2d %s %d %2d:%2d:%2d GMT")
+            % day_of_week_str
+            % days_of_month
+            % month_str
+            % years
+            % hours
+            % minuts
+            % seconds);
+
         rsp->insert_attribute("date", datetime);
         rsp->insert_attribute("server", "MyHttpd 0.1.0");
         if (this->_keep_alive) {
@@ -184,17 +206,17 @@ namespace myhttpd::http {
     session::session(std::unique_ptr<myhttpd::network::connection> conn, resource &resource, boost::asio::io_context& ctx)
     : _conn(std::move(conn)), _transceiver(this->_conn), _resource(resource), _timer(ctx) {
 #ifdef PERFORMANCE_LOGGING
-        this->_add_time_point("ses-start");
+        //this->_add_time_point("ses-start");
 #endif
     }
 
 #ifdef PERFORMANCE_LOGGING
     session::~session() {
-        this->_add_time_point("ses-stop");
+        /*this->_add_time_point("ses-stop");
         auto t0 = this->_time_points["ses-start"];
         auto t1 = this->_time_points["ses-stop"];
         std::chrono::duration<double, std::milli> dur = t1 - t0;
-        LOG(INFO) << "Session time sepent: " << dur.count() << "ms";
+        LOG(INFO) << "Session time sepent: " << dur.count() << "ms";*/
     }
 #endif
 }

@@ -29,5 +29,5 @@ namespace myhttpd::http {
     }
 
     transmitting_content::transmitting_content(std::shared_ptr<std::vector<char>> data)
-    : _data(std::move(data)) {}
+    : _data(data) {}
 }

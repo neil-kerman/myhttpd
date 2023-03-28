@@ -3,4 +3,4 @@
 #define MAJOR_VERSION
 #define MINOR_VERSION
 
-#define CONFIG_FILE_PATH 
+#define CONFIG_FILE_PATH

@@ -49,6 +49,9 @@ namespace myhttpd::http {
         if (req->contains_attribute("referer")) {
             header["HTTP_REFERER"] = object(req->find_attribute("referer")->second);
         }
+        if (req->contains_attribute("origin")) {
+            header["HTTP_ORIGIN"] = object(req->find_attribute("origin")->second);
+        }
         if (req->contains_attribute("cookie")) {
             header["HTTP_COOKIE"] = object(req->find_attribute("cookie")->second);
         }
@@ -64,12 +67,10 @@ namespace myhttpd::http {
         version.insert(0, 1);
         header["wsgi.version"] = import("builtins").attr("tuple")(version);
         if (req->has_content()) {
-            auto bytes = import("builtins").attr("bytes")();
             auto content = req->get_content();
-            auto raw_bytearray = PyBytes_FromStringAndSize((const char*)(content->get_data()), content->get_size());
-            handle<> ha(raw_bytearray);
-            object bytearray(ha);
+            auto bytearray = import("builtins").attr("bytearray")(str((const char*)content->get_data(), content->get_size()));
             header["wsgi.input"] = bytearray;
+            import("builtins").attr("print")(bytearray);
         } else {
             header["wsgi.input"] = import("builtins").attr("bytearray")();
         }
@@ -95,7 +96,7 @@ namespace myhttpd::http {
                         }
                     )
                 )
-                );
+            );
             if (rsp->contains_attribute("content-length")) {
                 auto bytes = ((object)rsp_content.attr("content"));
                 std::size_t size = PyBytes_Size(bytes.ptr());
@@ -107,7 +108,6 @@ namespace myhttpd::http {
                 auto err = boost::system::error_code();
                 tran_contnet->deliver(err);
                 rsp->set_content(tran_contnet);
-                LOG(INFO) << size;
             }
             handler(rsp);
         }
