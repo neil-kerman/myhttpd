@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.18)
 
 file(GLOB network_sources "*.cpp")
 add_library(network STATIC ${network_sources})

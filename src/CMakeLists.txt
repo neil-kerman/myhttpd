@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.18)
 
 include_directories(
     ${Boost_INCLUDE_DIRS}

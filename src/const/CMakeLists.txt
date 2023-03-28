@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.18)
 
 if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/error_page")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/error_page")

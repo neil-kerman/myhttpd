@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.18)
 project(myhttpd VERSION 0.1.0)
 
 option(BUILD_UNIT_TESTS OFF)

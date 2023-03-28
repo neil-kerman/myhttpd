@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.18)
 
 if(BUILD_UNIT_TESTS)
     add_executable(linked_buffer_test
