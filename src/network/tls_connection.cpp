@@ -24,12 +24,24 @@ namespace myhttpd::network {
         this->_stream.next_layer().async_wait(type, handler);
     }
 
-    connection::endpoint tls_connection::get_local_enpoint() {
-        return this->_stream.next_layer().local_endpoint();
+    std::string tls_connection::get_type() {
+        return "tls";
     }
 
-    connection::endpoint tls_connection::get_remote_endpoint() {
-        return this->_stream.next_layer().remote_endpoint();
+    std::string tls_connection::get_remote_address() {
+        return this->_stream.next_layer().remote_endpoint().address().to_string();
+    }
+
+    int tls_connection::get_remote_port() {
+        return this->_stream.next_layer().remote_endpoint().port();
+    }
+
+    std::string tls_connection::get_local_address() {
+        return this->_stream.next_layer().local_endpoint().address().to_string();
+    }
+
+    int tls_connection::get_local_port() {
+        return this->_stream.next_layer().local_endpoint().port();
     }
 
     void tls_connection::cancel() {

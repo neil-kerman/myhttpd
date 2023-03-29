@@ -25,9 +25,15 @@ namespace myhttpd::network {
 
         virtual void async_wait(socket_wait_type type, wait_handler handler);
 
-        virtual endpoint get_local_enpoint();
+        virtual std::string get_type();
 
-        virtual endpoint get_remote_endpoint();
+        virtual std::string get_remote_address();
+
+        virtual int get_remote_port();
+
+        virtual std::string get_local_address();
+
+        virtual int get_local_port();
 
         virtual void cancel();
 

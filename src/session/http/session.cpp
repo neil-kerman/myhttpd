@@ -120,7 +120,7 @@ namespace myhttpd::http {
     }
 
     void session::_do_pre_process(std::shared_ptr<message> msg) {
-        auto req = std::make_shared<request>(std::move(*msg));
+        auto req = std::make_shared<request>(std::move(*msg), this->_conn);
         if (req->contains_attribute("connection")) {
             if (message::assert_attribute(req->find_attribute("connection"), "keep-alive")) {
                 this->_keep_alive = true;
@@ -148,7 +148,7 @@ namespace myhttpd::http {
         auto minuts = utc_datetime.time_of_day().minutes();
         auto seconds = utc_datetime.time_of_day().seconds();
 
-        std::string datetime = boost::str(boost::format("%s, %2d %s %d %2d:%2d:%2d GMT")
+        std::string datetime = boost::str(boost::format("%s, %2d %s %d %02d:%02d:%02d GMT")
             % day_of_week_str
             % days_of_month
             % month_str

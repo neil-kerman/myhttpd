@@ -25,13 +25,27 @@ namespace myhttpd::network {
         this->_stream.async_wait(type, handler);
     }
 
-    connection::endpoint tcp_connection::get_local_enpoint() {
-        return this->_stream.local_endpoint();
+    std::string tcp_connection::get_type() {
+        return "tcp";
     }
 
-    connection::endpoint tcp_connection::get_remote_endpoint() {
-        return this->_stream.local_endpoint();
+    std::string tcp_connection::get_remote_address() {
+        return this->_stream.remote_endpoint().address().to_string();
     }
+
+    int tcp_connection::get_remote_port() {
+        return this->_stream.remote_endpoint().port();
+    }
+
+    std::string tcp_connection::get_local_address() {
+        return this->_stream.local_endpoint().address().to_string();
+    }
+
+    int tcp_connection::get_local_port() {
+        return this->_stream.local_endpoint().port();
+    }
+
+   
 
     void tcp_connection::cancel() {
         this->_stream.cancel();

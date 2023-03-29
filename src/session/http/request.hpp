@@ -2,6 +2,7 @@
 #define REQUEST_HPP
 
 #include "message.hpp"
+#include "network/connection.hpp"
 
 #undef DELETE
 
@@ -30,6 +31,8 @@ namespace myhttpd::http {
         std::string _query_string;
 
         std::string _version;
+
+        std::unique_ptr<network::connection>& _conn;
 
     private:
         static method _method_parse(std::string met_str) {
@@ -146,6 +149,10 @@ namespace myhttpd::http {
             this->_query_string = value;
         }
 
+        inline const std::unique_ptr<network::connection>& get_connection() {
+            return this->_conn;
+        }
+
     public:
         virtual std::string get_title() {
             std::string title;
@@ -163,10 +170,8 @@ namespace myhttpd::http {
         }
 
     public:
-        request() = default;
-
-        request(message&& msg)
-        : message(std::move(msg)){
+        request(message&& msg, std::unique_ptr<network::connection> &conn)
+        : message(std::move(msg)), _conn(conn) {
             this->_extract_title();
         }
 

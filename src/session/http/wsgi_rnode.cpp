@@ -20,11 +20,11 @@ namespace myhttpd::http {
         header["REQUEST_METHOD"] = object(request::method_to_string(req->get_method()));
         header["SCRIPT_NAME"] = object(this->_virtual_path);
         header["PATH_INFO"] = object(req->get_url());
-        header["SERVER_NAME"] = "localhost";
-        header["SERVER_PORT"] = "80";
+        header["SERVER_NAME"] = object(req->find_attribute("host")->second);
+        header["SERVER_PORT"] = object(std::to_string(req->get_connection()->get_local_port()));
         header["QUERY_STRING"] = object(req->get_query_string());
         header["GATEWAY_INTERFACE"] = "WSGI/1.0";
-        header["SERVER_PROTOCOL"] = "http";
+        header["SERVER_PROTOCOL"] = object(req->get_version());
         if (req->contains_attribute("content-language")) {
             header["CONTENT_LENGTH"] = object(req->find_attribute("content-language")->second);
         }
