@@ -23,12 +23,14 @@ namespace myhttpd::session::http{
 
         session_config _session_config;
 
+        server& _server;
+
     public:
         virtual std::unique_ptr<myhttpd::session::session> 
             create_session(std::unique_ptr<myhttpd::network::connection> conn);
 
     public:
-        session_factory(tinyxml2::XMLElement* config, boost::asio::io_context& ctx);
+        session_factory(tinyxml2::XMLElement* config, boost::asio::io_context& ctx, server &ser);
 
         virtual ~session_factory() = default;
     };

@@ -1,18 +1,21 @@
-#ifndef __SESSION_H__
-#define __SESSION_H__
+#ifndef SESSION_H
+#define SESSION_H
 
 #include <functional>
+#include <boost/uuid/uuid.hpp>
 
 namespace myhttpd::session {
 
     class session {
+
     public:
-        /* Session terminated event handler*/
-        typedef std::function<void ()> terminated_handler;
+        virtual void start() = 0;
+
+        virtual boost::uuids::uuid get_id() = 0;
+        
     public:
         virtual ~session() = default;
-        virtual void start(terminated_handler handler) = 0;
     }; 
 }
 
-#endif // __SESSION_H__
+#endif // SESSION_H

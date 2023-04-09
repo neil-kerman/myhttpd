@@ -6,6 +6,7 @@
 #include "acceptor.hpp"
 #include "tcp_acceptor.hpp"
 #include "tls_connection.hpp"
+#include "server.hpp"
 
 namespace myhttpd::network {
 
@@ -18,11 +19,16 @@ namespace myhttpd::network {
 
         boost::asio::ip::tcp::acceptor _raw_acceptor;
 
-    public:
-        virtual void async_accept(accept_handler handler);
+        server& _server;
+
+    private:
+        void _accept_handler(const asio_error_code& error, boost::asio::ip::tcp::socket soc);
 
     public:
-        tls_acceptor(std::string address, int port, boost::asio::io_context &ctx, boost::asio::ssl::context tls_ctx);
+        virtual void start_async_accept();
+
+    public:
+        tls_acceptor(std::string address, int port, boost::asio::io_context &ctx, boost::asio::ssl::context tls_ctx, server& ser);
 
         virtual ~tls_acceptor() = default;
     };

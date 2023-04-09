@@ -5,6 +5,7 @@
 
 #include "acceptor.hpp"
 #include "tcp_connection.hpp"
+#include "server.hpp"
 
 namespace myhttpd::network {
 
@@ -12,12 +13,17 @@ namespace myhttpd::network {
 
     private:
         boost::asio::ip::tcp::acceptor _raw_acceptor;
-        
-    public:
-        virtual void async_accept(accept_handler handler);
+
+        server& _server;
+
+    private:
+        void _accept_handler(const asio_error_code& error, boost::asio::ip::tcp::socket soc);
 
     public:
-        tcp_acceptor(std::string address, int port, boost::asio::io_context &ctx);
+        virtual void start_async_accept();
+
+    public:
+        tcp_acceptor(std::string address, int port, boost::asio::io_context &ctx, server& ser);
 
         virtual ~tcp_acceptor() = default;
     };

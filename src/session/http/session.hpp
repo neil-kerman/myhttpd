@@ -1,16 +1,12 @@
 #ifndef HTTP_SESSION_HPP
 #define HTTP_SESSION_HPP
 
-
 #include <memory>
 #include <unordered_map>
-
-
-#ifdef PERFORMANCE_LOGGING
-#define TIME_POINT(name, time) this->_time
-#endif
+#include <boost/uuid/uuid_generators.hpp>
 
 #include "session/session.hpp"
+#include "session/server.hpp"
 #include "resource.hpp"
 #include "transceiver.hpp"
 #include "network/connection.hpp"
@@ -24,13 +20,15 @@ namespace myhttpd::session::http {
         resource& _resource;
 
     private:
+        const boost::uuids::uuid _id;
+
+        server& _server;
+
         std::unique_ptr<myhttpd::network::connection> _conn;
 
         transceiver _transceiver;
 
         boost::asio::deadline_timer _timer;
-
-        terminated_handler _terminated_handler;
 
 #ifdef PERFORMANCE_LOGGING
 
@@ -89,10 +87,13 @@ namespace myhttpd::session::http {
         void _terminate();
 
     public:
-        virtual void start(terminated_handler handler);
+        virtual void start();
+
+        virtual boost::uuids::uuid get_id();
         
     public:
-        session(std::unique_ptr<myhttpd::network::connection> conn, resource &resource, boost::asio::io_context &ctx);
+        session(std::unique_ptr<myhttpd::network::connection> conn,
+            resource& resource, boost::asio::io_context& ctx, myhttpd::session::server& ser);
 
 #ifdef PERFORMANCE_LOGGING
         virtual ~session();

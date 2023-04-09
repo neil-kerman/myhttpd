@@ -6,7 +6,7 @@
 
 #include "session.hpp"
 #include "network/connection.hpp"
-
+#include "server.hpp"
 
 namespace myhttpd::session {
 

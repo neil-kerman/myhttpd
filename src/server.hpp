@@ -26,11 +26,9 @@ namespace myhttpd {
 
         std::list<std::unique_ptr<network::acceptor>> _acceptors;
 
-        std::map<boost::uuids::uuid, std::unique_ptr<session::session>> _sessions;
+        std::map<boost::uuids::uuid, std::shared_ptr<session::session>> _sessions;
 
         std::map<std::string, std::unique_ptr<myhttpd::session::session_factory>> _session_factories;
-
-        std::vector<network::acceptor::accept_handler> _accept_handlers;
 
     private:
         void _init_acceptors(tinyxml2::XMLElement* config);
@@ -40,7 +38,7 @@ namespace myhttpd {
     public:
         virtual void pass_connection(std::unique_ptr<network::connection> conn);
 
-        virtual void request_termination();
+        virtual void request_termination(session::session &sender);
 
     public:
         void start();

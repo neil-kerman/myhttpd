@@ -181,7 +181,7 @@ namespace myhttpd::session::http {
 #ifdef PERFORMANCE_LOGGING
             auto t0 = std::chrono::high_resolution_clock::now();
 #endif
-            this->_terminated_handler();
+            this->_server.request_termination(*this);
 #ifdef PERFORMANCE_LOGGING
             auto t1 = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double, std::milli> dur = t1 - t0;
@@ -199,14 +199,19 @@ namespace myhttpd::session::http {
         }
     }
     
-    void session::start(terminated_handler handler) {
-        this->_terminated_handler = handler;
+    void session::start() {
         this->_set_timer();
         this->_wait();
     }
 
-    session::session(std::unique_ptr<myhttpd::network::connection> conn, resource &resource, boost::asio::io_context& ctx)
-    : _conn(std::move(conn)), _transceiver(this->_conn), _resource(resource), _timer(ctx) {
+    boost::uuids::uuid session::get_id() {
+        return this->_id;
+    }
+
+    session::session(std::unique_ptr<myhttpd::network::connection> conn, 
+        resource &resource, boost::asio::io_context& ctx, myhttpd::session::server &ser)
+    : _conn(std::move(conn)), _transceiver(this->_conn), _resource(resource), 
+        _timer(ctx), _server(ser), _id(boost::uuids::random_generator()()) {
 #ifdef PERFORMANCE_LOGGING
         //this->_add_time_point("ses-start");
 #endif

@@ -6,7 +6,7 @@ namespace myhttpd::session {
     class server {
 
     public:
-        virtual void request_termination() = 0;
+        virtual void request_termination(session &sender) = 0;
 
     public:
         virtual ~server() = default;
