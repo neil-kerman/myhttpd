@@ -3,7 +3,7 @@
 
 #include <functional>
 
-namespace myhttpd {
+namespace myhttpd::session {
 
     class session {
     public:

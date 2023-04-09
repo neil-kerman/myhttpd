@@ -6,7 +6,7 @@
 #include "transceiver.hpp"
 #include "transmitting_content.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd::session::http {
 
     bool transceiver::header_detecter::match(const char value) {
         switch (this->status) {

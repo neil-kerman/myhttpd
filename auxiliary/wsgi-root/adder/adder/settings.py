@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-)#isi_mu&mc!iic4xrk6^tir_pmg$-$u^lm@bnlp=+xkriumn&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["bodeak.one"]
+ALLOWED_HOSTS = ["bodeak.one", "localhost"]
 
 
 # Application definition

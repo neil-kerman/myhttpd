@@ -12,7 +12,7 @@
 #include "wsgi_rnode.hpp"
 #include "transmitting_content.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd::session::http {
 
     void wsgi_rnode::_call_application(std::shared_ptr<request> req, request_handler handler) {
         using namespace boost::python;

@@ -6,7 +6,7 @@
 #include "const/error_page.hpp"
 #include "const_content.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd::session::http {
 
     class default_rnode : public rnode {
 

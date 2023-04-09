@@ -2,7 +2,7 @@
 
 #include "const_content.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd::session::http {
 
     const_content const_content::from_c_string(const char* str) {
         return const_content(str, std::strlen(str));

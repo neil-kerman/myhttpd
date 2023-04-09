@@ -29,7 +29,7 @@ namespace boost {
 #include "rnode.hpp"
 #include <boost/python.hpp>
 
-namespace myhttpd::http {
+namespace myhttpd::session::http {
 
     class wsgi_rnode : public rnode {
 

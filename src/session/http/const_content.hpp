@@ -3,7 +3,7 @@
 
 #include "content.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd::session::http {
 
     class const_content: public content {
 

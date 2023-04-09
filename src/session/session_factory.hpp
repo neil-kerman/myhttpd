@@ -8,7 +8,7 @@
 #include "network/connection.hpp"
 
 
-namespace myhttpd {
+namespace myhttpd::session {
 
     class session_factory {
 

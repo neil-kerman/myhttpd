@@ -16,9 +16,9 @@
 #include "network/connection.hpp"
 #include "resource.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd::session::http {
 
-    class session: public myhttpd::session {
+    class session: public myhttpd::session::session {
 
     private:
         resource& _resource;

@@ -9,7 +9,7 @@
 #include "session.hpp"
 #include "const_content.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd::session::http {
 
     void session::_wait_handler(const asio_error_code& error) {
 #ifdef PERFORMANCE_LOGGING

@@ -7,9 +7,9 @@
 #include "session/session_factory.hpp"
 #include "resource.hpp"
 
-namespace myhttpd::http{
+namespace myhttpd::session::http{
 
-    class session_factory : public myhttpd::session_factory {
+    class session_factory : public myhttpd::session::session_factory {
 
     public:
         struct session_config {
@@ -24,7 +24,7 @@ namespace myhttpd::http{
         session_config _session_config;
 
     public:
-        virtual std::unique_ptr<myhttpd::session> 
+        virtual std::unique_ptr<myhttpd::session::session> 
             create_session(std::unique_ptr<myhttpd::network::connection> conn);
 
     public:

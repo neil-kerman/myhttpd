@@ -3,7 +3,7 @@
 
 #include "message.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd::session::http {
 
     class response: public message {
 

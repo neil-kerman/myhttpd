@@ -6,7 +6,7 @@
 
 #include "rnode.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd::session::http {
 
     class filesystem_rnode: public rnode {
 

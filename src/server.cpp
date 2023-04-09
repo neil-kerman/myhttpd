@@ -13,7 +13,7 @@ using namespace boost::asio::ip;
 namespace myhttpd {
 
     void server::event_loop() {
-        this->_io.run();
+        this->_ctx.run();
     }
 
     void server::_init_acceptors(tinyxml2::XMLElement* config) {
@@ -23,21 +23,27 @@ namespace myhttpd {
         //Thus no need to delete it in this scope.
         while (ac_cfg) {
             /* Create acceptors */
-            this->_acceptors.push_back(network::acceptor_facory::create_acceptor(ac_cfg, this->_io));
+            this->_acceptors.push_back(network::acceptor_facory::create_acceptor(ac_cfg, this->_ctx));
             ac_cfg = ac_cfg->NextSiblingElement();
         }
     }
 
     void server::_init_session_factories(tinyxml2::XMLElement* config) {
         auto http_config = config->FirstChildElement("http");
-        std::unique_ptr<myhttpd::session_factory> fac = 
-            std::make_unique<http::session_factory>(http_config, this->_io);
-        std::pair < std::string, std::unique_ptr<myhttpd::session_factory>> pair("http", std::move(fac));
+        std::unique_ptr<myhttpd::session::session_factory> fac =
+            std::make_unique<session::http::session_factory>(http_config, this->_ctx);
+        std::pair < std::string, std::unique_ptr<session::session_factory>> pair("http", std::move(fac));
         this->_session_factories.insert(std::move(pair));
     }
 
+    void server::pass_connection(std::unique_ptr<network::connection> conn) {
+    }
+
+    void server::request_termination() {
+    }
+
     server::server(tinyxml2::XMLElement *config)
-    : _work_guard(this->_io.get_executor()) {
+    : _work_guard(this->_ctx.get_executor()) {
         this->_init_acceptors(config);
         this->_init_session_factories(config);
     }
@@ -53,7 +59,7 @@ namespace myhttpd {
                 boost::uuids::uuid id = boost::uuids::random_generator()();
                 auto& fac = factories["http"];
                 auto ses = fac->create_session(std::move(conn));
-                sessions.insert(std::pair<boost::uuids::uuid, std::unique_ptr<session>>(id, std::move(ses)));
+                sessions.insert(std::pair<boost::uuids::uuid, std::unique_ptr<session::session>>(id, std::move(ses)));
                 sessions[id]->start(
                     [id, &sessions]() {
                         sessions.erase(id);

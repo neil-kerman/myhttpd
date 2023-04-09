@@ -5,7 +5,7 @@
 #include "const/error_page.hpp"
 #include "const_content.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd::session::http {
 
 	bool filesystem_rnode::_exists(std::string url) {
 		std::string abs_path = this->_path + url;

@@ -9,7 +9,7 @@
 
 #include "rnode.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd::session::http {
 
     class resource {
     

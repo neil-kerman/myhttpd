@@ -1,6 +1,6 @@
 #include "transmitting_content.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd::session::http {
 
     void transmitting_content::deliver(const asio_error_code &error) {
         this->_is_ready = true;

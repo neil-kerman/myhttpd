@@ -2,7 +2,7 @@
 
 #include "filesystem_content.hpp"
 
-namespace myhttpd::http {
+namespace myhttpd::session::http {
 
     std::size_t filesystem_content::get_size() {
         return this->_region.get_size();
