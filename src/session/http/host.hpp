@@ -5,6 +5,8 @@ namespace myhttpd::session::http {
 
     class host {
 
+    private:
+
     };
 }
 

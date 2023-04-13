@@ -148,6 +148,17 @@ namespace myhttpd::session::http {
         }
     }
 
+    std::string header_key_formalize(const std::string &key) {
+        auto result = key;
+        result[0] -= 32;
+        auto next = key.find('-');
+        while (next != std::string::npos && next < key.size() + 1) {
+            result[next + 1] -= 32;
+            next = key.find('-', next + 1);
+        }
+        return result;
+    }
+
     std::string transceiver::_to_string_header(const std::shared_ptr<message>& msg) {
         auto title = msg->get_title();
         std::size_t size = title.size() + 4;
@@ -158,7 +169,7 @@ namespace myhttpd::session::http {
         buf.reserve(size);
         buf.append(title).append("\r\n");
         for (auto attr = msg->begin_attribute(); attr != msg->end_attribute(); attr++) {
-            buf.append(attr->first).append(": ").append(attr->second).append("\r\n");
+            buf.append(header_key_formalize(attr->first)).append(": ").append(attr->second).append("\r\n");
         }
         buf.append("\r\n");
         return buf;

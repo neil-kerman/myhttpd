@@ -15,47 +15,47 @@ namespace myhttpd::session::http {
     private:
         static const std::string& _get_status_meaning(unsigned status) {
 
-            static const std::string status_100_meaning = "continue";
-            static const std::string status_101_meaning = "switching protocols";
-            static const std::string status_200_meaning = "ok";
-            static const std::string status_201_meaning = "created";
-            static const std::string status_202_meaning = "accepted";
-            static const std::string status_203_meaning = "non-authoritative information";
-            static const std::string status_204_meaning = "no content";
-            static const std::string status_205_meaning = "reset content";
-            static const std::string status_206_meaning = "partial content";
-            static const std::string status_300_meaning = "multiple choices";
-            static const std::string status_301_meaning = "moved permanently";
-            static const std::string status_302_meaning = "found";
-            static const std::string status_303_meaning = "see other";
-            static const std::string status_304_meaning = "not modified";
-            static const std::string status_305_meaning = "use proxy";
+            static const std::string status_100_meaning = "Continue";
+            static const std::string status_101_meaning = "Switching Protocols";
+            static const std::string status_200_meaning = "OK";
+            static const std::string status_201_meaning = "Created";
+            static const std::string status_202_meaning = "Accepted";
+            static const std::string status_203_meaning = "Non-Authoritative Information";
+            static const std::string status_204_meaning = "No Content";
+            static const std::string status_205_meaning = "Reset Content";
+            static const std::string status_206_meaning = "Partial Content";
+            static const std::string status_300_meaning = "Multiple Choices";
+            static const std::string status_301_meaning = "Moved Permanently";
+            static const std::string status_302_meaning = "Found";
+            static const std::string status_303_meaning = "See Other";
+            static const std::string status_304_meaning = "Not Modified";
+            static const std::string status_305_meaning = "Use Proxy";
             static const std::string status_306_meaning = "*";
-            static const std::string status_307_meaning = "temporary redirect";
-            static const std::string status_400_meaning = "bad request";
-            static const std::string status_401_meaning = "unauthorized";
-            static const std::string status_402_meaning = "payment required";
-            static const std::string status_403_meaning = "forbidden";
-            static const std::string status_404_meaning = "not found";
-            static const std::string status_405_meaning = "method not allowed";
-            static const std::string status_406_meaning = "not acceptable";
-            static const std::string status_407_meaning = "proxy authentication required";
-            static const std::string status_408_meaning = "request timeout";
-            static const std::string status_409_meaning = "conflict";
-            static const std::string status_410_meaning = "gone";
-            static const std::string status_411_meaning = "length required";
-            static const std::string status_412_meaning = "precondition failed";
-            static const std::string status_413_meaning = "request entity too large";
-            static const std::string status_414_meaning = "request-uri too long";
-            static const std::string status_415_meaning = "unsupported media type";
-            static const std::string status_416_meaning = "requested range not satisfiable";
-            static const std::string status_417_meaning = "expectation failed";
-            static const std::string status_500_meaning = "internal server error";
-            static const std::string status_501_meaning = "not implemented";
-            static const std::string status_502_meaning = "bad gateway";
-            static const std::string status_503_meaning = "service unavailable";
-            static const std::string status_504_meaning = "gateway timeout";
-            static const std::string status_505_meaning = "http version not supported";
+            static const std::string status_307_meaning = "Temporary Redirect";
+            static const std::string status_400_meaning = "Bad Request";
+            static const std::string status_401_meaning = "Unauthorized";
+            static const std::string status_402_meaning = "Payment Required";
+            static const std::string status_403_meaning = "Forbidden";
+            static const std::string status_404_meaning = "Not Found";
+            static const std::string status_405_meaning = "Method Not Allowed";
+            static const std::string status_406_meaning = "Not Acceptable";
+            static const std::string status_407_meaning = "Proxy Authentication Required";
+            static const std::string status_408_meaning = "Request Timeout";
+            static const std::string status_409_meaning = "Conflict";
+            static const std::string status_410_meaning = "Gone";
+            static const std::string status_411_meaning = "Length Required";
+            static const std::string status_412_meaning = "Precondition Failed";
+            static const std::string status_413_meaning = "Request Entity Too Large";
+            static const std::string status_414_meaning = "Request-Uri Too Long";
+            static const std::string status_415_meaning = "Unsupported Media Type";
+            static const std::string status_416_meaning = "Requested Range Not Satisfiable";
+            static const std::string status_417_meaning = "Expectation Failed";
+            static const std::string status_500_meaning = "Internal Server Error";
+            static const std::string status_501_meaning = "Not Implemented";
+            static const std::string status_502_meaning = "Bad Gateway";
+            static const std::string status_503_meaning = "Service Unavailable";
+            static const std::string status_504_meaning = "Gateway Timeout";
+            static const std::string status_505_meaning = "Http Version Not Supported";
             static const std::string status_undefined_meaning = "*";
 
             switch (status) {
@@ -138,7 +138,7 @@ namespace myhttpd::session::http {
             auto& version = this->get_version();
             std::string title;
             title.reserve(version.size() + 5 + status_meaning.size());
-            title.append(version).append(" ").append(std::to_string(this->_status)).append(status_meaning);
+            title.append(version).append(" ").append(std::to_string(this->_status)).append(" ").append(status_meaning);
             return title;
         }
 
