@@ -61,7 +61,9 @@ namespace myhttpd::session::http {
     private:
         void _timeout_handler(const asio_error_code& error);
 
-        void _wait_handler(const asio_error_code &error);
+        void _wait_request_handler(const asio_error_code &error);
+
+        void _wait_error_handler(const asio_error_code& error);
 
         void _receive_handler(const asio_error_code& error, std::shared_ptr<message> request);
 
@@ -72,7 +74,9 @@ namespace myhttpd::session::http {
     private:
         void _set_timer();
 
-        void _wait();
+        void _wait_request();
+
+        void _wait_error();
 
         void _receive();
 

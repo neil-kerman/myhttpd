@@ -11,7 +11,7 @@
 
 namespace myhttpd::session::http {
 
-    void session::_wait_handler(const asio_error_code& error) {
+    void session::_wait_request_handler(const asio_error_code& error) {
 #ifdef PERFORMANCE_LOGGING
         this->_add_time_point("wait_t1");
 #endif
@@ -22,6 +22,10 @@ namespace myhttpd::session::http {
         } else {
             this->_terminate();
         }
+    }
+
+    void session::_wait_error_handler(const asio_error_code& error) {
+        this->_terminate();
     }
 
     void session::_receive_handler(const asio_error_code& error, std::shared_ptr<message> msg) {
@@ -71,8 +75,8 @@ namespace myhttpd::session::http {
         this->_transceiver_send_busy = false;
         if (!error) {
             if (this->_keep_alive) {
-                this->_set_timer();
-                this->_wait();
+                //this->_set_timer();
+                this->_wait_request();
             } else {
                 this->_terminate();
             }
@@ -97,17 +101,22 @@ namespace myhttpd::session::http {
         this->_add_time_point("timeout_t0");
 #endif
         this->_timer_busy = true;
-        this->_timer.expires_from_now(boost::posix_time::seconds(120));
+        this->_timer.expires_from_now(boost::posix_time::seconds(10));
         this->_timer.async_wait(std::bind(&session::_timeout_handler, this, std::placeholders::_1));
     }
 
-    void session::_wait() {
+    void session::_wait_request() {
 #ifdef PERFORMANCE_LOGGING
         this->_add_time_point("wait_t0");
 #endif
         this->_transceiver_wait_busy = true;
         this->_transceiver.async_wait(socket_wait_type::wait_read,
-            std::bind(&session::_wait_handler, this, std::placeholders::_1));
+            std::bind(&session::_wait_request_handler, this, std::placeholders::_1));
+    }
+
+    void session::_wait_error() {
+       this->_transceiver.async_wait(socket_wait_type::wait_error, 
+           std::bind(&session::_wait_error_handler, this, std::placeholders::_1));
     }
 
     void session::_receive() {
@@ -200,8 +209,9 @@ namespace myhttpd::session::http {
     }
     
     void session::start() {
-        this->_set_timer();
-        this->_wait();
+        //this->_set_timer();
+        this->_wait_error();
+        this->_wait_request();
     }
 
     boost::uuids::uuid session::get_id() {

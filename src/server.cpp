@@ -27,7 +27,7 @@ namespace myhttpd {
     void server::_init_session_factories(tinyxml2::XMLElement* config) {
         auto http_config = config->FirstChildElement("http");
         std::unique_ptr<myhttpd::session::session_factory> fac =
-            std::make_unique<session::http::session_factory>(http_config, this->_ctx, *this);
+            std::make_unique<session::http::session_factory>(http_config, this->_ctx, (*this));
         std::pair < std::string, std::unique_ptr<session::session_factory>> pair("http", std::move(fac));
         this->_session_factories.insert(std::move(pair));
     }
