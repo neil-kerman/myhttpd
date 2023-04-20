@@ -96,8 +96,12 @@ namespace myhttpd::session::http {
         virtual boost::uuids::uuid get_id();
         
     public:
-        session(std::unique_ptr<myhttpd::network::connection> conn,
-            resource& resource, boost::asio::io_context& ctx, myhttpd::session::server& ser);
+        session(
+            std::unique_ptr<myhttpd::network::connection> conn,
+            resource& resource, 
+            boost::asio::io_context& ctx, 
+            myhttpd::session::server& ser
+        );
 
 #ifdef PERFORMANCE_LOGGING
         virtual ~session();

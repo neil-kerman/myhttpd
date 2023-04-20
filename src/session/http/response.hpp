@@ -59,6 +59,7 @@ namespace myhttpd::session::http {
             static const std::string status_undefined_meaning = "*";
 
             switch (status) {
+
             case 100: return status_100_meaning;
             case 101: return status_101_meaning;
             case 200: return status_200_meaning;
@@ -105,6 +106,7 @@ namespace myhttpd::session::http {
         }
 
         void _extract_title() {
+
             auto title = message::get_title();
             std::size_t offset = 0;
             auto size = title.find(' ', 0);
@@ -117,23 +119,28 @@ namespace myhttpd::session::http {
 
     public:
         inline std::string& get_version() {
+
             return this->_version;
         }
 
         inline void set_version(std::string version) {
+
             this->_version = version;
         }
 
         inline unsigned get_status() {
+
             return this->_status;
         }
 
         inline void set_status(unsigned status) {
+
             this->_status = status;
         }
 
     public:
         virtual std::string get_title() {
+
             auto& status_meaning = this->_get_status_meaning(this->_status);
             auto& version = this->get_version();
             std::string title;
@@ -143,6 +150,7 @@ namespace myhttpd::session::http {
         }
 
         virtual void set_title(std::string title) {
+
             message::set_title(title);
             this->_extract_title();
         }
@@ -150,8 +158,9 @@ namespace myhttpd::session::http {
     public:
         response() = default;
 
-        response(message&& msg) 
-        : message(std::move(msg)) {
+        response(message&& msg): 
+            message(std::move(msg)) {
+
             this->_extract_title();
         }
 
