@@ -26,12 +26,10 @@ add_dependencies(server auxiliary)
 add_subdirectory(network)
 add_subdirectory(session)
 add_subdirectory(util)
-add_subdirectory(const)
 
 target_link_libraries(
     server
         network
         http
-        const
 )
 

@@ -26,8 +26,9 @@ namespace boost {
 
 #include <string>
 #include <boost/asio.hpp>
-#include "rnode.hpp"
 #include <boost/python.hpp>
+
+#include "../../resource/rnode.hpp"
 
 namespace myhttpd::session::http {
 

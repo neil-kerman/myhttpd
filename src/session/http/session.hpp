@@ -7,10 +7,9 @@
 
 #include "session/session.hpp"
 #include "session/server.hpp"
-#include "resource.hpp"
-#include "transceiver.hpp"
+#include "resource/resource.hpp"
+#include "transceiver/transceiver.hpp"
 #include "network/connection.hpp"
-#include "resource.hpp"
 
 namespace myhttpd::session::http {
 

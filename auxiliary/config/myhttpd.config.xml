@@ -6,12 +6,16 @@
         cert_file="fullchain.pem" key_file="privkey.pem"/>-->
     </acceptors>
     <http>
-        <resource host="bodeak.one" default="/index.html">
-            <rnodes>
-                <filesystem virtual_path="/" physical_path="../web-root"/>
-                <filesystem virtual_path="/static" physical_path="../wsgi-root/adder/app/static"/>
-                <wsgi virtual_path="/app" module_path="../wsgi-root/adder/adder"/>
-            </rnodes>
+        <resource>
+            <hosts>
+                <host name="localhost" default="/index.html">
+                    <rnodes>
+                        <filesystem virtual_path="/" physical_path="../web-root"/>
+                        <filesystem virtual_path="/static" physical_path="../wsgi-root/adder/app/static"/>
+                        <wsgi virtual_path="/app" module_path="../wsgi-root/adder/adder"/>
+                    </rnodes>
+                </host>
+            </hosts>
         </resource>
     </http>
 </config>

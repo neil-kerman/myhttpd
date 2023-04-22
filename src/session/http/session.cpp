@@ -7,7 +7,6 @@
 #include <boost/format.hpp>
 
 #include "session.hpp"
-#include "const_content.hpp"
 
 namespace myhttpd::session::http {
 
@@ -37,8 +36,10 @@ namespace myhttpd::session::http {
     void session::_receive_handler(const asio_error_code& error, std::shared_ptr<message> msg) {
 
 #ifdef PERFORMANCE_LOGGING
+
         this->_add_time_point("receive_t1");
 #endif
+
         this->_transceiver_receive_busy = false;
 
         if (!error) {
@@ -62,6 +63,7 @@ namespace myhttpd::session::http {
     void session::_send_handler(const asio_error_code& error) {
 
 #ifdef PERFORMANCE_LOGGING
+
         this->_add_time_point("send_t1");
         auto t0 = this->_time_points["timeout_t0"];
         auto t1 = this->_time_points["timeout_t1"];
@@ -85,13 +87,14 @@ namespace myhttpd::session::http {
         LOG(INFO) << "send time spendt: " << dur.count() << "ms";
         this->_time_points.clear();
 #endif
+
         this->_transceiver_send_busy = false;
 
         if (!error) {
 
             if (this->_keep_alive) {
 
-                //this->_set_timer();
+                this->_set_timer();
                 this->_wait_request();
 
             } else {
@@ -108,8 +111,10 @@ namespace myhttpd::session::http {
     void session::_timeout_handler(const asio_error_code& error) {
 
 #ifdef PERFORMANCE_LOGGING
+
         this->_add_time_point("timeout_t1");
 #endif
+
         this->_timer_busy = false;
 
         if (error == asio_error::operation_aborted) {
@@ -123,8 +128,10 @@ namespace myhttpd::session::http {
     void session::_set_timer() {
 
 #ifdef PERFORMANCE_LOGGING
+
         this->_add_time_point("timeout_t0");
 #endif
+
         this->_timer_busy = true;
         this->_timer.expires_from_now(boost::posix_time::seconds(10));
         this->_timer.async_wait(std::bind(&session::_timeout_handler, this, std::placeholders::_1));
@@ -133,8 +140,10 @@ namespace myhttpd::session::http {
     void session::_wait_request() {
 
 #ifdef PERFORMANCE_LOGGING
+
         this->_add_time_point("wait_t0");
 #endif
+
         this->_transceiver_wait_busy = true;
         this->_transceiver.async_wait(socket_wait_type::wait_read,
             std::bind(&session::_wait_request_handler, this, std::placeholders::_1));
@@ -149,8 +158,10 @@ namespace myhttpd::session::http {
     void session::_receive() {
 
 #ifdef PERFORMANCE_LOGGING
+
         this->_add_time_point("receive_t0");
 #endif
+
         this->_transceiver_receive_busy = true;
         this->_transceiver.async_receive(
             std::bind(&session::_receive_handler, this, std::placeholders::_1, std::placeholders::_2));
@@ -174,8 +185,10 @@ namespace myhttpd::session::http {
     void session::_request_resource(std::shared_ptr<request> req) {
 
 #ifdef PERFORMANCE_LOGGING
+
         this->_add_time_point("request_resource_t0");
 #endif
+
         this->_resource.async_request(
             req, 
             std::bind(&session::_request_resource_handler, this, std::placeholders::_1)
@@ -220,8 +233,10 @@ namespace myhttpd::session::http {
     void session::_send(std::shared_ptr<response> rsp) {
 
 #ifdef PERFORMANCE_LOGGING
+
         this->_add_time_point("send_t0");
 #endif
+
         this->_transceiver_send_busy = true;
         this->_transceiver.async_send(
             rsp, 
@@ -235,10 +250,14 @@ namespace myhttpd::session::http {
             !this->_transceiver_wait_busy && !this->_timer_busy) {
 
 #ifdef PERFORMANCE_LOGGING
+
             auto t0 = std::chrono::high_resolution_clock::now();
 #endif
+
             this->_server.request_termination(*this);
+
 #ifdef PERFORMANCE_LOGGING
+
             auto t1 = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double, std::milli> dur = t1 - t0;
             LOG(INFO) << "session delete time spendt: " << dur.count() << "ms";
@@ -251,6 +270,7 @@ namespace myhttpd::session::http {
 
                 this->_transceiver.cancel();
             }
+
             if (this->_timer_busy) {
 
                 this->_timer.cancel();
@@ -262,8 +282,8 @@ namespace myhttpd::session::http {
     
     void session::start() {
 
-        //this->_set_timer();
-        this->_wait_error();
+        this->_set_timer();
+        //this->_wait_error();
         this->_wait_request();
     }
 
@@ -285,11 +305,13 @@ namespace myhttpd::session::http {
         _id(boost::uuids::random_generator()()) {
 
 #ifdef PERFORMANCE_LOGGING
+
         //this->_add_time_point("ses-start");
 #endif
     }
 
 #ifdef PERFORMANCE_LOGGING
+
     session::~session() {
         
         /*this->_add_time_point("ses-stop");

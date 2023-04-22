@@ -1,10 +1,9 @@
 #include <glog/logging.h>
 
 #include "resource.hpp"
-#include "filesystem_rnode.hpp"
-#include "wsgi_rnode.hpp"
-#include "const/error_page.hpp"
 #include "const_content.hpp"
+#include "../const/error_page.hpp"
+#include "host.hpp"
 
 namespace myhttpd::session::http {
 
@@ -23,72 +22,35 @@ namespace myhttpd::session::http {
         virtual ~default_rnode() = default;
     };
 
-    std::string get_suffix(std::string url) {
+    std::shared_ptr<response> resource::_make_error(unsigned code) {
 
-        auto offset = url.find_last_of('.');
-
-        if (offset == std::string::npos) {
-
-            return "default";
-
-        } else {
-
-            return url.substr(offset);
-        }
+        auto rsp = std::make_shared<response>();
+        rsp->set_status(code);
+        auto& ep = this->_error_pages[code];
+        rsp->set_content(ep);
+        rsp->insert_attribute("content-length", std::to_string(ep->get_size()));
+        rsp->insert_attribute("content-type", this->_mimedb[".html"]);
+        return rsp;
     }
 
     void resource::async_request(std::shared_ptr<request> req, request_handler handler) {
 
-        if (req->get_url() == "/") {
+        if (req->contains_attribute("host")) {
 
-            req->set_url(this->_default);
+            auto host_it = this->_hosts.find(req->find_attribute("host")->second);
+            host_it->second.async_request(req, handler);
+
+        } else {
+
+            handler(this->_make_error(404));
         }
-
-        auto url = req->get_url();
-        std::string longest_match_rnode = "<default>";
-        auto longest_match_size = 0;
-
-        for (auto& rnode : this->_rnodes) {
-
-            if (url.starts_with(rnode.first)) {
-
-                if (rnode.first.size() > longest_match_size) {
-
-                    longest_match_rnode = rnode.first;
-                    longest_match_size = rnode.first.size();
-                }
-            }
-        }
-
-        auto rnode_it = this->_rnodes.find(longest_match_rnode);
-        auto sub_url = url.substr(rnode_it->first.size(), url.size() - rnode_it->first.size());
-
-        if (longest_match_rnode != "/") {
-
-            req->set_url(sub_url);
-        }
-
-        rnode_it->second->async_request(req,
-            [req, handler, this](std::shared_ptr<response> rsp) {
-
-                if (!rsp->has_content() && rsp->get_status() >= 400) {
-
-                    rsp->set_content(this->_get_error_page(rsp->get_status()));
-                    rsp->insert_attribute("content-length", std::to_string(rsp->get_content()->get_size()));
-                    rsp->insert_attribute("content-type", this->_mimedb[".html"]);
-                }
-
-                handler(rsp);
-            }
-        );
     }
 
     void resource::config(tinyxml2::XMLElement* config) {
 
-        this->_error_pages_init();
+        this->_hosts_init(config);
+        this->_error_pages_init(config);
         this->_mimedb_init();
-        this->_rnodes_init(config->FirstChildElement("rnodes"));
-        this->_default = config->Attribute("default");
     }
 
     void resource::_mimedb_init() {
@@ -107,50 +69,22 @@ namespace myhttpd::session::http {
         }
     }
 
-    void resource::_rnodes_init(tinyxml2::XMLElement* config) {
+    void resource::_hosts_init(tinyxml2::XMLElement* config) {
 
-        this->_rnodes.insert(
-            std::pair<std::string, std::unique_ptr<rnode>>("<default>", std::make_unique<default_rnode>())
-        );
-
-        if (!config) {
-
-            LOG(INFO) << "No rnode has set";
-            return;
-        }
-
-        auto node = config->FirstChildElement();
-
+        config = config->FirstChildElement("hosts");
+        auto node = config->FirstChildElement("host");
+        
         while (node) {
 
-            std::string type = node->Name();
-
-            if (type == "filesystem") {
-                std::string vpath = node->Attribute("virtual_path");
-                std::string ppath = node->Attribute("physical_path");
-                this->_rnodes.insert(
-                    std::pair<std::string, std::unique_ptr<rnode>>(vpath, std::make_unique<filesystem_rnode>(ppath))
-                );
-                LOG(INFO) << "Filesystem resource node added, virtual path: \"" + vpath + "\", physical path: \"" + ppath + "\"";
-
-            } else if (type == "wsgi") {
-
-                std::string vpath = node->Attribute("virtual_path");
-                std::string module_path = node->Attribute("module_path");
-                this->_rnodes.insert(
-                    std::pair<std::string, std::unique_ptr<rnode>>(vpath, std::make_unique<wsgi_rnode>(module_path, vpath))
-                );
-
-            } else {
-
-                LOG(ERROR) << "Unknown rnode type: " << type;
-            }
-
+            std::string name = node->Attribute("name");
+            auto host_node = std::pair<std::string, host>(name, host(this->_error_pages, this->_mimedb));
+            host_node.second.config(node);
+            this->_hosts.insert(std::move(host_node));
             node = node->NextSiblingElement();
         }
     }
 
-    void resource::_error_pages_init() {
+    void resource::_error_pages_init(tinyxml2::XMLElement* config) {
 
         this->_error_pages.insert(
             std::pair<unsigned, std::shared_ptr<content>>(
@@ -272,38 +206,6 @@ namespace myhttpd::session::http {
                 505, std::make_shared<const_content>(page_505_html, page_505_html_size)
             )
         );
-    }
-
-    std::shared_ptr<content> resource::_get_error_page(unsigned status) {
-
-        switch (status) {
-
-        case 400: return this->_error_pages[400];
-        case 401: return this->_error_pages[401];
-        case 402: return this->_error_pages[402];
-        case 403: return this->_error_pages[403];
-        case 404: return this->_error_pages[404];
-        case 405: return this->_error_pages[405];
-        case 406: return this->_error_pages[406];
-        case 407: return this->_error_pages[407];
-        case 408: return this->_error_pages[408];
-        case 409: return this->_error_pages[409];
-        case 410: return this->_error_pages[410];
-        case 411: return this->_error_pages[411];
-        case 412: return this->_error_pages[412];
-        case 413: return this->_error_pages[413];
-        case 414: return this->_error_pages[414];
-        case 415: return this->_error_pages[415];
-        case 416: return this->_error_pages[416];
-        case 417: return this->_error_pages[417];
-        case 500: return this->_error_pages[500];
-        case 501: return this->_error_pages[501];
-        case 502: return this->_error_pages[502];
-        case 503: return this->_error_pages[503];
-        case 504: return this->_error_pages[504];
-        case 505: return this->_error_pages[505];
-        default: return this->_error_pages[500];
-        }
     }
 }
 

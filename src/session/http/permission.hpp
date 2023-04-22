@@ -1,6 +1,0 @@
-#ifndef HTTP_PERMISSION_H
-#define HTTP_PERMISSION_H
-
-
-
-#endif // HTTP_PERMISSION_H

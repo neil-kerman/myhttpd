@@ -5,7 +5,7 @@
 #include <boost/asio.hpp>
 
 #include "session/session_factory.hpp"
-#include "resource.hpp"
+#include "resource/resource.hpp"
 
 namespace myhttpd::session::http{
 

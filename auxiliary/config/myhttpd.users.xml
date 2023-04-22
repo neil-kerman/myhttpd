@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<config>
+    <roles>
+        <role name="admin"/>
+        <role name="internal" includes="admin"/>
+    </roles>
+    <users>
+        <user name="admin" password="vulkan" role="admin"/>
+        <user name="ansar" password="123456" role="internal"/>
+        <user name="max" password="123123" role="internal"/>
+    </users>
+</config>

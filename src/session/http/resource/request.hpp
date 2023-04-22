@@ -1,7 +1,7 @@
 #ifndef REQUEST_HPP
 #define REQUEST_HPP
 
-#include "message.hpp"
+#include "../transceiver/message.hpp"
 #include "network/connection.hpp"
 
 #undef DELETE

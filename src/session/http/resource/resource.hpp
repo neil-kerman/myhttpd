@@ -7,7 +7,7 @@
 #include <tinyxml2.h>
 #include <list>
 
-#include "rnode.hpp"
+#include "host.hpp"
 
 namespace myhttpd::session::http {
 
@@ -17,27 +17,26 @@ namespace myhttpd::session::http {
         typedef rnode::request_handler request_handler;
 
     private:
-        std::map<std::string ,std::unique_ptr<rnode>> _rnodes;
-
-        std::string _default;
+        std::map<std::string , host> _hosts;
 
         std::unordered_map<std::string, std::string> _mimedb = { {"default", "application/octet-stream"} };
 
         std::map<unsigned, std::shared_ptr<content>> _error_pages;
 
     private:
-        void _error_pages_init();
+        void _hosts_init(tinyxml2::XMLElement* config);
+
+        void _error_pages_init(tinyxml2::XMLElement* config);
 
         void _mimedb_init();
 
-        void _rnodes_init(tinyxml2::XMLElement* config);
-
-        std::shared_ptr<content> _get_error_page(unsigned status);
+    private:
+        std::shared_ptr<response> _make_error(unsigned code);
 
     public:
         void async_request(std::shared_ptr<request> req, request_handler handler);
 
-        void config(tinyxml2::XMLElement *config);
+        void config(tinyxml2::XMLElement* config);
     };
 }
 
