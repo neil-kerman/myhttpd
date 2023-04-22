@@ -1,5 +1,6 @@
-#include "host.hpp"
 #include <glog/logging.h>
+#include <filesystem>
+#include <list>
 
 #include "host.hpp"
 #include "../const/error_page.hpp"
@@ -17,22 +18,7 @@
 
 namespace myhttpd::session::http {
 
-    class default_rnode : public rnode {
-
-    public:
-        virtual void async_request(std::shared_ptr<request> req, request_handler handler) {
-
-            auto rsp = std::make_shared<response>();
-            rsp->set_status(404);
-        }
-
-    public:
-        default_rnode() = default;
-
-        virtual ~default_rnode() = default;
-    };
-
-    std::string get_suffix(std::string url) {
+    static std::string get_suffix(std::string url) {
 
         auto offset = url.find_last_of('.');
 
@@ -59,18 +45,46 @@ namespace myhttpd::session::http {
 
     void host::async_request(std::shared_ptr<request> req, request_handler handler) {
 
+        auto url = req->get_url();
+
         if (req->get_url() == "/") {
 
-            req->set_url(this->_default);
+            url = this->_default;
+
+        } else {
+
+            std::filesystem::path path(url);
+
+            std::size_t path_deepth = 0;
+
+            for (auto &name: path) {
+                
+                if (name.filename() == "..") {
+
+                    path_deepth--;
+
+                } else {
+
+                    path_deepth++;
+                }
+
+                if (path_deepth < 0) {
+
+                    handler(this->_make_error(404));
+                    return;
+                }
+            }
         }
 
-        auto url = req->get_url();
         std::string longest_match_rnode = "<default>";
         auto longest_match_size = 0;
+        auto match_flag = false;
 
         for (auto& rnode : this->_rnodes) {
 
             if (url.starts_with(rnode.first)) {
+
+                match_flag = true;
 
                 if (rnode.first.size() > longest_match_size) {
 
@@ -80,19 +94,36 @@ namespace myhttpd::session::http {
             }
         }
 
+        if (!match_flag) {
+
+            handler(this->_make_error(404));
+            return;
+        }
+
         auto rnode_it = this->_rnodes.find(longest_match_rnode);
         auto sub_url = url.substr(rnode_it->first.size(), url.size() - rnode_it->first.size());
 
-        if (longest_match_rnode != "/") {
+        /*if (longest_match_rnode != "/") {
 
             req->set_url(sub_url);
-        }
+        }*/
+        req->set_url(sub_url);
 
         rnode_it->second->async_request(req, 
 
             [handler, this](std::shared_ptr<response> rsp) {
 
                 rsp->insert_attribute("host", this->_name);
+                auto status = rsp->get_status();
+
+                if (status >= 400) {
+
+                    auto& ep = this->_error_pages[status];
+                    rsp->set_content(ep);
+                    rsp->insert_attribute("content-length", std::to_string(ep->get_size()));
+                    rsp->insert_attribute("content-type", this->_mimedb[".html"]);
+                }
+
                 handler(rsp);
             }
         );
@@ -108,10 +139,6 @@ namespace myhttpd::session::http {
     
 
     void host::_rnodes_init(tinyxml2::XMLElement* config) {
-
-        this->_rnodes.insert(
-            std::pair<std::string, std::unique_ptr<rnode>>("<default>", std::make_unique<default_rnode>())
-        );
 
         if (!config) {
 
@@ -164,5 +191,6 @@ namespace myhttpd::session::http {
         std::map<unsigned, std::shared_ptr<content>> error_pages, 
         std::unordered_map<std::string, std::string>& mimedb) :
         _error_pages(error_pages), _mimedb(mimedb) {
+
     }
 }

@@ -48,9 +48,9 @@ namespace myhttpd::session::http {
 
     void resource::config(tinyxml2::XMLElement* config) {
 
-        this->_hosts_init(config);
         this->_error_pages_init(config);
         this->_mimedb_init();
+        this->_hosts_init(config);
     }
 
     void resource::_mimedb_init() {
