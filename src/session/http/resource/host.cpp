@@ -47,7 +47,7 @@ namespace myhttpd::session::http {
 
         auto url = req->get_url();
 
-        if (req->get_url() == "/") {
+        if (url == "/") {
 
             url = this->_default;
 
@@ -103,11 +103,14 @@ namespace myhttpd::session::http {
         auto rnode_it = this->_rnodes.find(longest_match_rnode);
         auto sub_url = url.substr(rnode_it->first.size(), url.size() - rnode_it->first.size());
 
-        /*if (longest_match_rnode != "/") {
+        if(longest_match_rnode != "/") {
 
             req->set_url(sub_url);
-        }*/
-        req->set_url(sub_url);
+
+        } else {
+
+            req->set_url(url);
+        }
 
         rnode_it->second->async_request(req, 
 

@@ -18,12 +18,21 @@ namespace myhttpd::session::http {
 
         boost::interprocess::mapped_region _region;
 
+        std::size_t _range_begin;
+
+        std::size_t _range_end;
+
     public:
         virtual std::size_t get_size();
 
         virtual const void* get_data();
 
         virtual void async_wait_ready(wait_handler handler);
+
+    public:
+        void set_range_begin(std::size_t index);
+
+        void set_range_end(std::size_t index);
 
     public:
         filesystem_content() = delete;

@@ -21,8 +21,38 @@ namespace myhttpd::session::http {
 
 		if (this->_exists(req->get_url())) {
 
-			rsp->set_status(200);
-			rsp->set_content(std::make_shared<filesystem_content>(this->_path + req->get_url()));
+			auto content = std::make_shared<filesystem_content>(this->_path + req->get_url());
+			rsp->set_content(content);
+			rsp->insert_attribute("accept-ranges", "bytes");
+
+			if (req->contains_attribute("range")) {
+
+				auto value = req->find_attribute("range")->second;
+				auto offset = value.find('=') + 1;
+				auto end_offset = value.find('-', offset);
+				auto size = end_offset - offset;
+				auto begin_bytes_str = value.substr(offset, size);
+				auto begin_bytes = std::stoll(begin_bytes_str);
+				content->set_range_begin(begin_bytes);
+
+
+				if (end_offset == value.size() - 1) {
+
+					offset = end_offset + 1;
+					end_offset = value.find('\r', offset);
+					size = end_offset - offset;
+					auto end_bytes_str = value.substr(offset, size);
+					auto end_bytes = std::stoll(end_bytes_str);
+					content->set_range_end(end_bytes);
+				}
+
+				rsp->set_status(206);
+				rsp->insert_attribute("content-range", value + "/" + std::to_string(content->get_size()));
+
+			} else {
+
+				rsp->set_status(200);
+			}
 
 		} else {
 
@@ -46,6 +76,7 @@ namespace myhttpd::session::http {
 
 	void http::filesystem_rnode::_do_post(std::shared_ptr<request> req, request_handler handler) {
 
+		this->_do_get(req, handler);
 	}
 
 	void http::filesystem_rnode::_do_put(std::shared_ptr<request> req, request_handler handler) {
