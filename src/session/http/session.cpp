@@ -7,20 +7,21 @@
 #include <boost/format.hpp>
 
 #include "session.hpp"
+#include "utils.hpp"
 
 namespace myhttpd::session::http {
 
     void session::_wait_request_handler(const asio_error_code& error) {
 
-#ifdef PERFORMANCE_LOGGING
-        this->_add_time_point("wait_t1");
-#endif
         this->_transceiver_wait_busy = false;
         this->_timer.cancel();
 
         if (!error) {
 
-            this->_receive();
+            if (!this->_terminating_flag) {
+
+                this->_receive();
+            }
 
         } else {
 
@@ -33,73 +34,15 @@ namespace myhttpd::session::http {
         this->_terminate();
     }
 
-    void session::_receive_handler(const asio_error_code& error, std::shared_ptr<message> msg) {
-
-#ifdef PERFORMANCE_LOGGING
-
-        this->_add_time_point("receive_t1");
-#endif
+    void session::_receive_handler(const asio_error_code& error, std::unique_ptr<message> msg) {
 
         this->_transceiver_receive_busy = false;
 
         if (!error) {
 
-            this->_do_pre_process(msg);
+            if (!this->_terminating_flag) {
 
-        } else {
-
-            this->_terminate();
-        }
-    }
-
-    void session::_request_resource_handler(std::shared_ptr<response> rsp) {
-
-#ifdef PERFORMANCE_LOGGING
-        this->_add_time_point("request_resource_t1");
-#endif
-        this->_do_post_process(rsp);
-    }
-
-    void session::_send_handler(const asio_error_code& error) {
-
-#ifdef PERFORMANCE_LOGGING
-
-        this->_add_time_point("send_t1");
-        auto t0 = this->_time_points["timeout_t0"];
-        auto t1 = this->_time_points["timeout_t1"];
-        std::chrono::duration<double, std::milli> dur = t1 - t0;
-        LOG(INFO) << "timeout time spendt: " << dur.count() << "ms";
-        t0 = this->_time_points["wait_t0"];
-        t1 = this->_time_points["wait_t1"];
-        dur = t1 - t0;
-        LOG(INFO) << "wait time spendt: " << dur.count() << "ms";
-        t0 = this->_time_points["receive_t0"];
-        t1 = this->_time_points["receive_t1"];
-        dur = t1 - t0;
-        LOG(INFO) << "receive time spendt: " << dur.count() << "ms";
-        t0 = this->_time_points["request_resource_t0"];
-        t1 = this->_time_points["request_resource_t1"];
-        dur = t1 - t0;
-        LOG(INFO) << "request resource time spendt: " << dur.count() << "ms";
-        t0 = this->_time_points["send_t0"];
-        t1 = this->_time_points["send_t1"];
-        dur = t1 - t0;
-        LOG(INFO) << "send time spendt: " << dur.count() << "ms";
-        this->_time_points.clear();
-#endif
-
-        this->_transceiver_send_busy = false;
-
-        if (!error) {
-
-            if (this->_keep_alive) {
-
-                this->_set_timer();
-                this->_wait_request();
-
-            } else {
-
-                this->_terminate();
+                this->_do_pre_process(std::move(msg));
             }
 
         } else {
@@ -108,12 +51,37 @@ namespace myhttpd::session::http {
         }
     }
 
+    void session::_request_resource_handler(std::unique_ptr<response> rsp) {
+
+        this->_do_post_process(std::move(rsp));
+    }
+
+    void session::_send_handler(const asio_error_code& error) {
+
+        this->_transceiver_send_busy = false;
+
+        if (!error) {
+
+            if (!this->_terminating_flag) {
+
+                if (this->_keep_alive) {
+
+                    this->_set_timer();
+                    this->_wait_request();
+
+                } else {
+
+                    this->_terminate();
+                }
+            }
+            
+        } else {
+
+            this->_terminate();
+        }
+    }
+
     void session::_timeout_handler(const asio_error_code& error) {
-
-#ifdef PERFORMANCE_LOGGING
-
-        this->_add_time_point("timeout_t1");
-#endif
 
         this->_timer_busy = false;
 
@@ -127,22 +95,12 @@ namespace myhttpd::session::http {
 
     void session::_set_timer() {
 
-#ifdef PERFORMANCE_LOGGING
-
-        this->_add_time_point("timeout_t0");
-#endif
-
         this->_timer_busy = true;
         this->_timer.expires_from_now(boost::posix_time::seconds(10));
         this->_timer.async_wait(std::bind(&session::_timeout_handler, this, std::placeholders::_1));
     }
 
     void session::_wait_request() {
-
-#ifdef PERFORMANCE_LOGGING
-
-        this->_add_time_point("wait_t0");
-#endif
 
         this->_transceiver_wait_busy = true;
         this->_transceiver.async_wait(socket_wait_type::wait_read,
@@ -157,19 +115,14 @@ namespace myhttpd::session::http {
 
     void session::_receive() {
 
-#ifdef PERFORMANCE_LOGGING
-
-        this->_add_time_point("receive_t0");
-#endif
-
         this->_transceiver_receive_busy = true;
         this->_transceiver.async_receive(
             std::bind(&session::_receive_handler, this, std::placeholders::_1, std::placeholders::_2));
     }
 
-    void session::_do_pre_process(std::shared_ptr<message> msg) {
+    void session::_do_pre_process(std::unique_ptr<message> msg) {
 
-        auto req = std::make_shared<request>(std::move(*msg), this->_conn);
+        auto req = std::make_unique<request>(std::move(*msg), this->_conn);
 
         if (req->contains_attribute("connection")) {
 
@@ -179,42 +132,21 @@ namespace myhttpd::session::http {
             }
         }
 
-        this->_request_resource(req);
+        this->_request_resource(std::move(req));
     }
 
-    void session::_request_resource(std::shared_ptr<request> req) {
-
-#ifdef PERFORMANCE_LOGGING
-
-        this->_add_time_point("request_resource_t0");
-#endif
+    void session::_request_resource(std::unique_ptr<request> req) {
 
         this->_resource.async_request(
-            req, 
+            std::move(req), 
             std::bind(&session::_request_resource_handler, this, std::placeholders::_1)
         );
     }
 
-    void session::_do_post_process(std::shared_ptr<response> rsp) {
+    void session::_do_post_process(std::unique_ptr<response> rsp) {
 
         boost::posix_time::ptime utc_datetime = boost::posix_time::second_clock::universal_time();
-        auto date = utc_datetime.date();
-        std::string day_of_week_str = date.day_of_week().as_short_string();
-        auto days_of_month = date.day().as_number();
-        std::string month_str = date.month().as_short_string();
-        auto years = date.year();
-        auto hours = utc_datetime.time_of_day().hours();
-        auto minuts = utc_datetime.time_of_day().minutes();
-        auto seconds = utc_datetime.time_of_day().seconds();
-        std::string datetime = boost::str(boost::format("%s, %2d %s %d %02d:%02d:%02d GMT")
-            % day_of_week_str
-            % days_of_month
-            % month_str
-            % years
-            % hours
-            % minuts
-            % seconds
-        );
+        std::string datetime = utils::ptime_to_http_date(utc_datetime);
         rsp->insert_attribute("date", datetime);
         rsp->insert_attribute("server", "MyHttpd 0.1.0");
 
@@ -227,43 +159,26 @@ namespace myhttpd::session::http {
             rsp->insert_attribute("connection", "close");
         }
 
-        this->_send(rsp);
+        this->_send(std::move(rsp));
     }
 
-    void session::_send(std::shared_ptr<response> rsp) {
-
-#ifdef PERFORMANCE_LOGGING
-
-        this->_add_time_point("send_t0");
-#endif
+    void session::_send(std::unique_ptr<response> rsp) {
 
         this->_transceiver_send_busy = true;
         this->_transceiver.async_send(
-            rsp, 
+            std::move(rsp), 
             std::bind(&session::_send_handler, this, std::placeholders::_1)
         );
     }
 
     void session::_terminate() {
 
-        if (!this->_transceiver_receive_busy && !this->_transceiver_send_busy &&
-            !this->_transceiver_wait_busy && !this->_timer_busy) {
-
-#ifdef PERFORMANCE_LOGGING
-
-            auto t0 = std::chrono::high_resolution_clock::now();
-#endif
+        if (!(this->_transceiver_receive_busy || this->_transceiver_send_busy ||
+            this->_transceiver_wait_busy || this->_timer_busy)) {
 
             this->_server.request_termination(*this);
 
-#ifdef PERFORMANCE_LOGGING
-
-            auto t1 = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double, std::milli> dur = t1 - t0;
-            LOG(INFO) << "session delete time spendt: " << dur.count() << "ms";
-#endif
-
-        } else {
+        } else if (!this->_terminating_flag){
 
             if (this->_transceiver_receive_busy || this->_transceiver_send_busy ||
                 this->_transceiver_wait_busy) {
@@ -276,14 +191,14 @@ namespace myhttpd::session::http {
                 this->_timer.cancel();
             }
 
-            this->_terminating_required = true;
+            this->_terminating_flag = true;
         }
     }
     
     void session::start() {
 
         this->_set_timer();
-        //this->_wait_error();
+        this->_wait_error();
         this->_wait_request();
     }
 
@@ -304,21 +219,5 @@ namespace myhttpd::session::http {
         _server(ser),
         _id(boost::uuids::random_generator()()) {
 
-#ifdef PERFORMANCE_LOGGING
-
-        //this->_add_time_point("ses-start");
-#endif
     }
-
-#ifdef PERFORMANCE_LOGGING
-
-    session::~session() {
-        
-        /*this->_add_time_point("ses-stop");
-        auto t0 = this->_time_points["ses-start"];
-        auto t1 = this->_time_points["ses-stop"];
-        std::chrono::duration<double, std::milli> dur = t1 - t0;
-        LOG(INFO) << "Session time sepent: " << dur.count() << "ms";*/
-    }
-#endif
 }

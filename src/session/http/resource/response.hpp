@@ -10,7 +10,9 @@ namespace myhttpd::session::http {
     private:
         std::string _version = "HTTP/1.1";
 
-        unsigned _status;
+        unsigned _status = 500;
+
+        std::unique_ptr<request> _request;
 
     private:
         static const std::string& _get_status_meaning(unsigned status) {
@@ -138,6 +140,11 @@ namespace myhttpd::session::http {
             this->_status = status;
         }
 
+        inline request& get_request() {
+
+            return *(this->_request);
+        }
+
     public:
         virtual std::string get_title() {
 
@@ -156,12 +163,8 @@ namespace myhttpd::session::http {
         }
 
     public:
-        response() = default;
+        response(std::unique_ptr<request> req): _request(std::move(req)) {
 
-        response(message&& msg): 
-            message(std::move(msg)) {
-
-            this->_extract_title();
         }
 
         virtual ~response() = default;

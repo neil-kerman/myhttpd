@@ -156,7 +156,7 @@ namespace myhttpd::session::http {
         }
     }
 
-    void wsgi_rnode::async_request(std::shared_ptr<request> req, request_handler handler) {
+    void wsgi_rnode::async_request(std::unique_ptr<request> req, request_handler handler) {
 
         if (req->has_content()) {
 

@@ -16,8 +16,6 @@ namespace myhttpd {
 
         auto acs_cfg = config->FirstChildElement("acceptors");
         auto ac_cfg = acs_cfg->FirstChildElement();
-        //The memory of XMLElement objects are managed by the XMLDocument object which created themselves,
-        //Thus no need to delete it in this scope.
 
         while (ac_cfg) {
 

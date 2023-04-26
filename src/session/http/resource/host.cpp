@@ -32,9 +32,9 @@ namespace myhttpd::session::http {
         }
     }
 
-    std::shared_ptr<response> host::_make_error(unsigned code) {
+    std::unique_ptr<response> host::_make_error(unsigned code, std::unique_ptr<request> req) {
 
-        auto rsp = std::make_shared<response>();
+        auto rsp = std::make_unique<response>(std::move(req));
         rsp->set_status(code);
         auto& ep = this->_error_pages[code];
         rsp->set_content(ep);
@@ -43,7 +43,7 @@ namespace myhttpd::session::http {
         return rsp;
     }
 
-    void host::async_request(std::shared_ptr<request> req, request_handler handler) {
+    void host::async_request(std::unique_ptr<request> req, request_handler handler) {
 
         auto url = req->get_url();
 
@@ -70,7 +70,7 @@ namespace myhttpd::session::http {
 
                 if (path_deepth < 0) {
 
-                    handler(this->_make_error(404));
+                    handler(this->_make_error(404, std::move(req)));
                     return;
                 }
             }
@@ -96,7 +96,7 @@ namespace myhttpd::session::http {
 
         if (!match_flag) {
 
-            handler(this->_make_error(404));
+            handler(this->_make_error(404, std::move(req)));
             return;
         }
 
@@ -112,9 +112,9 @@ namespace myhttpd::session::http {
             req->set_url(url);
         }
 
-        rnode_it->second->async_request(req, 
+        rnode_it->second->async_request(std::move(req), 
 
-            [handler, this](std::shared_ptr<response> rsp) {
+            [handler, this](std::unique_ptr<response> rsp) {
 
                 rsp->insert_attribute("host", this->_name);
                 auto status = rsp->get_status();
@@ -123,11 +123,28 @@ namespace myhttpd::session::http {
 
                     auto& ep = this->_error_pages[status];
                     rsp->set_content(ep);
-                    rsp->insert_attribute("content-length", std::to_string(ep->get_size()));
                     rsp->insert_attribute("content-type", this->_mimedb[".html"]);
+
+                } else {
+
+                    auto suffix = get_suffix(rsp->get_request().get_url());
+                    rsp->insert_attribute("content-type", this->_mimedb[suffix]);
                 }
 
-                handler(rsp);
+                if (rsp->has_content()) {
+
+                    auto attr_cl = rsp->find_attribute("content-lenth");
+
+                    if (attr_cl != rsp->end_attribute()) {
+
+                        rsp->erase_attribute(attr_cl);
+                    }
+
+                    auto content = rsp->get_content();
+                    rsp->insert_attribute("content-length", std::to_string(content->get_size()));
+                }
+
+                handler(std::move(rsp));
             }
         );
     }

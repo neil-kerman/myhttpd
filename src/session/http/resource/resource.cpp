@@ -10,10 +10,11 @@ namespace myhttpd::session::http {
     class default_rnode : public rnode {
 
     public:
-        virtual void async_request(std::shared_ptr<request> req, request_handler handler) {
+        virtual void async_request(std::unique_ptr<request> req, request_handler handler) {
 
-            auto rsp = std::make_shared<response>();
+            auto rsp = std::make_unique<response>(std::move(req));
             rsp->set_status(404);
+            handler(std::move(rsp));
         }
 
     public:
@@ -22,9 +23,9 @@ namespace myhttpd::session::http {
         virtual ~default_rnode() = default;
     };
 
-    std::shared_ptr<response> resource::_make_error(unsigned code) {
+    std::unique_ptr<response> resource::_make_error(unsigned code, std::unique_ptr<request> req) {
 
-        auto rsp = std::make_shared<response>();
+        auto rsp = std::make_unique<response>(std::move(req));
         rsp->set_status(code);
         auto& ep = this->_error_pages[code];
         rsp->set_content(ep);
@@ -33,16 +34,24 @@ namespace myhttpd::session::http {
         return rsp;
     }
 
-    void resource::async_request(std::shared_ptr<request> req, request_handler handler) {
+    void resource::async_request(std::unique_ptr<request> req, request_handler handler) {
 
         if (req->contains_attribute("host")) {
 
             auto host_it = this->_hosts.find(req->find_attribute("host")->second);
-            host_it->second.async_request(req, handler);
+
+            if (host_it != this->_hosts.end()) {
+
+                host_it->second.async_request(std::move(req), handler);
+
+            } else {
+
+                handler(this->_make_error(404, std::move(req)));
+            }
 
         } else {
 
-            handler(this->_make_error(404));
+            handler(this->_make_error(404, std::move(req)));
         }
     }
 

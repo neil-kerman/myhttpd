@@ -39,11 +39,13 @@ namespace myhttpd::session::http {
 
         std::shared_ptr<boost::python::api::object_attribute> _application = nullptr;
 
+
+
     private:
         void _call_application(std::shared_ptr<request> req, request_handler handler);
 
     public:
-        virtual void async_request(std::shared_ptr<request> req, request_handler handler);
+        virtual void async_request(std::unique_ptr<request> req, request_handler handler);
 
     public:
         wsgi_rnode(std::string module_path, std::string virtual_path);

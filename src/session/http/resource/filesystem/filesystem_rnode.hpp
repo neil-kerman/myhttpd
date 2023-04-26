@@ -16,22 +16,22 @@ namespace myhttpd::session::http {
     private:
         bool _exists(std::string url);
 
-        void _do_option(std::shared_ptr<request> req, request_handler handler);
+        void _do_option(std::unique_ptr<request> req, request_handler handler);
 
-        void _do_get(std::shared_ptr<request> req, request_handler handler);
+        void _do_get(std::unique_ptr<request> req, request_handler handler);
 
-        void _do_head(std::shared_ptr<request> req, request_handler handler);
+        void _do_head(std::unique_ptr<request> req, request_handler handler);
 
-        void _do_post(std::shared_ptr<request> req, request_handler handler);
+        void _do_post(std::unique_ptr<request> req, request_handler handler);
 
-        void _do_put(std::shared_ptr<request> req, request_handler handler);
+        void _do_put(std::unique_ptr<request> req, request_handler handler);
 
-        void _do_delete(std::shared_ptr<request> req, request_handler handler);
+        void _do_delete(std::unique_ptr<request> req, request_handler handler);
 
-        void _do_trace(std::shared_ptr<request> req, request_handler handler);
+        void _do_trace(std::unique_ptr<request> req, request_handler handler);
 
     public:
-        virtual void async_request(std::shared_ptr<request> req, request_handler handler);
+        virtual void async_request(std::unique_ptr<request> req, request_handler handler);
 
     public:
         filesystem_rnode(std::string path);

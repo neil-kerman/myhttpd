@@ -55,7 +55,7 @@ namespace myhttpd::session::http {
 
         bool _timer_busy = false;
 
-        bool _terminating_required = false;
+        bool _terminating_flag = false;
 
     private:
         void _timeout_handler(const asio_error_code& error);
@@ -64,11 +64,11 @@ namespace myhttpd::session::http {
 
         void _wait_error_handler(const asio_error_code& error);
 
-        void _receive_handler(const asio_error_code& error, std::shared_ptr<message> request);
+        void _receive_handler(const asio_error_code& error, std::unique_ptr<message> request);
 
         void _send_handler(const asio_error_code& error);
 
-        void _request_resource_handler(std::shared_ptr<response> rsp);
+        void _request_resource_handler(std::unique_ptr<response> rsp);
     
     private:
         void _set_timer();
@@ -79,13 +79,13 @@ namespace myhttpd::session::http {
 
         void _receive();
 
-        void _do_pre_process(std::shared_ptr<message> msg);
+        void _do_pre_process(std::unique_ptr<message> msg);
 
-        void _request_resource(std::shared_ptr<request> req);
+        void _request_resource(std::unique_ptr<request> req);
 
-        void _do_post_process(std::shared_ptr<response> rsp);
+        void _do_post_process(std::unique_ptr<response> rsp);
 
-        void _send(std::shared_ptr<response> rsp);
+        void _send(std::unique_ptr<response> rsp);
 
         void _terminate();
 

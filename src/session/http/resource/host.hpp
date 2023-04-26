@@ -36,10 +36,10 @@ namespace myhttpd::session::http {
         void _rnodes_init(tinyxml2::XMLElement* config);
 
     private:
-        std::shared_ptr<response> _make_error(unsigned code);
+        std::unique_ptr<response> _make_error(unsigned code, std::unique_ptr<request> req);
 
     public:
-        void async_request(std::shared_ptr<request> req, request_handler handler);
+        void async_request(std::unique_ptr<request> req, request_handler handler);
 
         void config(tinyxml2::XMLElement* config);
 

@@ -37,26 +37,6 @@ namespace myhttpd::session::http {
             return result;
         }
 
-        inline void _extract(const std::string raw_header) {
-
-            auto& raw = raw_header;
-            auto title_size = raw.find('\r', 0);
-            this->set_title(std::string(raw_header.substr(0, title_size)));
-            auto offset = title_size + 2;
-
-            while (raw[offset] != '\r') {
-
-                auto name_size = raw.find(':', offset) - offset;
-                std::string name = this->_to_lower_case(raw.substr(offset, name_size));
-                offset += name_size + 1;
-                offset = raw.find_first_not_of(' ', offset);
-                auto value_size = raw.find('\r', offset) - offset;
-                std::string value(raw.data() + offset, value_size);
-                this->insert_attribute(std::move(name), std::move(value));
-                offset += value_size + 2;
-            }
-        }
-
     public:
         static inline bool assert_attribute(std::multimap<std::string, std::string>::iterator attr, std::string value) {
 
@@ -123,18 +103,6 @@ namespace myhttpd::session::http {
         message(): 
             _content(nullptr) {
 
-        }
-
-        message(const std::string header): 
-            _content(nullptr) {
-
-            this->_extract(header);
-        }
-
-        message(const std::string header, std::shared_ptr<content> content): 
-            _content(content) {
-
-            this->_extract(header);
         }
         
         message(message&& msg) noexcept: 

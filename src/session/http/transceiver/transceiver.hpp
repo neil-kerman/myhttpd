@@ -23,11 +23,7 @@ namespace myhttpd::session::http {
 
         typedef std::function<void(const asio_error_code& error_code)> wait_handler;
 
-#ifdef __UNIT_TEST__
-    public:
-#else
     private:
-#endif
 
         class header_detecter {
 
@@ -40,31 +36,29 @@ namespace myhttpd::session::http {
             void reset();
         };
 
-#ifdef __UNIT_TEST__
-    public:
-#else
     private:
-#endif
 
         std::unique_ptr<myhttpd::network::connection> &_conn;
 
         linked_buffer<1024> _header_receive_buffer;
 
         header_detecter _match;
+        
+        send_handler _send_handler;
 
         receive_handler _receive_handler;
 
-#ifdef __UNIT_TEST__
-    public:
-#else
+        std::unique_ptr<message> _sending_msg;
+
     private:
-#endif
 
         const std::string _take_header(const std::size_t size);
 
         static std::size_t _get_content_length(const std::unique_ptr<message> &msg);
 
-        static std::string _to_string_header(const std::shared_ptr<message> &msg);
+        static std::shared_ptr<std::vector<char>> _encode_header(message& msg);
+
+        static std::unique_ptr<message> _decode_header(std::string &buf);
 
     private:
         void _header_receive_handler(const asio_error_code& error, std::size_t bytes_transferred);
@@ -72,7 +66,7 @@ namespace myhttpd::session::http {
     public:
         void async_receive(receive_handler handler);
 
-        void async_send(std::shared_ptr<message> msg, send_handler handler);
+        void async_send(std::unique_ptr<message> msg, send_handler handler);
 
         void async_wait(socket_wait_type type, wait_handler handler);
 

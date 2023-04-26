@@ -1,4 +1,5 @@
 #include "transceiver.hpp"
+#include "transceiver.hpp"
 #include <string>
 #include <functional>
 #include <vector>
@@ -102,7 +103,7 @@ namespace myhttpd::session::http {
                     /* Copy header */
                     this->_header_receive_buffer.commit(bytes_transferred);
                     std::string header = this->_take_header(header_size);
-                    auto msg = std::make_unique<message>(std::move(header));
+                    auto msg = this->_decode_header(header);
                     auto content_length = this->_get_content_length(msg);
                     /* Check if there are content of message */
 
@@ -200,6 +201,7 @@ namespace myhttpd::session::http {
         if (cl_attr != msg->end_attribute()) {
 
             return (std::size_t)std::stoll(cl_attr->second);
+
         } else {
 
             return 0;
@@ -221,27 +223,65 @@ namespace myhttpd::session::http {
         return result;
     }
 
-    std::string transceiver::_to_string_header(const std::shared_ptr<message>& msg) {
+    std::shared_ptr<std::vector<char>> transceiver::_encode_header(message &msg) {
 
-        auto title = msg->get_title();
+        auto title = msg.get_title();
         std::size_t size = title.size() + 4;
 
-        for (auto attr = msg->begin_attribute(); attr != msg->end_attribute(); attr++) {
+        for (auto attr = msg.begin_attribute(); attr != msg.end_attribute(); attr++) {
 
             size += attr->first.size() + attr->second.size() + 4;
         }
 
-        std::string buf;
-        buf.reserve(size);
-        buf.append(title).append("\r\n");
+        auto buf = std::make_shared<std::vector<char>>();
+        buf->resize(size);
+        char* ptr = buf->data();
+        std::memcpy(ptr, title.data(), title.size());
+        ptr += title.size();
+        ptr[0] = '\r';
+        ptr[1] = '\n';
+        ptr += 2;
 
-        for (auto attr = msg->begin_attribute(); attr != msg->end_attribute(); attr++) {
+        for (auto attr = msg.begin_attribute(); attr != msg.end_attribute(); attr++) {
 
-            buf.append(header_key_formalize(attr->first)).append(": ").append(attr->second).append("\r\n");
+            std::string name = header_key_formalize(attr->first);
+            std::string& value = attr->second;
+            std::memcpy(ptr, name.data(), name.size());
+            ptr += name.size();
+            ptr[0] = ':';
+            ptr += 1;
+            std::memcpy(ptr, value.data(), value.size());
+            ptr += value.size();
+            ptr[0] = '\r';
+            ptr[1] = '\n';
+            ptr += 2;
         }
 
-        buf.append("\r\n");
+        ptr[0] = '\r';
+        ptr[1] = '\n';
         return buf;
+    }
+
+    std::unique_ptr<message> transceiver::_decode_header(std::string &buf) {
+        
+        auto msg = std::make_unique<message>();
+        auto title_size = buf.find('\r', 0);
+        msg->set_title(std::string(buf.substr(0, title_size)));
+        auto offset = title_size + 2;
+
+        while (buf[offset] != '\r') {
+
+            auto name_size = buf.find(':', offset) - offset;
+            std::string name = buf.substr(offset, name_size);
+            offset += name_size + 1;
+            offset = buf.find_first_not_of(' ', offset);
+            auto value_size = buf.find('\r', offset) - offset;
+            std::string value(buf.data() + offset, value_size);
+            msg->insert_attribute(std::move(name), std::move(value));
+            offset += value_size + 2;
+        }
+
+        return msg;
     }
 
     void transceiver::async_receive(receive_handler handler) {
@@ -264,7 +304,7 @@ namespace myhttpd::session::http {
 
                         loop_flag = false;
                         std::string header = this->_take_header(match_ptr + 1);
-                        auto msg = std::make_unique<message>(std::move(header));
+                        auto msg = this->_decode_header(header);
                         auto content_length = _get_content_length(msg);
 
                         if (content_length != 0) {
@@ -291,25 +331,27 @@ namespace myhttpd::session::http {
         );
     }
 
-    void transceiver::async_send(std::shared_ptr<message> msg, send_handler handler) {
+    void transceiver::async_send(std::unique_ptr<message> msg, send_handler handler) {
 
-        if (msg->find_attribute("content-length") == msg->end_attribute() && msg->has_content()) {
-
-            msg->insert_attribute("content-length", std::to_string(msg->get_content()->get_size()));
-        }
-
-        auto header = this->_to_string_header(msg);
-        this->_conn->async_send({header.data(), header.size()},
-            [msg, &conn = this->_conn, handler, header](const asio_error_code& error, std::size_t bytes_transferred) {
+        this->_sending_msg.release();
+        this->_sending_msg = std::move(msg);
+        auto encoded_header = this->_encode_header(*(this->_sending_msg));
+        
+        this->_conn->async_send({ encoded_header->data(), encoded_header->size()},
+            [this, handler, encoded_header]
+            (const asio_error_code& error, std::size_t bytes_transferred) {
 
                 if (!error) {
 
-                    if (msg->has_content()) {
+                    if (this->_sending_msg->has_content()) {
 
-                        msg->get_content()->async_wait_ready(
-                            [msg, &conn, handler](const asio_error_code& error, network::connection::const_buffer buf) {
-                                conn->async_send(buf,
-                                    [msg, handler](const asio_error_code& error, std::size_t bytes_transferred) {
+                        this->_sending_msg->get_content()->async_wait_ready(
+                            [this, handler](const asio_error_code& error, network::connection::const_buffer buf) {
+
+                                this->_conn->async_send(buf,
+                                    [this, handler](const asio_error_code& error, std::size_t bytes_transferred) {
+
+                                        this->_sending_msg.release();
                                         handler(error);
                                     }
                                 );
