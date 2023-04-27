@@ -339,6 +339,7 @@ namespace myhttpd::session::http {
         
         this->_conn->async_send({ encoded_header->data(), encoded_header->size()},
             [this, handler, encoded_header]
+
             (const asio_error_code& error, std::size_t bytes_transferred) {
 
                 if (!error) {
@@ -346,9 +347,11 @@ namespace myhttpd::session::http {
                     if (this->_sending_msg->has_content()) {
 
                         this->_sending_msg->get_content()->async_wait_ready(
+
                             [this, handler](const asio_error_code& error, network::connection::const_buffer buf) {
 
                                 this->_conn->async_send(buf,
+
                                     [this, handler](const asio_error_code& error, std::size_t bytes_transferred) {
 
                                         this->_sending_msg.release();

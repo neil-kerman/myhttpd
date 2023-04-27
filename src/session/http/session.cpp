@@ -29,11 +29,6 @@ namespace myhttpd::session::http {
         }
     }
 
-    void session::_wait_error_handler(const asio_error_code& error) {
-
-        this->_terminate();
-    }
-
     void session::_receive_handler(const asio_error_code& error, std::unique_ptr<message> msg) {
 
         this->_transceiver_receive_busy = false;
@@ -105,12 +100,6 @@ namespace myhttpd::session::http {
         this->_transceiver_wait_busy = true;
         this->_transceiver.async_wait(socket_wait_type::wait_read,
             std::bind(&session::_wait_request_handler, this, std::placeholders::_1));
-    }
-
-    void session::_wait_error() {
-
-       this->_transceiver.async_wait(socket_wait_type::wait_error, 
-           std::bind(&session::_wait_error_handler, this, std::placeholders::_1));
     }
 
     void session::_receive() {
@@ -198,7 +187,6 @@ namespace myhttpd::session::http {
     void session::start() {
 
         this->_set_timer();
-        this->_wait_error();
         this->_wait_request();
     }
 

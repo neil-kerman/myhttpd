@@ -2,6 +2,7 @@
 #include <glog/logging.h>
 #include <gflags/gflags.h>
 #include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 #include "server.hpp"
 #include "network/acceptor_factory.hpp"
@@ -41,11 +42,16 @@ namespace myhttpd {
         ses->start();
         auto id = ses->get_id();
         this->_sessions.insert(std::pair<boost::uuids::uuid, std::shared_ptr<session::session>>(id, std::move(ses)));
+        DLOG(INFO) << "new session created, id: " << boost::uuids::to_string(id);
+        DLOG(INFO) << "session counter: " << this->_sessions.size();
     }
 
     void server::request_termination(session::session& sender) {
 
-        this->_sessions.erase(sender.get_id());
+        auto id = sender.get_id();
+        this->_sessions.erase(id);
+        DLOG(INFO) << "a session terminated, id: " << boost::uuids::to_string(id);
+        DLOG(INFO) << "session counter: " << this->_sessions.size();
     }
 
     void server::event_loop() {

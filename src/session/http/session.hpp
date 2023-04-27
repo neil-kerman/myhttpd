@@ -62,8 +62,6 @@ namespace myhttpd::session::http {
 
         void _wait_request_handler(const asio_error_code &error);
 
-        void _wait_error_handler(const asio_error_code& error);
-
         void _receive_handler(const asio_error_code& error, std::unique_ptr<message> request);
 
         void _send_handler(const asio_error_code& error);
@@ -74,8 +72,6 @@ namespace myhttpd::session::http {
         void _set_timer();
 
         void _wait_request();
-
-        void _wait_error();
 
         void _receive();
 
