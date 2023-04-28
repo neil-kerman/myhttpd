@@ -17,7 +17,7 @@ namespace myhttpd::session::http {
     class transceiver {
 
     public:
-        typedef std::function<void(const asio_error_code &error_code, std::unique_ptr<message> msg)> receive_handler;
+        typedef std::function<void(const asio_error_code& error_code, std::unique_ptr<message> msg)> receive_handler;
 
         typedef std::function<void(const asio_error_code& error_code)> send_handler;
 
@@ -39,6 +39,8 @@ namespace myhttpd::session::http {
     private:
 
         std::unique_ptr<myhttpd::network::connection> &_conn;
+
+        boost::asio::io_context& _ctx;
 
         linked_buffer<1024> _header_receive_buffer;
 
@@ -73,7 +75,7 @@ namespace myhttpd::session::http {
         void cancel();
 
     public:
-        transceiver(std::unique_ptr<myhttpd::network::connection> &conn);
+        transceiver(std::unique_ptr<myhttpd::network::connection> &conn, boost::asio::io_context& ctx);
     };
 }
 

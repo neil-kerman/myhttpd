@@ -21,6 +21,8 @@ namespace myhttpd::session::http {
     private:
         const boost::uuids::uuid _id;
 
+        boost::asio::io_context& _ctx;
+
         server& _server;
 
         std::unique_ptr<myhttpd::network::connection> _conn;
@@ -29,19 +31,7 @@ namespace myhttpd::session::http {
 
         boost::asio::deadline_timer _timer;
 
-#ifdef PERFORMANCE_LOGGING
-
-        std::map<std::string, std::chrono::steady_clock::time_point> _time_points;
-
-        inline void _add_time_point(std::string name) {
-            this->_time_points.insert(
-                std::pair<std::string, std::chrono::steady_clock::time_point>(
-                    name, std::chrono::high_resolution_clock::now()
-                )
-            );
-        }
-
-#endif
+        int _request_counter = 0;
 
     private:
         bool _keep_alive = false;
@@ -75,13 +65,13 @@ namespace myhttpd::session::http {
 
         void _receive();
 
-        void _do_pre_process(std::unique_ptr<message> msg);
+        void _do_pre_process(std::unique_ptr<message> &msg);
 
-        void _request_resource(std::unique_ptr<request> req);
+        void _request_resource(std::unique_ptr<request> &req);
 
-        void _do_post_process(std::unique_ptr<response> rsp);
+        void _do_post_process(std::unique_ptr<response> &rsp);
 
-        void _send(std::unique_ptr<response> rsp);
+        void _send(std::unique_ptr<response> &rsp);
 
         void _terminate();
 

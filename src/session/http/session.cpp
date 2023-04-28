@@ -1,4 +1,5 @@
 #include <glog/logging.h>
+#include <boost/uuid/uuid_io.hpp>
 #include <functional>
 #ifdef PERFORMANCE_LOGGING
     #include <chrono>
@@ -25,6 +26,8 @@ namespace myhttpd::session::http {
 
         } else {
 
+            DLOG(INFO) << "error during session waiting request: "
+                << error.message() << ", session id: " << boost::uuids::to_string(this->get_id());
             this->_terminate();
         }
     }
@@ -37,11 +40,14 @@ namespace myhttpd::session::http {
 
             if (!this->_terminating_flag) {
 
+
                 this->_do_pre_process(std::move(msg));
             }
 
         } else {
 
+            DLOG(INFO) << "error during session receiving request: "
+                << error.message() << ", session id: " << boost::uuids::to_string(this->get_id());
             this->_terminate();
         }
     }
@@ -59,9 +65,13 @@ namespace myhttpd::session::http {
 
             if (!this->_terminating_flag) {
 
+                this->_request_counter++;
+                DLOG(INFO) << "session: " << boost::uuids::to_string(this->get_id()) 
+                    << ", reqeust counter: " << this->_request_counter;
+
                 if (this->_keep_alive) {
 
-                    this->_set_timer();
+                    //this->_set_timer();
                     this->_wait_request();
 
                 } else {
@@ -72,6 +82,8 @@ namespace myhttpd::session::http {
             
         } else {
 
+            DLOG(INFO) << "error during session sending response: "
+                << error.message() << ", session id: " << boost::uuids::to_string(this->get_id());
             this->_terminate();
         }
     }
@@ -109,7 +121,7 @@ namespace myhttpd::session::http {
             std::bind(&session::_receive_handler, this, std::placeholders::_1, std::placeholders::_2));
     }
 
-    void session::_do_pre_process(std::unique_ptr<message> msg) {
+    void session::_do_pre_process(std::unique_ptr<message> &msg) {
 
         auto req = std::make_unique<request>(std::move(*msg), this->_conn);
 
@@ -124,7 +136,7 @@ namespace myhttpd::session::http {
         this->_request_resource(std::move(req));
     }
 
-    void session::_request_resource(std::unique_ptr<request> req) {
+    void session::_request_resource(std::unique_ptr<request> &req) {
 
         this->_resource.async_request(
             std::move(req), 
@@ -132,7 +144,7 @@ namespace myhttpd::session::http {
         );
     }
 
-    void session::_do_post_process(std::unique_ptr<response> rsp) {
+    void session::_do_post_process(std::unique_ptr<response> &rsp) {
 
         boost::posix_time::ptime utc_datetime = boost::posix_time::second_clock::universal_time();
         std::string datetime = utils::ptime_to_http_date(utc_datetime);
@@ -145,13 +157,13 @@ namespace myhttpd::session::http {
 
         } else {
 
-            rsp->insert_attribute("connection", "close");
+            rsp->insert_attribute("connection", "Close");
         }
 
         this->_send(std::move(rsp));
     }
 
-    void session::_send(std::unique_ptr<response> rsp) {
+    void session::_send(std::unique_ptr<response> &rsp) {
 
         this->_transceiver_send_busy = true;
         this->_transceiver.async_send(
@@ -186,7 +198,7 @@ namespace myhttpd::session::http {
     
     void session::start() {
 
-        this->_set_timer();
+        //this->_set_timer();
         this->_wait_request();
     }
 
@@ -201,7 +213,8 @@ namespace myhttpd::session::http {
         boost::asio::io_context& ctx,
         myhttpd::session::server& ser):
         _conn(std::move(conn)),
-        _transceiver(this->_conn),
+        _ctx(ctx),
+        _transceiver(this->_conn, ctx),
         _resource(resource),
         _timer(ctx),
         _server(ser),

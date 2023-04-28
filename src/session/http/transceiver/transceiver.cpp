@@ -3,6 +3,7 @@
 #include <string>
 #include <functional>
 #include <vector>
+#include <boost/bind.hpp>
 
 #include "transceiver.hpp"
 #include "transmitting_content.hpp"
@@ -230,7 +231,7 @@ namespace myhttpd::session::http {
 
         for (auto attr = msg.begin_attribute(); attr != msg.end_attribute(); attr++) {
 
-            size += attr->first.size() + attr->second.size() + 4;
+            size += (attr->first.size() + attr->second.size() + 4);
         }
 
         auto buf = std::make_shared<std::vector<char>>();
@@ -249,7 +250,8 @@ namespace myhttpd::session::http {
             std::memcpy(ptr, name.data(), name.size());
             ptr += name.size();
             ptr[0] = ':';
-            ptr += 1;
+            ptr[1] = ' ';
+            ptr += 2;
             std::memcpy(ptr, value.data(), value.size());
             ptr += value.size();
             ptr[0] = '\r';
@@ -384,8 +386,8 @@ namespace myhttpd::session::http {
         this->_conn->cancel();
     }
 
-    transceiver::transceiver(std::unique_ptr<myhttpd::network::connection> &conn): 
-        _conn(conn) {
+    transceiver::transceiver(std::unique_ptr<myhttpd::network::connection> &conn, boost::asio::io_context& ctx):
+        _conn(conn), _ctx(ctx) {
 
     }
 }
