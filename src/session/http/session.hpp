@@ -65,13 +65,13 @@ namespace myhttpd::session::http {
 
         void _receive();
 
-        void _do_pre_process(std::unique_ptr<message> &msg);
+        void _do_pre_process(std::unique_ptr<message> msg);
 
-        void _request_resource(std::unique_ptr<request> &req);
+        void _request_resource(std::unique_ptr<request> req);
 
-        void _do_post_process(std::unique_ptr<response> &rsp);
+        void _do_post_process(std::unique_ptr<response> rsp);
 
-        void _send(std::unique_ptr<response> &rsp);
+        void _send(std::unique_ptr<response> rsp);
 
         void _terminate();
 
