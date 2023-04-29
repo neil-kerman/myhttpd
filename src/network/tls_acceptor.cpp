@@ -41,16 +41,17 @@ namespace myhttpd::network {
 
     void tls_acceptor::start_async_accept() {
 
+        this->_raw_acceptor.listen();
         this->_raw_acceptor.async_accept(
             std::bind(&tls_acceptor::_accept_handler, this, std::placeholders::_1, std::placeholders::_2)
         );
     }
 
     tls_acceptor::tls_acceptor(std::string address, int port, boost::asio::io_context& ctx, ssl::context tls_ctx, server& ser)
-    :_raw_acceptor(tcp::acceptor(ctx, tcp::endpoint(address::from_string(address), port))), 
+    :_raw_acceptor(tcp::acceptor(ctx, tcp::endpoint(address::from_string(address), port), true)), 
     _ctx(ctx), _tls_ctx(std::move(tls_ctx)), _server(ser) {
 
-        this->_raw_acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+
         this->_raw_acceptor.listen();
         DLOG(INFO) << "A tls_acceptor created, which listening at the local endpoint: " << address << ":" << port;
     }

@@ -41,7 +41,7 @@ namespace myhttpd {
         auto ses = fac->create_session(std::move(conn));
         ses->start();
         auto id = ses->get_id();
-        this->_sessions.insert(std::pair<boost::uuids::uuid, std::shared_ptr<session::session>>(id, std::move(ses)));
+        this->_sessions.insert(std::pair<boost::uuids::uuid, std::shared_ptr<session::session>>(id, ses.release()));
         DLOG(INFO) << "new session created, id: " << boost::uuids::to_string(id);
         DLOG(INFO) << "session counter: " << this->_sessions.size();
     }

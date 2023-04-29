@@ -50,8 +50,6 @@ namespace myhttpd::session::http {
 
         receive_handler _receive_handler;
 
-        std::unique_ptr<message> _sending_msg;
-
     private:
 
         const std::string _take_header(const std::size_t size);

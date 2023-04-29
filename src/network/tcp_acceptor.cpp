@@ -26,20 +26,17 @@ namespace myhttpd::network {
 
     void tcp_acceptor::start_async_accept() {
 
+        this->_raw_acceptor.listen();
         this->_raw_acceptor.async_accept(
             std::bind(&tcp_acceptor::_accept_handler, this, std::placeholders::_1, std::placeholders::_2)
         );
     }
 
-    tcp_acceptor::tcp_acceptor(std::string address, int port, boost::asio::io_context& ctx, server& ser): 
-        _raw_acceptor(
-            boost::asio::ip::tcp::acceptor(
-                ctx, boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(address), port)
-            )
-        ), 
-        _server(ser) {
+    using namespace boost::asio::ip;
 
-        this->_raw_acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+    tcp_acceptor::tcp_acceptor(std::string address, int port, boost::asio::io_context& ctx, server& ser)
+    :_raw_acceptor(tcp::acceptor(ctx, tcp::endpoint(address::from_string(address), port))), _server(ser) {
+
         this->_raw_acceptor.listen();
         DLOG(INFO) << "A tcp_acceptor created, which listening at the local endpoint: " << address << ":" << port;
     }

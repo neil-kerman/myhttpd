@@ -88,11 +88,7 @@ namespace myhttpd::session::http {
             myhttpd::session::server& ser
         );
 
-#ifdef PERFORMANCE_LOGGING
-        virtual ~session();
-#else
         virtual ~session() = default;
-#endif
     };
 }
 

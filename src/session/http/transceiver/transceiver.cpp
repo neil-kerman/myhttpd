@@ -335,28 +335,25 @@ namespace myhttpd::session::http {
 
     void transceiver::async_send(std::unique_ptr<message> msg, send_handler handler) {
 
-        this->_sending_msg.release();
-        this->_sending_msg = std::move(msg);
-        auto encoded_header = this->_encode_header(*(this->_sending_msg));
-        
+        std::shared_ptr<message> s_msg(msg.release());
+        auto encoded_header = this->_encode_header(*s_msg);
         this->_conn->async_send({ encoded_header->data(), encoded_header->size()},
-            [this, handler, encoded_header]
+            [this, handler, encoded_header, s_msg]
 
             (const asio_error_code& error, std::size_t bytes_transferred) {
 
                 if (!error) {
 
-                    if (this->_sending_msg->has_content()) {
+                    if (s_msg->has_content()) {
 
-                        this->_sending_msg->get_content()->async_wait_ready(
+                        s_msg->get_content()->async_wait_ready(
 
-                            [this, handler](const asio_error_code& error, network::connection::const_buffer buf) {
+                            [this, handler, s_msg](const asio_error_code& error, network::connection::const_buffer buf) {
 
                                 this->_conn->async_send(buf,
 
                                     [this, handler](const asio_error_code& error, std::size_t bytes_transferred) {
 
-                                        this->_sending_msg.release();
                                         handler(error);
                                     }
                                 );
