@@ -39,6 +39,7 @@ namespace myhttpd::network {
         ), 
         _server(ser) {
 
+        this->_raw_acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
         this->_raw_acceptor.listen();
         DLOG(INFO) << "A tcp_acceptor created, which listening at the local endpoint: " << address << ":" << port;
     }
