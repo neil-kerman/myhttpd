@@ -6,27 +6,27 @@ namespace myhttpd::network {
 
     void tls_connection::async_read_some(mutable_buffer buf, read_handler handler) {
 
-        this->_stream.async_read_some(boost::asio::buffer(buf.data, buf.size), handler);
+        this->_stream->async_read_some(boost::asio::buffer(buf.data, buf.size), handler);
     }
 
     void tls_connection::async_write_some(const_buffer buf, write_handler handler) {
 
-        this->_stream.async_write_some(boost::asio::buffer(buf.data, buf.size), handler);
+        this->_stream->async_write_some(boost::asio::buffer(buf.data, buf.size), handler);
     }
 
     void tls_connection::async_receive(mutable_buffer buf, receive_handler handler) {
 
-        boost::asio::async_read(this->_stream, boost::asio::buffer(buf.data, buf.size), handler);
+        boost::asio::async_read(*(this->_stream), boost::asio::buffer(buf.data, buf.size), handler);
     }
 
     void tls_connection::async_send(const_buffer buf, send_handler handler) {
 
-        boost::asio::async_write(this->_stream, boost::asio::buffer(buf.data, buf.size), handler);
+        boost::asio::async_write(*(this->_stream), boost::asio::buffer(buf.data, buf.size), handler);
     }
 
     void tls_connection::async_wait(socket_wait_type type, wait_handler handler) {
 
-        this->_stream.next_layer().async_wait(type, handler);
+        this->_stream->next_layer().async_wait(type, handler);
     }
 
     std::string tls_connection::get_type() {
@@ -36,36 +36,46 @@ namespace myhttpd::network {
 
     std::string tls_connection::get_remote_address() {
 
-        return this->_stream.next_layer().remote_endpoint().address().to_string();
+        return this->_stream->next_layer().remote_endpoint().address().to_string();
     }
 
     int tls_connection::get_remote_port() {
 
-        return this->_stream.next_layer().remote_endpoint().port();
+        return this->_stream->next_layer().remote_endpoint().port();
     }
 
     std::string tls_connection::get_local_address() {
 
-        return this->_stream.next_layer().local_endpoint().address().to_string();
+        return this->_stream->next_layer().local_endpoint().address().to_string();
     }
 
     int tls_connection::get_local_port() {
 
-        return this->_stream.next_layer().local_endpoint().port();
+        return this->_stream->next_layer().local_endpoint().port();
     }
 
     void tls_connection::cancel() {
 
-        this->_stream.next_layer().cancel();
+        this->_stream->next_layer().cancel();
     }
 
     bool tls_connection::is_open() {
 
-        return this->_stream.next_layer().is_open();
+        return this->_stream->next_layer().is_open();
     }
 
-    tls_connection::tls_connection(boost::asio::ssl::stream<boost::asio::ip::tcp::socket> stream): 
-        _stream(std::move(stream)) {
+    void tls_connection::reset_io_context(boost::asio::io_context& ctx) {
+
+        auto ssl_handler = this->_stream->native_handle();
+        auto soc_handler = this->_stream->next_layer().release();
+        auto new_soc = boost::asio::ip::tcp::socket(ctx, soc_handler);
+        this->_stream.reset(
+            new boost::asio::ssl::stream<boost::asio::ip::tcp::socket>(std::move(new_soc), ssl_handler)
+        );
+    }
+
+    tls_connection::tls_connection(boost::asio::ssl::stream<boost::asio::ip::tcp::socket> stream):
+        _stream(new boost::asio::ssl::stream<boost::asio::ip::tcp::socket>(std::move(stream))) {
 
     }
 }

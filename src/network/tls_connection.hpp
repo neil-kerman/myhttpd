@@ -12,7 +12,7 @@ namespace myhttpd::network {
     class tls_connection: public connection {
 
     private:
-        boost::asio::ssl::stream<boost::asio::ip::tcp::socket> _stream;
+        std::unique_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> _stream;
 
     public:
         virtual void async_read_some(mutable_buffer buf, read_handler handler);
@@ -38,6 +38,8 @@ namespace myhttpd::network {
         virtual void cancel();
 
         virtual bool is_open();
+
+        virtual void reset_io_context(boost::asio::io_context& ctx);
 
     public:
         tls_connection(boost::asio::ssl::stream<boost::asio::ip::tcp::socket> _stream);

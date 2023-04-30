@@ -1,49 +1,41 @@
-#ifndef __SERVER_H__
-#define __SERVER_H__
+#ifndef SERVER_H
+#define SERVER_H
 
 #include <string>
-#include <map>
 #include <list>
 #include <memory>
 #include <boost/asio.hpp>
-#include <boost/uuid/uuid.hpp>
 #include <tinyxml2.h>
 
 #include "network/acceptor.hpp"
 #include "network/server.hpp"
-#include "session/session.hpp"
-#include "session/session_factory.hpp"
-#include "session/server.hpp"
+#include "worker.hpp"
 
 namespace myhttpd {
 
-    class server: public network::server, public session::server {
+    class server: public network::server {
 
     private:
         boost::asio::io_context _ctx;
 
         boost::asio::executor_work_guard<boost::asio::io_context::executor_type> _work_guard;
 
+        std::unique_ptr<std::thread> _thread = nullptr;
+
         std::list<std::unique_ptr<network::acceptor>> _acceptors;
 
-        std::map<boost::uuids::uuid, std::shared_ptr<session::session>> _sessions;
-
-        std::map<std::string, std::unique_ptr<myhttpd::session::session_factory>> _session_factories;
+        std::list<std::unique_ptr<worker>> _workers;
 
     private:
         void _init_acceptors(tinyxml2::XMLElement* config);
 
-        void _init_session_factories(tinyxml2::XMLElement* config);
-
     public:
         virtual void pass_connection(std::unique_ptr<network::connection> conn);
-
-        virtual void request_termination(session::session &sender);
 
     public:
         void start();
     
-        void event_loop();
+        void join();
 
     public:
         server(tinyxml2::XMLElement *config);
@@ -52,4 +44,4 @@ namespace myhttpd {
 
 
 
-#endif // __SERVER_H__
+#endif // SERVER_H

@@ -26,51 +26,45 @@ namespace myhttpd {
         }
     }
 
-    void server::_init_session_factories(tinyxml2::XMLElement* config) {
-
-        auto http_config = config->FirstChildElement("http");
-        std::unique_ptr<myhttpd::session::session_factory> fac =
-            std::make_unique<session::http::session_factory>(http_config, this->_ctx, (*this));
-        std::pair < std::string, std::unique_ptr<session::session_factory>> pair("http", std::move(fac));
-        this->_session_factories.insert(std::move(pair));
-    }
-
     void server::pass_connection(std::unique_ptr<network::connection> conn) {
 
-        auto& fac = this->_session_factories["http"];
-        auto ses = fac->create_session(std::move(conn));
-        ses->start();
-        auto id = ses->get_id();
-        this->_sessions.insert(std::pair<boost::uuids::uuid, std::shared_ptr<session::session>>(id, ses.release()));
-        DLOG(INFO) << "new session created, id: " << boost::uuids::to_string(id);
-        DLOG(INFO) << "session counter: " << this->_sessions.size();
-    }
-
-    void server::request_termination(session::session& sender) {
-
-        auto id = sender.get_id();
-        this->_sessions.erase(id);
-        DLOG(INFO) << "a session terminated, id: " << boost::uuids::to_string(id);
-        DLOG(INFO) << "session counter: " << this->_sessions.size();
-    }
-
-    void server::event_loop() {
-
-        this->_ctx.run();
-    }
-
-    server::server(tinyxml2::XMLElement *config): 
-        _work_guard(this->_ctx.get_executor()) {
-
-        this->_init_acceptors(config);
-        this->_init_session_factories(config);
+        this->_workers.front()->handle_connection(std::move(conn));
+        this->_workers.push_back(std::move(this->_workers.front()));
+        this->_workers.pop_front();
     }
 
     void server::start() {
 
-        for (auto &ac: this->_acceptors) {
+        for (auto& worker : this->_workers) {
+
+            worker->start();
+        }
+
+        for (auto& ac : this->_acceptors) {
 
             ac->start_async_accept();
+        }
+
+        this->_thread.reset(new std::thread([this]() {
+            
+            this->_ctx.run();
+        }));
+    }
+
+    void server::join() {
+
+        this->_thread->join();
+    }
+
+    server::server(tinyxml2::XMLElement *config)
+    : _work_guard(this->_ctx.get_executor()) {
+
+        this->_init_acceptors(config);
+        auto worker_num = std::thread::hardware_concurrency();
+
+        for (int i = 0; i < worker_num; i++) {
+
+            this->_workers.push_back(std::make_unique<worker>(config));
         }
     }
 }

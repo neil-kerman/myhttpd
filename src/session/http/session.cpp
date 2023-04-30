@@ -1,9 +1,6 @@
 #include <glog/logging.h>
 #include <boost/uuid/uuid_io.hpp>
 #include <functional>
-#ifdef PERFORMANCE_LOGGING
-    #include <chrono>
-#endif
 #include <boost/date_time.hpp>
 #include <boost/format.hpp>
 
@@ -26,8 +23,6 @@ namespace myhttpd::session::http {
 
         } else {
 
-            DLOG(INFO) << "error during session waiting request: "
-                << error.message() << ", session id: " << boost::uuids::to_string(this->get_id());
             this->_terminate();
         }
     }
@@ -46,8 +41,6 @@ namespace myhttpd::session::http {
 
         } else {
 
-            DLOG(INFO) << "error during session receiving request: "
-                << error.message() << ", session id: " << boost::uuids::to_string(this->get_id());
             this->_terminate();
         }
     }
@@ -66,8 +59,6 @@ namespace myhttpd::session::http {
             if (!this->_terminating_flag) {
 
                 this->_request_counter++;
-                DLOG(INFO) << "session: " << boost::uuids::to_string(this->get_id()) 
-                    << ", reqeust counter: " << this->_request_counter;
 
                 if (this->_keep_alive) {
 
@@ -82,7 +73,6 @@ namespace myhttpd::session::http {
             
         } else {
 
-            DLOG(INFO) << "error during session sending response: "
                 << error.message() << ", session id: " << boost::uuids::to_string(this->get_id());
             this->_terminate();
         }

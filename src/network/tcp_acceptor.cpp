@@ -38,6 +38,5 @@ namespace myhttpd::network {
     :_raw_acceptor(tcp::acceptor(ctx, tcp::endpoint(address::from_string(address), port))), _server(ser) {
 
         this->_raw_acceptor.listen();
-        DLOG(INFO) << "A tcp_acceptor created, which listening at the local endpoint: " << address << ":" << port;
     }
 }

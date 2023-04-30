@@ -13,13 +13,14 @@ namespace myhttpd::network {
 
         if (!error) {
 
-            auto stream = std::make_shared<tls_stream>(std::move(soc), this->_tls_ctx);
-            stream->async_handshake(tls_stream::server,
+            auto stream = std::make_shared<std::unique_ptr<tls_stream>>(new tls_stream(std::move(soc), this->_tls_ctx));
+            (*stream)->async_handshake(tls_stream::server,
+
                 [this, stream](const asio_error_code& error) {
 
                     if (!error) {
 
-                        this->_server.pass_connection(std::make_unique<tls_connection>(std::move(*stream)));
+                        this->_server.pass_connection((std::unique_ptr<connection>&&)std::move(*stream));
 
                     } else {
 

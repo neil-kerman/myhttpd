@@ -18,5 +18,5 @@ int main(int, char* argv[]) {
     auto config = config_file.RootElement();
     myhttpd::server _server(config);
     _server.start();
-    _server.event_loop();
+    _server.join();
 }

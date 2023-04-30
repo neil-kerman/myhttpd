@@ -45,11 +45,6 @@ namespace myhttpd::session::http {
 
     void host::async_request(std::unique_ptr<request> req, request_handler handler) {
 
-        auto rsp = this->_make_error(500, std::move(req));
-        rsp->set_status(200);
-        handler(std::move(rsp));
-        return;
-
         auto url = req->get_url();
 
         if (url == "/") {
