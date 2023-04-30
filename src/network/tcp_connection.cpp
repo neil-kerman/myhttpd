@@ -68,9 +68,9 @@ namespace myhttpd::network {
     void tcp_connection::reset_io_context(boost::asio::io_context& ctx) {
 
         auto protocol = this->_stream->local_endpoint().protocol();
-        auto soc_handler = this->_stream->release();
+        auto soc_handle = this->_stream->release();
         this->_stream.reset(new boost::asio::ip::tcp::socket(ctx));
-        this->_stream->assign(protocol, soc_handler);
+        this->_stream->assign(protocol, soc_handle);
     }
 
     tcp_connection::tcp_connection(boost::asio::ip::tcp::socket stream): 

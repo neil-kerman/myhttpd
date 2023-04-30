@@ -66,9 +66,11 @@ namespace myhttpd::network {
 
     void tls_connection::reset_io_context(boost::asio::io_context& ctx) {
 
+        auto protocol = this->_stream->next_layer().local_endpoint().protocol();
+        auto soc_handle = this->_stream->next_layer().release();
         auto ssl_handler = this->_stream->native_handle();
-        auto soc_handler = this->_stream->next_layer().release();
-        auto new_soc = boost::asio::ip::tcp::socket(ctx, soc_handler);
+        auto new_soc = boost::asio::ip::tcp::socket(ctx);
+        new_soc.assign(protocol, soc_handle);
         this->_stream.reset(
             new boost::asio::ssl::stream<boost::asio::ip::tcp::socket>(std::move(new_soc), ssl_handler)
         );
