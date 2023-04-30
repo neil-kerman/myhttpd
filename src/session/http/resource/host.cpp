@@ -208,7 +208,7 @@ namespace myhttpd::session::http {
     }
 
     host::host(
-        std::map<unsigned, std::shared_ptr<content>> error_pages, 
+        std::array<std::shared_ptr<content>, 506> error_pages,
         std::unordered_map<std::string, std::string>& mimedb) :
         _error_pages(error_pages), _mimedb(mimedb) {
 

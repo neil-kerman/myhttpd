@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <functional>
-#include <map>
+#include <unordered_map>
 #include <tinyxml2.h>
 #include <list>
 
@@ -17,11 +17,11 @@ namespace myhttpd::session::http {
         typedef rnode::request_handler request_handler;
 
     private:
-        std::map<std::string , host> _hosts;
+        std::unordered_map<std::string , host> _hosts;
 
         std::unordered_map<std::string, std::string> _mimedb = { {"default", "application/octet-stream"} };
 
-        std::map<unsigned, std::shared_ptr<content>> _error_pages;
+        std::array<std::shared_ptr<content>, 506> _error_pages;
 
     private:
         void _hosts_init(tinyxml2::XMLElement* config);

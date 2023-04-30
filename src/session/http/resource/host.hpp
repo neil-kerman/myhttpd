@@ -4,6 +4,7 @@
 #include <memory>
 #include <functional>
 #include <map>
+#include <unordered_map>
 #include <tinyxml2.h>
 #include <list>
 
@@ -24,11 +25,11 @@ namespace myhttpd::session::http {
 
         std::string _default;
 
-        std::map<std::string, std::unique_ptr<rnode>> _rnodes;
-
-        std::map<unsigned, std::shared_ptr<content>> _error_pages;
+        std::unordered_map<std::string, std::unique_ptr<rnode>> _rnodes;
 
         std::unordered_map<std::string, std::string>& _mimedb;
+
+        std::array<std::shared_ptr<content>, 506> _error_pages;
 
     private:
         void _error_pages_init(tinyxml2::XMLElement* config);
@@ -45,7 +46,7 @@ namespace myhttpd::session::http {
 
     public:
         host(
-            std::map<unsigned, std::shared_ptr<content>> error_pages, 
+            std::array<std::shared_ptr<content>, 506> error_pages,
             std::unordered_map<std::string, std::string> &mimedb
         );
     };

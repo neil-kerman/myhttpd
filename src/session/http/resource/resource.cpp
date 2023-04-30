@@ -95,126 +95,30 @@ namespace myhttpd::session::http {
 
     void resource::_error_pages_init(tinyxml2::XMLElement* config) {
 
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                400, std::make_shared<const_content>(page_400_html, page_400_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                401, std::make_shared<const_content>(page_401_html, page_401_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                402, std::make_shared<const_content>(page_402_html, page_402_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                403, std::make_shared<const_content>(page_403_html, page_403_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                404, std::make_shared<const_content>(page_404_html, page_404_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                405, std::make_shared<const_content>(page_405_html, page_405_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                406, std::make_shared<const_content>(page_406_html, page_406_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                407, std::make_shared<const_content>(page_407_html, page_407_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                408, std::make_shared<const_content>(page_408_html, page_408_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                409, std::make_shared<const_content>(page_409_html, page_409_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                410, std::make_shared<const_content>(page_410_html, page_410_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                411, std::make_shared<const_content>(page_411_html, page_411_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                412, std::make_shared<const_content>(page_412_html, page_412_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                413, std::make_shared<const_content>(page_413_html, page_413_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                414, std::make_shared<const_content>(page_414_html, page_414_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                415, std::make_shared<const_content>(page_415_html, page_415_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                416, std::make_shared<const_content>(page_416_html, page_416_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                417, std::make_shared<const_content>(page_417_html, page_417_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                500, std::make_shared<const_content>(page_500_html, page_500_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                501, std::make_shared<const_content>(page_501_html, page_501_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                502, std::make_shared<const_content>(page_502_html, page_502_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                503, std::make_shared<const_content>(page_503_html, page_503_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                504, std::make_shared<const_content>(page_504_html, page_504_html_size)
-            )
-        );
-        this->_error_pages.insert(
-            std::pair<unsigned, std::shared_ptr<content>>(
-                505, std::make_shared<const_content>(page_505_html, page_505_html_size)
-            )
-        );
+        this->_error_pages[400] = std::make_shared<const_content>(page_400_html, page_400_html_size);
+        this->_error_pages[401] = std::make_shared<const_content>(page_401_html, page_401_html_size);
+        this->_error_pages[402] = std::make_shared<const_content>(page_402_html, page_402_html_size);
+        this->_error_pages[403] = std::make_shared<const_content>(page_403_html, page_403_html_size);
+        this->_error_pages[404] = std::make_shared<const_content>(page_404_html, page_404_html_size);
+        this->_error_pages[405] = std::make_shared<const_content>(page_405_html, page_405_html_size);
+        this->_error_pages[406] = std::make_shared<const_content>(page_406_html, page_406_html_size);
+        this->_error_pages[407] = std::make_shared<const_content>(page_407_html, page_407_html_size);
+        this->_error_pages[408] = std::make_shared<const_content>(page_408_html, page_408_html_size);
+        this->_error_pages[409] = std::make_shared<const_content>(page_409_html, page_409_html_size);
+        this->_error_pages[410] = std::make_shared<const_content>(page_410_html, page_410_html_size);
+        this->_error_pages[411] = std::make_shared<const_content>(page_411_html, page_411_html_size);
+        this->_error_pages[412] = std::make_shared<const_content>(page_412_html, page_412_html_size);
+        this->_error_pages[413] = std::make_shared<const_content>(page_413_html, page_413_html_size);
+        this->_error_pages[414] = std::make_shared<const_content>(page_414_html, page_414_html_size);
+        this->_error_pages[415] = std::make_shared<const_content>(page_415_html, page_415_html_size);
+        this->_error_pages[416] = std::make_shared<const_content>(page_416_html, page_416_html_size);
+        this->_error_pages[417] = std::make_shared<const_content>(page_417_html, page_417_html_size);
+        this->_error_pages[500] = std::make_shared<const_content>(page_500_html, page_500_html_size);
+        this->_error_pages[501] = std::make_shared<const_content>(page_501_html, page_501_html_size);
+        this->_error_pages[502] = std::make_shared<const_content>(page_502_html, page_502_html_size);
+        this->_error_pages[503] = std::make_shared<const_content>(page_503_html, page_503_html_size);
+        this->_error_pages[504] = std::make_shared<const_content>(page_504_html, page_504_html_size);
+        this->_error_pages[505] = std::make_shared<const_content>(page_505_html, page_505_html_size);
     }
 }
 
