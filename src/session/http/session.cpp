@@ -73,7 +73,6 @@ namespace myhttpd::session::http {
             
         } else {
 
-                << error.message() << ", session id: " << boost::uuids::to_string(this->get_id());
             this->_terminate();
         }
     }

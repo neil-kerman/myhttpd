@@ -60,7 +60,7 @@ namespace myhttpd {
     : _work_guard(this->_ctx.get_executor()) {
 
         this->_init_acceptors(config);
-        auto worker_num = std::thread::hardware_concurrency();
+        auto worker_num = std::thread::hardware_concurrency() * 2;
 
         for (int i = 0; i < worker_num; i++) {
 
