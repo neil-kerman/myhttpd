@@ -17,7 +17,7 @@ namespace myhttpd::network {
         server& _server;
 
     private:
-        void _accept_handler(const asio_error_code& error, boost::asio::ip::tcp::socket soc);
+        void _accept_handler(const asio_error_code error, boost::asio::ip::tcp::socket soc);
 
     public:
         virtual void start_async_accept();

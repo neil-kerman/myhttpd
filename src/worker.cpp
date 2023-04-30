@@ -20,11 +20,11 @@ namespace myhttpd {
         conn->reset_io_context(this->_ctx);
         auto& fac = this->_session_factories["http"];
         std::shared_ptr<session::session> ses = fac->create_session(std::move(conn));
-        auto id = ses->get_id();
-        this->_sessions.insert(std::pair<boost::uuids::uuid, std::shared_ptr<session::session>>(id, ses));
 
-        this->_ctx.post([ses]() {
+        this->_ctx.post([ses, this]() {
 
+            auto id = ses->get_id();
+            this->_sessions.insert(std::pair<boost::uuids::uuid, std::shared_ptr<session::session>>(id, ses));
             ses->start();
         });
     }

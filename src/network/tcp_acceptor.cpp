@@ -5,7 +5,7 @@
 
 namespace myhttpd::network {
 
-    void tcp_acceptor::_accept_handler(const asio_error_code& error, boost::asio::ip::tcp::socket soc) {
+    void tcp_acceptor::_accept_handler(const asio_error_code error, boost::asio::ip::tcp::socket soc) {
 
         if (!error) {
 
