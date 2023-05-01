@@ -5,7 +5,6 @@ My graduation design, a simple toy web server based on ASIO and supports WSGI py
 - OpenSSL
 - Python3
 - tinyxml2
-- glog
 ## How to build
 Before build this project, make sure you have installed: latest version of CMake, a C++20 supported compiler and a python interpreter. 
 

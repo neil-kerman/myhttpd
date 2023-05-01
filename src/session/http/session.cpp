@@ -1,4 +1,3 @@
-#include <glog/logging.h>
 #include <boost/uuid/uuid_io.hpp>
 #include <functional>
 #include <boost/date_time.hpp>

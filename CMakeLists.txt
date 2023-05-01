@@ -9,12 +9,7 @@ option(ENABLE_PROXY OFF)
 option(ENABLE_REVERSE OFF)
 option(ENABLE_WSGI OFF)
 option(BUILD_UNIT_TESTS OFF)
-option(PERFORMANCE_LOGGING OFF)
 
-if(PERFORMANCE_LOGGING)
-
-    add_compile_definitions(PERFORMANCE_LOGGING)
-endif()
 
 if(CMAKE_BUILD_TYPE)
 
@@ -29,6 +24,7 @@ endif()
 if(WIN32)
 
     add_compile_definitions(WIN32)
+
 elseif(LINUX)
 
     add_compile_definitions(LINUX)
@@ -45,8 +41,6 @@ endif()
 
 find_package(OpenSSL REQUIRED)
 find_package(Boost COMPONENTS context filesystem REQUIRED)
-find_package(glog CONFIG REQUIRED)
-find_package(gflags CONFIG REQUIRED)
 find_package(tinyxml2 CONFIG REQUIRED)
 
 if(BUILD_UNIT_TESTS)

@@ -1,4 +1,3 @@
-#include <glog/logging.h>
 
 #include "resource.hpp"
 #include "const_content.hpp"

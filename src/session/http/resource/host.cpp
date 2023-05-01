@@ -1,4 +1,3 @@
-#include <glog/logging.h>
 #include <filesystem>
 #include <list>
 
@@ -162,7 +161,6 @@ namespace myhttpd::session::http {
 
         if (!config) {
 
-            LOG(INFO) << "No rnode has set";
             return;
         }
 
@@ -196,7 +194,6 @@ namespace myhttpd::session::http {
 
             } else {
 
-                LOG(ERROR) << "Unknown rnode type: " << type;
             }
 
             node = node->NextSiblingElement();

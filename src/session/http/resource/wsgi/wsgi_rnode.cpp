@@ -4,7 +4,6 @@
 #include <boost/python/list.hpp>
 #include <filesystem>
 #include <boost/bind.hpp>
-#include <glog/logging.h>
 #include <memory>
 #include <algorithm>
 #include <boost/asio.hpp>

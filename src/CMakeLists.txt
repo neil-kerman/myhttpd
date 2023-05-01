@@ -10,8 +10,6 @@ message("boost include dir: ${Boost_LIBRARIES}")
 
 link_libraries(
     ${Boost_LIBRARIES}
-    glog::glog
-    gflags::gflags
     tinyxml2::tinyxml2
 )
 

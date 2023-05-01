@@ -1,4 +1,3 @@
-#include <glog/logging.h>
 
 #include "tls_acceptor.hpp"
 
@@ -54,6 +53,5 @@ namespace myhttpd::network {
 
 
         this->_raw_acceptor.listen();
-        DLOG(INFO) << "A tls_acceptor created, which listening at the local endpoint: " << address << ":" << port;
     }
 }
