@@ -6,7 +6,7 @@ namespace ssl = boost::asio::ssl;
 
 namespace myhttpd::network {
 
-    void tls_acceptor::_accept_handler(const asio_error_code& error, boost::asio::ip::tcp::socket soc) {
+    void tls_acceptor::_accept_handler(const asio_error_code error, boost::asio::ip::tcp::socket soc) {
 
         typedef boost::asio::ssl::stream<tcp::socket> tls_stream;
 
@@ -15,7 +15,7 @@ namespace myhttpd::network {
             auto stream = std::make_shared<std::unique_ptr<tls_stream>>(new tls_stream(std::move(soc), this->_tls_ctx));
             (*stream)->async_handshake(tls_stream::server,
 
-                [this, stream](const asio_error_code& error) {
+                [this, stream](const asio_error_code error) {
 
                     if (!error) {
 

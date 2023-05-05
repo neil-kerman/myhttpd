@@ -15,15 +15,15 @@ namespace myhttpd::network {
         std::unique_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> _stream;
 
     public:
-        virtual void async_read_some(mutable_buffer buf, read_handler handler);
+        virtual void async_read_some(mutable_buffer buf, reading_handler handler);
 
-        virtual void async_write_some(const_buffer buf, write_handler handler);
+        virtual void async_write_some(const_buffer buf, writing_handler handler);
 
-        virtual void async_receive(mutable_buffer buf, receive_handler handler);
+        virtual void async_receive(mutable_buffer buf, receiving_handler handler);
 
-        virtual void async_send(const_buffer buf, send_handler handler);
+        virtual void async_send(const_buffer buf, sending_handler handler);
 
-        virtual void async_wait(socket_wait_type type, wait_handler handler);
+        virtual void async_wait(socket_wait_type type, waiting_handler handler);
 
         virtual std::string get_type();
 

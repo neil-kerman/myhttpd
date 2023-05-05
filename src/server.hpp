@@ -1,5 +1,5 @@
-#ifndef SERVER_H
-#define SERVER_H
+#ifndef SERVER_HPP
+#define SERVER_HPP
 
 #include <string>
 #include <list>
@@ -29,6 +29,8 @@ namespace myhttpd {
     private:
         void _init_acceptors(tinyxml2::XMLElement* config);
 
+        void _init_workers(tinyxml2::XMLElement* config);
+
     public:
         virtual void pass_connection(std::unique_ptr<network::connection> conn);
 
@@ -44,4 +46,4 @@ namespace myhttpd {
 
 
 
-#endif // SERVER_H
+#endif // SERVER_HPP

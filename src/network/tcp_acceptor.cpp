@@ -31,10 +31,10 @@ namespace myhttpd::network {
         );
     }
 
-    using namespace boost::asio::ip;
+    namespace ip = boost::asio::ip;
 
     tcp_acceptor::tcp_acceptor(std::string address, int port, boost::asio::io_context& ctx, server& ser)
-    :_raw_acceptor(tcp::acceptor(ctx, tcp::endpoint(address::from_string(address), port))), _server(ser) {
+    :_raw_acceptor(ip::tcp::acceptor(ctx, ip::tcp::endpoint(ip::address::from_string(address), port))), _server(ser) {
 
         this->_raw_acceptor.listen();
     }

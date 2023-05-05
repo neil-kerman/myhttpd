@@ -15,12 +15,14 @@ namespace myhttpd::network {
 
     public:
         struct mutable_buffer {
-            void* data;
+
+            char* data;
             const std::size_t size;
         };
 
         struct const_buffer {
-            const void* data;
+
+            const char* data;
             const std::size_t size;
         };
 
@@ -28,37 +30,37 @@ namespace myhttpd::network {
 
         /* Read event handler */
         typedef std::function<
-                    void (const asio_error_code& error, std::size_t bytes_transferred)
-                > read_handler;
+                    void (const asio_error_code error, std::size_t bytes_transferred)
+                > reading_handler;
 
         /* Write event handler */
         typedef std::function<
-                    void (const asio_error_code& error, std::size_t bytes_transferred)
-                > write_handler;
+                    void (const asio_error_code error, std::size_t bytes_transferred)
+                > writing_handler;
 
         /* Receive event handler */
         typedef std::function<
-                    void(const asio_error_code& error, std::size_t bytes_transferred)
-                > receive_handler;
+                    void(const asio_error_code error, std::size_t bytes_transferred)
+                > receiving_handler;
 
         /* send event handler */
         typedef std::function<
-                    void(const asio_error_code& error, std::size_t bytes_transferred)
-                > send_handler;
+                    void(const asio_error_code error, std::size_t bytes_transferred)
+                > sending_handler;
 
         /* Wait event handler */
-        typedef std::function<void (const asio_error_code&code)> wait_handler;
+        typedef std::function<void (const asio_error_code code)> waiting_handler;
 
     public:
-        virtual void async_read_some(mutable_buffer buf, read_handler handler) = 0;
+        virtual void async_read_some(mutable_buffer buf, reading_handler handler) = 0;
 
-        virtual void async_write_some(const_buffer buf, write_handler handler) = 0;
+        virtual void async_write_some(const_buffer buf, writing_handler handler) = 0;
 
-        virtual void async_receive(mutable_buffer buf, receive_handler handler) = 0;
+        virtual void async_receive(mutable_buffer buf, receiving_handler handler) = 0;
 
-        virtual void async_send(const_buffer buf, send_handler handler) = 0;
+        virtual void async_send(const_buffer buf, sending_handler handler) = 0;
 
-        virtual void async_wait(socket_wait_type type, wait_handler handler) = 0;
+        virtual void async_wait(socket_wait_type type, waiting_handler handler) = 0;
 
         virtual std::string get_type() = 0;
 

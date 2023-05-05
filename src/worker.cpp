@@ -1,38 +1,30 @@
 #include <boost/uuid/uuid_generators.hpp>
 
 #include "worker.hpp"
-#include "session/http/session.hpp"
-#include "session/http/session_factory.hpp"
+#include "protocol/http/session.hpp"
+#include "protocol/http/manager.hpp"
 
 namespace myhttpd {
 
     void worker::_init_session_factories(tinyxml2::XMLElement* config) {
 
         auto http_config = config->FirstChildElement("http");
-        std::unique_ptr<myhttpd::session::session_factory> fac =
-            std::make_unique<session::http::session_factory>(http_config, this->_ctx, *this);
-        std::pair < std::string, std::unique_ptr<session::session_factory>> pair("http", std::move(fac));
+        std::unique_ptr<myhttpd::protocol::manager> fac =
+            std::make_unique<protocol::http::manager>(http_config, this->_ctx, *this);
+        std::pair < std::string, std::unique_ptr<protocol::manager>> pair("http", std::move(fac));
         this->_session_factories.insert(std::move(pair));
     }
 
     void worker::handle_connection(std::unique_ptr<network::connection> conn) {
 
         conn->reset_io_context(this->_ctx);
-        auto& fac = this->_session_factories["http"];
-        std::shared_ptr<session::session> ses = fac->create_session(std::move(conn));
+        auto conn_sptr = std::make_shared<std::unique_ptr<network::connection>>(std::move(conn));
 
-        this->_ctx.post([ses, this]() {
+        this->_ctx.post([conn_sptr, this]() {
 
-            auto id = ses->get_id();
-            this->_sessions.insert(std::pair<boost::uuids::uuid, std::shared_ptr<session::session>>(id, ses));
-            ses->start();
+            auto& fac = this->_session_factories["http"];
+            fac->create_session(std::move(*conn_sptr));
         });
-    }
-
-    void worker::request_termination(session::session& sender) {
-
-        auto id = sender.get_id();
-        this->_sessions.erase(id);
     }
 
     void worker::start() {

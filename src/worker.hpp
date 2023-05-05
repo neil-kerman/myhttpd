@@ -2,20 +2,17 @@
 #define WORKER_HPP
 
 #include <memory>
-#include <map>
-#include <boost/asio.hpp>
-#include <boost/uuid/uuid.hpp>
+#include <unordered_map>
 #include <thread>
+#include <boost/asio/io_context.hpp>
 #include <tinyxml2.h>
 
-#include "session/session.hpp"
-#include "session/session_factory.hpp"
-#include "session/server.hpp"
+#include "protocol/manager.hpp"
 
 
 namespace myhttpd {
 
-    class worker : public session::server {
+    class worker {
 
     private:
         boost::asio::io_context _ctx;
@@ -24,17 +21,13 @@ namespace myhttpd {
 
         std::unique_ptr<std::thread> _working_thread = nullptr;
 
-        std::map<boost::uuids::uuid, std::shared_ptr<session::session>> _sessions;
-
-        std::map<std::string, std::unique_ptr<myhttpd::session::session_factory>> _session_factories;
+        std::unordered_map<std::string, std::unique_ptr<protocol::manager>> _session_factories;
 
     private:
         void _init_session_factories(tinyxml2::XMLElement* config);
 
     public:
         virtual void handle_connection(std::unique_ptr<network::connection> conn);
-
-        virtual void request_termination(session::session& sender);
 
     public:
         void start();

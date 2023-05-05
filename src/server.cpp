@@ -1,10 +1,6 @@
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
 
 #include "server.hpp"
 #include "network/acceptor_factory.hpp"
-#include "session/http/session.hpp"
-#include "session/http/session_factory.hpp"
 
 using namespace boost::asio::ip;
 
@@ -15,11 +11,22 @@ namespace myhttpd {
         auto acs_cfg = config->FirstChildElement("acceptors");
         auto ac_cfg = acs_cfg->FirstChildElement();
 
+        /* Create acceptors */
         while (ac_cfg) {
-
-            /* Create acceptors */
+            
             this->_acceptors.push_back(network::acceptor_facory::create_acceptor(ac_cfg, this->_ctx, *this));
             ac_cfg = ac_cfg->NextSiblingElement();
+        }
+    }
+
+    void server::_init_workers(tinyxml2::XMLElement* config) {
+
+        auto worker_num = std::thread::hardware_concurrency();
+
+        /* Create workers */
+        for (int i = 0; i < worker_num; i++) {
+
+            this->_workers.push_back(std::make_unique<worker>(config));
         }
     }
 
@@ -57,12 +64,7 @@ namespace myhttpd {
     : _work_guard(this->_ctx.get_executor()) {
 
         this->_init_acceptors(config);
-        auto worker_num = std::thread::hardware_concurrency();
-
-        for (int i = 0; i < worker_num; i++) {
-
-            this->_workers.push_back(std::make_unique<worker>(config));
-        }
+        this->_init_workers(config);
     }
 }
 
