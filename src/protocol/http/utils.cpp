@@ -14,7 +14,7 @@ namespace myhttpd::protocol::http::utils {
         auto hours = time.time_of_day().hours();
         auto minuts = time.time_of_day().minutes();
         auto seconds = time.time_of_day().seconds();
-        return boost::str(boost::format("%s, %2d %s %d %02d:%02d:%02d GMT")
+        return boost::str(boost::format("%s, %d %s %d %02d:%02d:%02d GMT")
             % day_of_week_str
             % days_of_month
             % month_str

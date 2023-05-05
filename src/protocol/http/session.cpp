@@ -74,7 +74,7 @@ namespace myhttpd::protocol::http {
     void session::_do_pre_process(std::unique_ptr<message> msg) {
 
         auto req = std::make_unique<request>(std::move(*msg), *(this->_conn));
-        this->_keep_alive = msg->keep_alive();
+        this->_keep_alive = req->keep_alive();
         this->_request_resource(std::move(req));
     }
 
@@ -102,7 +102,7 @@ namespace myhttpd::protocol::http {
 
         } else {
 
-            rsp->insert_attribute("connection", "Close");
+            rsp->insert_attribute("connection", "close");
         }
 
         this->_send(std::move(rsp));
