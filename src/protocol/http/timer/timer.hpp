@@ -3,24 +3,26 @@
 
 #include <string>
 
-#include "timer_service.hpp"
+#include "timing_wheel.hpp"
 
 namespace myhttpd::protocol::http {
 
     class timer {
 
     private:
-        timer_service& _service;
+        timing_wheel& _timing_wheel;
+
+        timing_wheel::token _tk;
 
     public:
         std::string get_current_rfc1123_datetime();
 
-        void set_timer();
+        void set(timing_wheel::timeout_handler handler);
 
         void cancel();
 
     public:
-        timer(timer_service& service);
+        timer(timing_wheel& _timing_wheel);
     };
 }
 

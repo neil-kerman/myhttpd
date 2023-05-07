@@ -128,6 +128,7 @@ namespace myhttpd::protocol::http {
             /* Continue to receive */
             this->_header_receive_buffer.commit(bytes_transferred);
             auto next_buffer = this->_header_receive_buffer.get_available_block();
+            this->_receiving_busy = true;
             this->_conn.async_read_some(
                 myhttpd::network::connection::mutable_buffer(next_buffer.data, next_buffer.size),
                 std::bind(
@@ -146,7 +147,7 @@ namespace myhttpd::protocol::http {
     void transceiver::_content_receiving_handler(std::shared_ptr<transmitting_content> content, 
         const asio_error_code error, std::size_t bytes_transferred) {
 
-        this->_sending_busy = false;
+        this->_receiving_busy = false;
 
         if (this->_canceled) {
 
@@ -162,7 +163,7 @@ namespace myhttpd::protocol::http {
 
             if (content->commit(bytes_transferred)) {
 
-                this->_sending_busy = true;
+                this->_receiving_busy = true;
                 this->_conn.async_receive(content->get_buffer(), 
                     std::bind(
                         &transceiver::_content_receiving_handler, 
@@ -199,7 +200,6 @@ namespace myhttpd::protocol::http {
             if (remaining) {
 
                 this->_sending_busy = true;
-
                 content->async_read(
 
                     [this, handler, remaining, content]
@@ -272,10 +272,10 @@ namespace myhttpd::protocol::http {
                         this->_header_receive_buffer.consume(header_size);
                         /* Decode header  */
                         auto msg  = this->_decode_header(header_buf);
-                        /* Invoke callback */
-                        handler(transceiver_error_code::sucess, std::move(msg));
                         /* Receive content */
                         this->_receive_content(*msg);
+                        /* Invoke callback */
+                        handler(transceiver_error_code::sucess, std::move(msg));
                         return;
                     }
 
@@ -285,6 +285,7 @@ namespace myhttpd::protocol::http {
         }
 
         /* No full header has detected, receive more data from connection */
+        this->_receiving_busy = true;
         auto next_buffer = this->_header_receive_buffer.get_available_block();
         this->_conn.async_read_some(
             myhttpd::network::connection::mutable_buffer(next_buffer.data, next_buffer.size),
@@ -413,8 +414,17 @@ namespace myhttpd::protocol::http {
 
     void transceiver::cancel(cancellation_handler handler) {
 
-        this->_conn.cancel();
-        this->_canceled = true;
+        if (!this->is_busy()) {
+
+            handler();
+
+        } else {
+            
+            this->_cancellation_handler = handler;
+            this->_canceled = true;
+            this->_conn.cancel();
+        }
+
         return;
     }
 

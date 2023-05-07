@@ -27,8 +27,9 @@ namespace myhttpd::protocol::http {
         auto id = this->_id_pool.back();
         this->_id_pool.pop_back();
         auto ses = std::make_unique<http::session>(
-            std::move(conn), 
-            *this
+            std::move(conn),
+            *this,
+            timer(this->_timing_wheel)
         );
         auto& ses_ref = *ses;
         this->_sessions.insert(
@@ -36,8 +37,8 @@ namespace myhttpd::protocol::http {
         );
         ses_ref.start([id, this]() {
             
-            this->_sessions.erase(id);
             this->_id_pool.push_back(id);
+            this->_sessions.erase(id);
         });
     }
 
@@ -45,7 +46,8 @@ namespace myhttpd::protocol::http {
         tinyxml2::XMLElement* config, 
         boost::asio::io_context& ctx, 
         worker& wk):
-        _ctx(ctx), 
+        _ctx(ctx),
+        _timing_wheel(ctx),
         _worker(wk) {
 
         this->_init_id_pool();

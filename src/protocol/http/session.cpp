@@ -1,4 +1,5 @@
 #include "session.hpp"
+#include "session.hpp"
 #include <functional>
 #include <boost/date_time.hpp>
 #include <boost/format.hpp>
@@ -9,6 +10,8 @@
 namespace myhttpd::protocol::http {
 
     void session::_wait_handler(const transceiver::transceiver_error_code error) {
+
+        this->_timer.cancel();
 
         if (!error) {
 
@@ -48,12 +51,24 @@ namespace myhttpd::protocol::http {
 
         if (this->_keep_alive) {
 
+            this->_set_timer();
             this->_wait_request();
 
         } else {
 
             this->_terminate();
         }
+    }
+
+    void session::_set_timer() {
+
+        this->_timer.set(
+            
+            [this]() {
+            
+                this->_terminate();
+            }
+        );
     }
 
     void session::_wait_request() {
@@ -91,9 +106,7 @@ namespace myhttpd::protocol::http {
 
     void session::_do_post_process(std::unique_ptr<response> rsp) {
 
-        boost::posix_time::ptime utc_datetime = boost::posix_time::second_clock::universal_time();
-        std::string datetime = utils::ptime_to_http_date(utc_datetime);
-        rsp->insert_attribute("date", datetime);
+        rsp->insert_attribute("date", this->_timer.get_current_rfc1123_datetime());
         rsp->insert_attribute("server", "MyHttpd 0.1.0");
 
         if (this->_keep_alive) {
@@ -130,11 +143,12 @@ namespace myhttpd::protocol::http {
     void session::start(terminating_handler handler) {
 
         this->_terminating_handler = handler;
+        this->_set_timer();
         this->_wait_request();
     }
 
-    session::session(std::unique_ptr<myhttpd::network::connection> conn, http::manager& manager)
-    :_conn(std::move(conn)), _transceiver(*(this->_conn)), _manager(manager) {
+    session::session(std::unique_ptr<myhttpd::network::connection> conn, http::manager& manager, timer tmr)
+    :_conn(std::move(conn)), _transceiver(*(this->_conn)), _manager(manager), _timer(tmr) {
 
     }
 }

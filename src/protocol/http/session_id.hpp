@@ -1,0 +1,9 @@
+#ifndef HTTP_SESSION_ID_HPP
+#define HTTP_SESSION_ID_HPP
+
+namespace myhttpd::protocol::http {
+
+    typedef int session_id;
+}
+
+#endif // HTTP_SESSION_ID_HPP

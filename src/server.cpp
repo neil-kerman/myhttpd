@@ -21,7 +21,15 @@ namespace myhttpd {
 
     void server::_init_workers(tinyxml2::XMLElement* config) {
 
+#ifdef DEBUG
+
+        auto worker_num = 1;
+
+#else
+
         auto worker_num = std::thread::hardware_concurrency();
+
+#endif
 
         /* Create workers */
         for (int i = 0; i < worker_num; i++) {

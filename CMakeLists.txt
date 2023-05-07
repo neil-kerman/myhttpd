@@ -13,11 +13,11 @@ option(BUILD_UNIT_TESTS OFF)
 
 if(CMAKE_BUILD_TYPE)
 
-    set(build_type)
     string(TOUPPER ${CMAKE_BUILD_TYPE} build_type)
     set(runtime_output_dir ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
     set(home_dir ${runtime_output_dir}/..)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${build_type} ${runtime_output_dir})
+    add_compile_definitions(${build_type})
     unset(build_type)
 endif()
 

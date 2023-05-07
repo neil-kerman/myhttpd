@@ -9,6 +9,7 @@
 #include "network/connection.hpp"
 
 #include "manager.hpp"
+#include "session_id.hpp"
 #include "transceiver/transceiver.hpp"
 #include "timer/timer.hpp"
 
@@ -19,7 +20,8 @@ namespace myhttpd::protocol::http {
     private:
         http::manager& _manager;
 
-    private:
+        http::timer _timer;
+
         std::unique_ptr<myhttpd::network::connection> _conn;
 
         transceiver _transceiver;
@@ -39,6 +41,8 @@ namespace myhttpd::protocol::http {
     private:
         void _next_request();
 
+        void _set_timer();
+
         void _wait_request();
 
         void _receive();
@@ -57,7 +61,7 @@ namespace myhttpd::protocol::http {
         virtual void start(terminating_handler handler);
 
     public:
-        session(std::unique_ptr<myhttpd::network::connection> conn, http::manager &manager);
+        session(std::unique_ptr<myhttpd::network::connection> conn, http::manager &manager, http::timer tmr);
 
         virtual ~session() = default;
     };

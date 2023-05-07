@@ -9,29 +9,22 @@
 #include "../manager.hpp"
 #include "../../worker.hpp"
 #include "resource/resource.hpp"
+#include "timer/timing_wheel.hpp"
 
 namespace myhttpd::protocol::http{
 
     class manager : public protocol::manager {
 
-    public:
-        struct session_config {
-
-            unsigned int keepalive_time = 30;
-        };
-
-        typedef int session_id;
-
     private:
         boost::asio::io_context& _ctx;
+
+        timing_wheel _timing_wheel;
 
         resource _resource;
 
         std::vector<session_id> _id_pool;
 
         std::map<session_id, std::shared_ptr<protocol::session>> _sessions;
-
-        session_config _session_config;
 
         worker& _worker;
 
@@ -41,6 +34,8 @@ namespace myhttpd::protocol::http{
     public:
         resource& get_resource();
 
+    
+    public:
         virtual void create_session(std::unique_ptr<myhttpd::network::connection> conn);
 
     public:
