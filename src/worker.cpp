@@ -19,12 +19,14 @@ namespace myhttpd {
 
         conn->reset_io_context(this->_ctx);
         auto conn_sptr = std::make_shared<std::unique_ptr<network::connection>>(std::move(conn));
+        this->_ctx.post(
 
-        this->_ctx.post([conn_sptr, this]() {
+            [conn_sptr, this]() {
 
-            auto& fac = this->_session_factories["http"];
-            fac->create_session(std::move(*conn_sptr));
-        });
+                auto& fac = this->_session_factories["http"];
+                fac->create_session(std::move(*conn_sptr));
+            }
+        );
     }
 
     void worker::start() {
