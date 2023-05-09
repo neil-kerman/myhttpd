@@ -8,7 +8,7 @@
 
 namespace myhttpd::network {
 
-    class tcp_connection: public connection {
+    class default_connection: public connection {
 
     private:
         std::unique_ptr<boost::asio::ip::tcp::socket> _stream;
@@ -38,12 +38,10 @@ namespace myhttpd::network {
 
         virtual bool is_open();
 
-        virtual void reset_io_context(boost::asio::io_context& ctx);
-
     public:
-        tcp_connection(boost::asio::ip::tcp::socket stream);
+        default_connection(boost::asio::ip::tcp::socket stream);
 
-        virtual ~tcp_connection() = default;
+        virtual ~default_connection() = default;
     };
 }
 

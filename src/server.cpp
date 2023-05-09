@@ -1,6 +1,6 @@
 
 #include "server.hpp"
-#include "network/acceptor_factory.hpp"
+#include "network/handshaker_factory.hpp"
 
 using namespace boost::asio::ip;
 
@@ -14,7 +14,7 @@ namespace myhttpd {
         /* Create acceptors */
         while (ac_cfg) {
             
-            this->_acceptors.push_back(network::acceptor_facory::create_acceptor(ac_cfg, this->_ctx, *this));
+            this->_listeners.push_back(network::listener::create_listener(ac_cfg, this->_ctx));
             ac_cfg = ac_cfg->NextSiblingElement();
         }
     }
@@ -38,13 +38,6 @@ namespace myhttpd {
         }
     }
 
-    void server::pass_connection(std::unique_ptr<network::connection> conn) {
-
-        this->_workers.front()->handle_connection(std::move(conn));
-        this->_workers.push_back(std::move(this->_workers.front()));
-        this->_workers.pop_front();
-    }
-
     void server::start() {
 
         for (auto& worker : this->_workers) {
@@ -52,9 +45,17 @@ namespace myhttpd {
             worker->start();
         }
 
-        for (auto& ac : this->_acceptors) {
+        for (auto& listener : this->_listeners) {
 
-            ac->start_async_accept();
+            listener.start_async_accept(
+                
+                [this, tag = listener.get_listener_tag()](boost::asio::ip::tcp::socket soc) {
+                
+                    this->_workers.front()->transfer_socket(tag, std::move(soc));
+                    this->_workers.push_back(std::move(this->_workers.front()));
+                    this->_workers.pop_front();
+                }
+            );
         }
 
         this->_thread.reset(new std::thread([this]() {

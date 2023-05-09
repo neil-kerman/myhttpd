@@ -7,13 +7,12 @@
 #include <boost/asio.hpp>
 #include <tinyxml2.h>
 
-#include "network/acceptor.hpp"
-#include "network/server.hpp"
+#include "network/listener.hpp"
 #include "worker.hpp"
 
 namespace myhttpd {
 
-    class server: public network::server {
+    class server {
 
     private:
         boost::asio::io_context _ctx;
@@ -22,7 +21,7 @@ namespace myhttpd {
 
         std::unique_ptr<std::thread> _thread = nullptr;
 
-        std::list<std::unique_ptr<network::acceptor>> _acceptors;
+        std::list<network::listener> _listeners;
 
         std::list<std::unique_ptr<worker>> _workers;
 
@@ -30,9 +29,6 @@ namespace myhttpd {
         void _init_acceptors(tinyxml2::XMLElement* config);
 
         void _init_workers(tinyxml2::XMLElement* config);
-
-    public:
-        virtual void pass_connection(std::unique_ptr<network::connection> conn);
 
     public:
         void start();

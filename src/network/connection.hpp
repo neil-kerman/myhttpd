@@ -76,8 +76,6 @@ namespace myhttpd::network {
 
         virtual bool is_open() = 0;
 
-        virtual void reset_io_context(boost::asio::io_context &ctx) = 0;
-
     public:
         virtual ~connection() = default;
     };

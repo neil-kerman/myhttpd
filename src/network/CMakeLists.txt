@@ -6,7 +6,6 @@ unset(network_sources)
 
 target_link_libraries(
     network
-        PRIVATE 
         OpenSSL::SSL 
         OpenSSL::Crypto
 )

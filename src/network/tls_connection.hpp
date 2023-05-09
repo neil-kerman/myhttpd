@@ -39,8 +39,6 @@ namespace myhttpd::network {
 
         virtual bool is_open();
 
-        virtual void reset_io_context(boost::asio::io_context& ctx);
-
     public:
         tls_connection(boost::asio::ssl::stream<boost::asio::ip::tcp::socket> _stream);
 
