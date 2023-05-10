@@ -8,7 +8,7 @@
 #include "request.hpp"
 #include "response.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     class rnode {
 

@@ -12,9 +12,9 @@ namespace myhttpd {
     void worker::_init_session_factories(tinyxml2::XMLElement* config) {
 
         auto http_config = config->FirstChildElement("http");
-        std::unique_ptr<myhttpd::protocol::manager> fac =
-            std::make_unique<protocol::http::manager>(http_config, this->_ctx, *this);
-        std::pair < std::string, std::unique_ptr<protocol::manager>> pair("http", std::move(fac));
+        std::unique_ptr<myhttpd::service::manager> fac =
+            std::make_unique<service::http::manager>(http_config, this->_ctx, *this);
+        std::pair < std::string, std::unique_ptr<service::manager>> pair("http", std::move(fac));
         this->_session_factories.insert(std::move(pair));
     }
 

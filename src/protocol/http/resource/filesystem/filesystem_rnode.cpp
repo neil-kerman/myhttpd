@@ -5,7 +5,7 @@
 #include "filesystem_rnode.hpp"
 #include "../../utils.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
 	struct range_string {
 		

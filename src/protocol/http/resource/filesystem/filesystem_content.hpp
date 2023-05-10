@@ -9,7 +9,7 @@
 
 using namespace boost::interprocess;
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     class filesystem_content: public content {
 

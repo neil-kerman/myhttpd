@@ -2,7 +2,7 @@
 
 #include "timer.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     std::string timer::get_current_rfc1123_datetime() {
 

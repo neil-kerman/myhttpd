@@ -11,9 +11,9 @@
 #include "resource/resource.hpp"
 #include "timer/timing_wheel.hpp"
 
-namespace myhttpd::protocol::http{
+namespace myhttpd::service::http{
 
-    class manager : public protocol::manager {
+    class manager : public service::manager {
 
     private:
         boost::asio::io_context& _ctx;
@@ -24,7 +24,7 @@ namespace myhttpd::protocol::http{
 
         std::vector<session_id> _id_pool;
 
-        std::map<session_id, std::shared_ptr<protocol::session>> _sessions;
+        std::map<session_id, std::shared_ptr<service::session>> _sessions;
 
         worker& _worker;
 

@@ -5,7 +5,7 @@
 
 #include "timing_wheel.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     class timer {
 

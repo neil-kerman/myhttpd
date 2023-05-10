@@ -3,7 +3,7 @@
 #include "timing_wheel.hpp"
 #include "../utils.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     void timing_wheel::_set_timer() {
 

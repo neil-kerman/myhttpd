@@ -1,6 +1,6 @@
 #include "transmitting_content.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
 
     network::connection::mutable_buffer transmitting_content::get_buffer(std::size_t size) {

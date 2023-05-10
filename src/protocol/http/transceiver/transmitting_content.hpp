@@ -7,7 +7,7 @@
 
 #include "content.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     class transmitting_content : public content {
 

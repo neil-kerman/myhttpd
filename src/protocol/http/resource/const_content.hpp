@@ -3,7 +3,7 @@
 
 #include "../transceiver/content.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     class const_content: public content {
 

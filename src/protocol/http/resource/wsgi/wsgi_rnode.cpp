@@ -11,7 +11,7 @@
 #include "wsgi_rnode.hpp"
 #include "transmitting_content.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     void wsgi_rnode::_call_application(std::shared_ptr<request> req, request_handler handler) {
 
@@ -160,6 +160,7 @@ namespace myhttpd::protocol::http {
         if (req->has_content()) {
 
             req->get_content()->async_wait_ready(
+
                 [this, req, handler](const asio_error_code &error, network::connection::const_buffer) {
 
                     if (!error) {

@@ -10,7 +10,7 @@
 #include "network/connection.hpp"
 #include "content.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
     
     class message {
 

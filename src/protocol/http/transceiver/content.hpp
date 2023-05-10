@@ -7,7 +7,7 @@
 
 #include "network/connection.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     class content {
 

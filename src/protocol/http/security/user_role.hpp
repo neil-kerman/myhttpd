@@ -4,7 +4,7 @@
 #include <string>
 #include <set>
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     struct user_role {
 

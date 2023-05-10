@@ -6,7 +6,7 @@
 
 #undef DELETE
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     class request: public message {
 

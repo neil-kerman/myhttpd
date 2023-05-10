@@ -2,7 +2,7 @@
 
 #include "filesystem_content.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     std::size_t filesystem_content::_get_size() {
 

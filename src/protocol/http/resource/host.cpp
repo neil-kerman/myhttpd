@@ -15,7 +15,7 @@
 #include "wsgi/wsgi_rnode.hpp"
 #endif
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     static std::string get_suffix(std::string url) {
 

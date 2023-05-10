@@ -7,7 +7,7 @@
 #include "session.hpp"
 #include "utils.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     void session::_wait_handler(const transceiver::transceiver_error_code error) {
 

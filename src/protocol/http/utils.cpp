@@ -2,7 +2,7 @@
 
 #include "utils.hpp"
 
-namespace myhttpd::protocol::http::utils {
+namespace myhttpd::service::http::utils {
 
     std::string ptime_to_http_date(boost::posix_time::ptime time) {
 

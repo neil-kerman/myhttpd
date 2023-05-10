@@ -3,7 +3,7 @@
 #include "manager.hpp"
 #include "session.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     void manager::_init_id_pool() {
 

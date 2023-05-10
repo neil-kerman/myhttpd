@@ -3,7 +3,7 @@
 
 #include "../transceiver/message.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     class response: public message {
 

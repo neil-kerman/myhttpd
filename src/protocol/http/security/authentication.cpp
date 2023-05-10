@@ -7,7 +7,7 @@
 
 #include "authentication.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     std::string authentication::_to_based64_string(const std::string str) {
         namespace its = boost::archive::iterators;

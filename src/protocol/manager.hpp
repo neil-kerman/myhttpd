@@ -7,7 +7,7 @@
 #include "session.hpp"
 #include "network/connection.hpp"
 
-namespace myhttpd::protocol {
+namespace myhttpd::service {
 
     class manager {
 

@@ -2,7 +2,7 @@
 
 #include "const_content.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     const_content const_content::from_c_string(const char* str) {
 

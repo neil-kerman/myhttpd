@@ -5,7 +5,7 @@
 #include <array>
 #include <cstddef>
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
     
     template <std::size_t BlockSize> class linked_buffer {
 

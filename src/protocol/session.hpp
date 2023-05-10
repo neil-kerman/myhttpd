@@ -3,7 +3,7 @@
 
 #include <functional>
 
-namespace myhttpd::protocol {
+namespace myhttpd::service {
 
     class session {
 

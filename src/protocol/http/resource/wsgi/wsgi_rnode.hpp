@@ -30,7 +30,7 @@ namespace boost {
 
 #include "../../resource/rnode.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     class wsgi_rnode : public rnode {
 

@@ -5,7 +5,7 @@
 
 #include "user_role.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     struct user {
         

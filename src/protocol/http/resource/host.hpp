@@ -11,7 +11,7 @@
 #include "rnode.hpp"
 #include "../security/access_control.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     class host {
 

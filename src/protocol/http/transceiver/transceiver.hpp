@@ -13,7 +13,7 @@
 
 namespace asio_error = boost::asio::error;
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     class transceiver {
 

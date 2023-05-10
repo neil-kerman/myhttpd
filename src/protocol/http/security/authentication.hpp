@@ -11,7 +11,7 @@
 #include "../resource/request.hpp"
 #include "../resource/response.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     class authentication {
 

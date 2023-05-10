@@ -9,7 +9,7 @@
 
 #include "host.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     class resource {
     

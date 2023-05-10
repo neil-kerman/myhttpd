@@ -7,7 +7,7 @@
 #include "transceiver.hpp"
 #include "transmitting_content.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     std::string header_key_formalize(const std::string &key) {
 
@@ -428,7 +428,7 @@ namespace myhttpd::protocol::http {
         return;
     }
 
-    bool myhttpd::protocol::http::transceiver::is_busy() {
+    bool myhttpd::service::http::transceiver::is_busy() {
 
         return this->_receiving_busy || this->_sending_busy || this->_waiting_busy;
     }

@@ -8,7 +8,7 @@
 
 #include "../session_id.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     class timing_wheel {
 

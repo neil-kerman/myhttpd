@@ -4,7 +4,7 @@
 #include "../const/error_page.hpp"
 #include "host.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
     class default_rnode : public rnode {
 

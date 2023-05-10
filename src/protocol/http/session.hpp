@@ -13,9 +13,9 @@
 #include "transceiver/transceiver.hpp"
 #include "timer/timer.hpp"
 
-namespace myhttpd::protocol::http {
+namespace myhttpd::service::http {
 
-    class session: public myhttpd::protocol::session {
+    class session: public myhttpd::service::session {
 
     private:
         http::manager& _manager;
