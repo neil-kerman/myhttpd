@@ -6,7 +6,6 @@
 #include <iostream>
 #include <tinyxml2.h>
 
-#include "user_role.hpp"
 #include "user.hpp"
 #include "../resource/request.hpp"
 #include "../resource/response.hpp"
@@ -16,15 +15,13 @@ namespace myhttpd::service::http {
     class authentication {
 
     private:
-        std::map<std::string, user_role> roles;
-
-        std::map<std::string, user> users;
+        std::map<std::string, std::shared_ptr<user>> _users;
 
     private:
-        std::string _to_based64_string(const std::string str);
+        static void base64_decode(const std::string& input, std::string& output);
 
     public:
-        bool authenticate(request &req, response &rsp);
+        std::shared_ptr<user> authenticate(request &req);
 
     public:
         authentication(tinyxml2::XMLElement* config);

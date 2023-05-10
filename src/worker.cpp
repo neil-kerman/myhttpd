@@ -1,5 +1,3 @@
-#include <boost/uuid/uuid_generators.hpp>
-
 #include "worker.hpp"
 #include "network/handshaker_factory.hpp"
 #include "protocol/http/session.hpp"
@@ -15,7 +13,7 @@ namespace myhttpd {
         std::unique_ptr<myhttpd::service::manager> fac =
             std::make_unique<service::http::manager>(http_config, this->_ctx, *this);
         std::pair < std::string, std::unique_ptr<service::manager>> pair("http", std::move(fac));
-        this->_session_factories.insert(std::move(pair));
+        this->_service_managers.insert(std::move(pair));
     }
 
     void worker::_init_handshakers(tinyxml2::XMLElement* config) {
@@ -55,7 +53,7 @@ namespace myhttpd {
 
                     [this](std::unique_ptr<network::connection> conn) {
                         
-                        this->_session_factories["http"]->create_session(std::move(conn));
+                        this->_service_managers["http"]->create_session(std::move(conn));
                     }
                 );
             }

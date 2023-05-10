@@ -48,10 +48,9 @@ namespace myhttpd::service::http {
         worker& wk):
         _ctx(ctx),
         _timing_wheel(ctx),
-        _worker(wk) {
+        _worker(wk),
+        _resource(config->FirstChildElement("resource")){
 
         this->_init_id_pool();
-        auto res_config = config->FirstChildElement("resource");
-        this->_resource.config(res_config);
     }
 }

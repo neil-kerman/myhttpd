@@ -26,7 +26,7 @@ namespace myhttpd {
 
         std::unordered_map<network::listener_tag, std::unique_ptr<network::handshaker>> _handshakers;
 
-        std::unordered_map<std::string, std::unique_ptr<service::manager>> _session_factories;
+        std::unordered_map<std::string, std::unique_ptr<service::manager>> _service_managers;
 
     private:
         void _init_session_factories(tinyxml2::XMLElement* config);

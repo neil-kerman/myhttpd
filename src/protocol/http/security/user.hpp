@@ -2,17 +2,17 @@
 #define HTTP_USER_HPP
 
 #include <string>
-
-#include "user_role.hpp"
+#include <set>
 
 namespace myhttpd::service::http {
 
     struct user {
         
-        bool anonymous;
         std::string name;
+
         std::string password;
-        user_role& role;
+
+        std::set<std::string> groups;
     };
 }
 

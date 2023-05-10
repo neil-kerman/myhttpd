@@ -1,8 +1,11 @@
+#include "resource.hpp"
+#include "resource.hpp"
 
 #include "resource.hpp"
 #include "const_content.hpp"
 #include "../const/error_page.hpp"
 #include "host.hpp"
+#include "../security/access_control.hpp"
 
 namespace myhttpd::service::http {
 
@@ -22,11 +25,11 @@ namespace myhttpd::service::http {
         virtual ~default_rnode() = default;
     };
 
-    std::unique_ptr<response> resource::_make_error(unsigned code, std::unique_ptr<request> req) {
+    std::unique_ptr<response> resource::_make_error(unsigned status, std::unique_ptr<request> req) {
 
         auto rsp = std::make_unique<response>(std::move(req));
-        rsp->set_status(code);
-        auto& ep = this->_error_pages[code];
+        rsp->set_status(status);
+        auto& ep = this->_error_pages[status];
         rsp->set_content(ep);
         rsp->insert_attribute("content-length", std::to_string(ep->get_content_langth()));
         rsp->insert_attribute("content-type", this->_mimedb[".html"]);
@@ -41,7 +44,23 @@ namespace myhttpd::service::http {
 
             if (host_it != this->_hosts.end()) {
 
-                host_it->second.async_request(std::move(req), handler);
+                host_it->second->async_request(std::move(req), 
+                    
+                    [this, handler](std::unique_ptr<response> rsp) {
+                        
+                        auto status = rsp->get_status();
+
+                        if (status >= 400 && !rsp->has_content()) {
+
+                            auto& ep = this->_error_pages[status];
+                            rsp->set_content(ep);
+                            rsp->insert_attribute("content-length", std::to_string(ep->get_content_langth()));
+                            rsp->insert_attribute("content-type", this->_mimedb[".html"]);
+                        }
+
+                        handler(std::move(rsp));
+                    }
+                );
 
             } else {
 
@@ -54,10 +73,11 @@ namespace myhttpd::service::http {
         }
     }
 
-    void resource::config(tinyxml2::XMLElement* config) {
+    resource::resource(tinyxml2::XMLElement* config) {
 
         this->_error_pages_init(config);
         this->_mimedb_init();
+        this->_auth_init();
         this->_hosts_init(config);
     }
 
@@ -85,11 +105,21 @@ namespace myhttpd::service::http {
         while (node) {
 
             std::string name = node->Attribute("name");
-            auto host_node = std::pair<std::string, host>(name, host(this->_error_pages, this->_mimedb));
-            host_node.second.config(node);
-            this->_hosts.insert(std::move(host_node));
+            typedef access_control<host, tinyxml2::XMLElement*, authentication&, std::array<std::shared_ptr<content>, 506>,
+                std::unordered_map<std::string, std::string>&> secure_host;
+            auto host_node = std::make_unique<secure_host>(node, *(this->_auth), node, *(this->_auth), this->_error_pages, this->_mimedb);
+            auto pair = std::pair<std::string, std::unique_ptr<host>>(name, (std::unique_ptr<host>&&)std::move(host_node));
+            this->_hosts.insert(std::move(pair));
             node = node->NextSiblingElement();
         }
+    }
+
+    void myhttpd::service::http::resource::_auth_init() {
+
+        tinyxml2::XMLDocument users_config;
+        users_config.LoadFile("../config/myhttpd.users.xml");
+        auto config = users_config.RootElement();
+        this->_auth.reset(new authentication(config));
     }
 
     void resource::_error_pages_init(tinyxml2::XMLElement* config) {

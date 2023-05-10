@@ -9,8 +9,11 @@
         <resource>
             <hosts>
                 <host name="localhost" default="/index.html">
+                    <access_control owner="ansar" group="dev" owner_allows="GET" group_allows="OPTIONS" anon_allows="TRACE"/>
                     <rnodes>
-                        <filesystem virtual_path="/" physical_path="../web-root"/>
+                        <filesystem virtual_path="/" physical_path="../web-root">
+                            <access_control owner="ansar" group="dev" owner_allows="GET" group_allows="OPTIONS" anon_allows="TRACE"/>
+                        </filesystem>
                         <wsgi virtual_path="/app" module_path="../wsgi-root/adder/adder"/>
                     </rnodes>
                 </host>

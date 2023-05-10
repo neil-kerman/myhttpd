@@ -148,15 +148,6 @@ namespace myhttpd::service::http {
         );
     }
 
-    void host::config(tinyxml2::XMLElement* config) {
-
-        this->_default = config->Attribute("default");
-        this->_name = config->Attribute("name");
-        this->_rnodes_init(config->FirstChildElement("rnodes"));
-    }
-
-    
-
     void host::_rnodes_init(tinyxml2::XMLElement* config) {
 
         if (!config) {
@@ -164,39 +155,41 @@ namespace myhttpd::service::http {
             return;
         }
 
-        auto node = config->FirstChildElement();
+        auto node_config = config->FirstChildElement();
 
-        while (node) {
+        while (node_config) {
 
-            std::string type = node->Name();
+            std::string type = node_config->Name();
 
             if (type == "filesystem") {
 
 #if ENABLE_FILESYSTEM
 
-                std::string vpath = node->Attribute("virtual_path");
-                std::string ppath = node->Attribute("physical_path");
-                this->_rnodes.insert(
-                    std::pair<std::string, std::unique_ptr<rnode>>(vpath, std::make_unique<filesystem_rnode>(ppath))
-                );
+                std::string vpath = node_config->Attribute("virtual_path");
+                std::string ppath = node_config->Attribute("physical_path");
+                typedef access_control<filesystem_rnode, std::string> secure_filesystem_rnode;
+                auto node = std::make_unique<secure_filesystem_rnode>(node_config, this->_auth, ppath);
+                auto pair = std::pair<std::string, std::unique_ptr<rnode>>(vpath, (std::unique_ptr<rnode>&&)std::move(node));
+                this->_rnodes.insert(std::move(pair));
 #endif
 
             } else if (type == "wsgi") {
 
 #if ENDABLE_WSGI
 
-                std::string vpath = node->Attribute("virtual_path");
-                std::string module_path = node->Attribute("module_path");
-                this->_rnodes.insert(
-                    std::pair<std::string, std::unique_ptr<rnode>>(vpath, std::make_unique<wsgi_rnode>(module_path, vpath))
-                );
+                std::string vpath = node_config->Attribute("virtual_path");
+                std::string module_path = node_config->Attribute("module_path");
+                typedef access_control<wsgi_rnode, std::string, std::string> secure_filesystem_rnode;
+                auto node = std::make_unique<secure_filesystem_rnode>(node_config, this->_auth, module_path, vpath);
+                auto pair = std::pair<std::string, std::unique_ptr<rnode>>(vpath, (std::unique_ptr<rnode>&&)std::move(node));
+                this->_rnodes.insert(std::move(pair));
 #endif 
 
             } else {
 
             }
 
-            node = node->NextSiblingElement();
+            node_config = node_config->NextSiblingElement();
         }
     }
 
@@ -205,9 +198,14 @@ namespace myhttpd::service::http {
     }
 
     host::host(
+        tinyxml2::XMLElement* config,
+        authentication& auth,
         std::array<std::shared_ptr<content>, 506> error_pages,
         std::unordered_map<std::string, std::string>& mimedb) :
-        _error_pages(error_pages), _mimedb(mimedb) {
+        _error_pages(error_pages), _mimedb(mimedb), _auth(auth) {
 
+        this->_default = config->Attribute("default");
+        this->_name = config->Attribute("name");
+        this->_rnodes_init(config->FirstChildElement("rnodes"));
     }
 }

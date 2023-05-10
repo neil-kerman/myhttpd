@@ -3,6 +3,7 @@
 
 #include <string>
 #include <boost/asio.hpp>
+#include <tinyxml2.h>
 
 #include "../rnode.hpp"
 

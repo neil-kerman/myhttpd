@@ -36,7 +36,37 @@ namespace myhttpd::service::http {
         network::connection& _conn;
 
     private:
-        static method _method_parse(std::string met_str) {
+        void _extract_title() {
+
+            auto title = message::get_title();
+            std::size_t offset = 0;
+            auto size = title.find(' ', 0);
+            auto method_str = title.substr(0, size);
+            this->_method = this->method_parse(method_str);
+            offset = size + 1;
+
+            if (title.find('?') != std::string::npos) {
+
+                size = title.find('?', offset) - offset;
+                this->_url = title.substr(offset, size);
+                offset += size + 1;
+                size = title.find(' ', offset) - offset;
+                this->_query_string = title.substr(offset, size);
+                offset += size + 1;
+
+            } else {
+
+                size = title.find(' ', offset) - offset;
+                this->_url = title.substr(offset, size);
+                offset += size + 1;
+            }
+
+            size = title.find('\r', offset) - offset;
+            this->_version = title.substr(offset, size);
+        }
+
+    public:
+        static method method_parse(std::string met_str) {
 
             if (met_str == "OPTIONS") {
 
@@ -76,36 +106,6 @@ namespace myhttpd::service::http {
             }
         }
 
-        void _extract_title() {
-
-            auto title = message::get_title();
-            std::size_t offset = 0;
-            auto size = title.find(' ', 0);
-            auto method_str = title.substr(0, size);
-            this->_method = this->_method_parse(method_str);
-            offset = size + 1;
-
-            if (title.find('?') != std::string::npos) {
-
-                size = title.find('?', offset) - offset;
-                this->_url = title.substr(offset, size);
-                offset += size + 1;
-                size = title.find(' ', offset) - offset;
-                this->_query_string = title.substr(offset, size);
-                offset += size + 1;
-
-            } else {
-
-                size = title.find(' ', offset) - offset;
-                this->_url = title.substr(offset, size);
-                offset += size + 1;
-            }
-
-            size = title.find('\r', offset) - offset;
-            this->_version = title.substr(offset, size);
-        }
-
-    public:
         static const std::string& method_to_string(method met) {
 
             static const std::string method_options_str = "OPTIONS";
