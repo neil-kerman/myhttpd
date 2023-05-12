@@ -40,8 +40,13 @@ if(MSVC)
 endif()
 
 find_package(OpenSSL REQUIRED)
-find_package(Boost COMPONENTS context filesystem REQUIRED)
+find_package(Boost COMPONENTS context python310 filesystem REQUIRED)
 find_package(tinyxml2 CONFIG REQUIRED)
+
+if(ENABLE_WSGI)
+
+    find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+endif()
 
 if(BUILD_UNIT_TESTS)
 

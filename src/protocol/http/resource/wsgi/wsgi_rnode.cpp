@@ -9,11 +9,12 @@
 #include <boost/asio.hpp>
 
 #include "wsgi_rnode.hpp"
-#include "transmitting_content.hpp"
+#include "../../transceiver/transmitting_content.hpp"
 
 namespace myhttpd::service::http {
 
-    void wsgi_rnode::_call_application(std::shared_ptr<request> req, request_handler handler) {
+    void wsgi_rnode::_call_application(
+        std::unique_ptr<request> req, network::connection::const_buffer buf, request_handler handler) {
 
         using namespace boost::python;
         auto header = dict();
@@ -21,7 +22,7 @@ namespace myhttpd::service::http {
         header["SCRIPT_NAME"] = object(this->_virtual_path);
         header["PATH_INFO"] = object(req->get_url());
         header["SERVER_NAME"] = object(req->find_attribute("host")->second);
-        header["SERVER_PORT"] = object(std::to_string(req->get_connection()->get_local_port()));
+        header["SERVER_PORT"] = object("80");
         header["QUERY_STRING"] = object(req->get_query_string());
         header["GATEWAY_INTERFACE"] = "WSGI/1.0";
         header["SERVER_PROTOCOL"] = object(req->get_version());
@@ -95,7 +96,7 @@ namespace myhttpd::service::http {
         if (req->has_content()) {
 
             auto content = req->get_content();
-            auto bytearray = import("builtins").attr("bytearray")(str((const char*)content->get_data(), content->get_size()));
+            auto bytearray = import("builtins").attr("bytearray")(str((const char*)buf.data, buf.size));
             header["wsgi.input"] = bytearray;
             import("builtins").attr("print")(bytearray);
 
@@ -105,19 +106,19 @@ namespace myhttpd::service::http {
         }
 
         header["wsgi.errors"];
-        header["wsgi.multithread"] = object(false);
+        header["wsgi.multithread"] = object(true);
         header["wsgi.run_once"] = object(false);
 
         try {
 
-            auto rsp = std::make_shared<http::response>();
+            auto rsp = std::make_unique<http::response>(std::move(req));
             auto rsp_content = (*(this->_application))(
                 header, make_function(
                     boost::function<object(str, list)>(
-                        [&](str status, list header) {
+                        [&rsp](str status, list header) {
 
-                            rsp->set_title(req->get_version() + " " + extract<std::string>(status)());
-                            auto len = extract<int>(header.attr("__len__")())();
+                            rsp->set_status(std::stoi(extract<std::string>(status)()));
+                            auto len = extract<int>(import("builtins").attr("len")(header))();
 
                             for (int i = 0; i < len; i++) {
 
@@ -138,16 +139,14 @@ namespace myhttpd::service::http {
                 auto bytes = ((object)rsp_content.attr("content"));
                 std::size_t size = PyBytes_Size(bytes.ptr());
                 auto buf = PyBytes_AsString(bytes.ptr());
-                auto vec = std::make_shared<std::vector<char>>();
-                vec->resize(size);
-                std::memcpy(vec->data(), buf, size);
-                auto tran_contnet = std::make_shared<transmitting_content>(vec);
-                auto err = boost::system::error_code();
-                tran_contnet->deliver(err);
+                auto tran_contnet = std::make_shared<transmitting_content>(size);
+                auto tran_buf = tran_contnet->get_buffer(size);
+                std::memcpy(tran_buf.data, buf, size);
+                tran_contnet->commit(size);
                 rsp->set_content(tran_contnet);
             }
-
-            handler(rsp);
+           
+            handler(std::move(rsp));
 
         } catch (boost::python::error_already_set const&) {
 
@@ -159,20 +158,19 @@ namespace myhttpd::service::http {
 
         if (req->has_content()) {
 
-            req->get_content()->async_wait_ready(
-
-                [this, req, handler](const asio_error_code &error, network::connection::const_buffer) {
-
-                    if (!error) {
-
-                        this->_call_application(req, handler);
-                    }
+            auto req_sptr = std::make_shared<std::unique_ptr<request>>(std::move(req));
+            auto content = (*req_sptr)->get_content();
+            content->async_read(
+                
+                [this, req_sptr, handler](const content::content_error_code error, network::connection::const_buffer buf) {
+                
+                    this->_call_application(std::move(*req_sptr), buf, handler);
                 }
             );
 
         } else {
 
-            this->_call_application(req, handler);
+            this->_call_application(std::move(req), {0, 0}, handler);
         }
     }
 
@@ -187,7 +185,6 @@ namespace myhttpd::service::http {
         try {
 
             auto sys = boost::python::import("sys");
-            boost::python::import("builtins").attr("print")(boost::python::object(sys.attr("prefix")));
             sys.attr("path").attr("append")(boost::python::str(path.string()));
             this->_application = std::make_shared<boost::python::api::object_attribute>(
                 boost::python::import(boost::python::str(module_name.string() + ".wsgi")).attr("application")

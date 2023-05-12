@@ -40,11 +40,13 @@ endif()
 
 if(ENABLE_WSGI)
 
+    message("wsgi enabled")
     add_subdirectory(wsgi)
     target_link_libraries(resource wsgi)
     target_compile_definitions(resource PRIVATE "ENABLE_WSGI=1")
     
 else()
 
+    message("wsgi disabled")
     target_compile_definitions(resource PRIVATE "ENABLE_WSGI=0")
 endif()

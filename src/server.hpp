@@ -26,7 +26,7 @@ namespace myhttpd {
         std::list<std::unique_ptr<worker>> _workers;
 
     private:
-        void _init_acceptors(tinyxml2::XMLElement* config);
+        void _init_listeners(tinyxml2::XMLElement* config);
 
         void _init_workers(tinyxml2::XMLElement* config);
 

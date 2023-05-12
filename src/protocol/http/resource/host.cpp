@@ -124,11 +124,11 @@ namespace myhttpd::service::http {
                     rsp->set_content(ep);
                     rsp->insert_attribute("content-type", this->_mimedb[".html"]);
 
-                } else {
+                } /*else {
 
                     auto suffix = get_suffix(rsp->get_request().get_url());
                     rsp->insert_attribute("content-type", this->_mimedb[suffix]);
-                }
+                }*/
 
                 if (rsp->has_content()) {
 
@@ -175,12 +175,12 @@ namespace myhttpd::service::http {
 
             } else if (type == "wsgi") {
 
-#if ENDABLE_WSGI
+#if ENABLE_WSGI
 
                 std::string vpath = node_config->Attribute("virtual_path");
                 std::string module_path = node_config->Attribute("module_path");
-                typedef access_control<wsgi_rnode, std::string, std::string> secure_filesystem_rnode;
-                auto node = std::make_unique<secure_filesystem_rnode>(node_config, this->_auth, module_path, vpath);
+                typedef access_control<wsgi_rnode, std::string, std::string> secure_wsgi_rnode;
+                auto node = std::make_unique<secure_wsgi_rnode>(node_config, this->_auth, module_path, vpath);
                 auto pair = std::pair<std::string, std::unique_ptr<rnode>>(vpath, (std::unique_ptr<rnode>&&)std::move(node));
                 this->_rnodes.insert(std::move(pair));
 #endif 

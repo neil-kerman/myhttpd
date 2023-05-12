@@ -298,6 +298,7 @@ namespace myhttpd::service::http {
 
     void transceiver::async_send(std::unique_ptr<message> msg, sending_handler handler) {
 
+
         this->_sending_busy = true;
         std::shared_ptr<message> msg_ptr(msg.release());
         auto encoded_header = std::make_shared<std::vector<char>>(this->_encode_header(*msg_ptr));

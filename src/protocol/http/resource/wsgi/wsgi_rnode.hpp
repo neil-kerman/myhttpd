@@ -42,7 +42,7 @@ namespace myhttpd::service::http {
 
 
     private:
-        void _call_application(std::shared_ptr<request> req, request_handler handler);
+        void _call_application(std::unique_ptr<request> req, network::connection::const_buffer buf, request_handler handler);
 
     public:
         virtual void async_request(std::unique_ptr<request> req, request_handler handler);

@@ -6,7 +6,7 @@ using namespace boost::asio::ip;
 
 namespace myhttpd {
 
-    void server::_init_acceptors(tinyxml2::XMLElement* config) {
+    void server::_init_listeners(tinyxml2::XMLElement* config) {
 
         auto acs_cfg = config->FirstChildElement("acceptors");
         auto ac_cfg = acs_cfg->FirstChildElement();
@@ -27,7 +27,8 @@ namespace myhttpd {
 
 #else
 
-        auto worker_num = std::thread::hardware_concurrency();
+        //auto worker_num = std::thread::hardware_concurrency();
+        auto worker_num = 1;
 
 #endif
 
@@ -72,7 +73,7 @@ namespace myhttpd {
     server::server(tinyxml2::XMLElement *config)
     : _work_guard(this->_ctx.get_executor()) {
 
-        this->_init_acceptors(config);
+        this->_init_listeners(config);
         this->_init_workers(config);
     }
 }
