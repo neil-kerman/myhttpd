@@ -27,8 +27,8 @@ namespace myhttpd {
 
 #else
 
-        //auto worker_num = std::thread::hardware_concurrency();
-        auto worker_num = 1;
+        auto worker_num = std::thread::hardware_concurrency();
+        //auto worker_num = 1;
 
 #endif
 

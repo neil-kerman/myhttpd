@@ -7,6 +7,20 @@
 
 namespace myhttpd::service::http {
 
+	static std::string get_suffix(std::string url) {
+
+		auto offset = url.find_last_of('.');
+
+		if (offset == std::string::npos) {
+
+			return "default";
+
+		} else {
+
+			return url.substr(offset);
+		}
+	}
+
 	struct range_string {
 		
 		std::string begin;
@@ -166,16 +180,17 @@ namespace myhttpd::service::http {
 				} else {
 
 					rsp->set_status(200);
-					handler(std::move(rsp));
-					return;
 				}
 
 			} else {
 
 				rsp->set_status(200);
-				handler(std::move(rsp));
-				return;
 			}
+
+			auto suffix = get_suffix(rsp->get_request().get_url());
+			rsp->insert_attribute("content-type", this->_mimedb[suffix]);
+			handler(std::move(rsp));
+			return;
 
 		} else {
 
@@ -217,6 +232,22 @@ namespace myhttpd::service::http {
 		handler(std::move(rsp));
 	}
 
+	void filesystem_rnode::_mimedb_init() {
+
+		tinyxml2::XMLDocument mimedb_doc;
+		mimedb_doc.LoadFile("../config/myhttpd.mimedb.xml");
+		auto mime_types = mimedb_doc.RootElement();
+		auto mime_type = mime_types->FirstChildElement();
+
+		while (mime_type) {
+
+			auto suffix = mime_type->Attribute("suffix");
+			auto type = mime_type->Attribute("type");
+			this->_mimedb.insert(std::pair<std::string, std::string>(suffix, type));
+			mime_type = mime_type->NextSiblingElement();
+		}
+	}
+
 	void filesystem_rnode::async_request(std::unique_ptr<request> req, request_handler handler) {
 
 		switch (req->get_method()) {
@@ -238,5 +269,6 @@ namespace myhttpd::service::http {
 	filesystem_rnode::filesystem_rnode(std::string path): 
 		_path(path) {
 
+		this->_mimedb_init();
 	}
 }

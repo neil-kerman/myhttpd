@@ -17,19 +17,7 @@
 
 namespace myhttpd::service::http {
 
-    static std::string get_suffix(std::string url) {
-
-        auto offset = url.find_last_of('.');
-
-        if (offset == std::string::npos) {
-
-            return "default";
-
-        } else {
-
-            return url.substr(offset);
-        }
-    }
+    
 
     std::unique_ptr<response> host::_make_error(unsigned code, std::unique_ptr<request> req) {
 
@@ -38,7 +26,7 @@ namespace myhttpd::service::http {
         auto& ep = this->_error_pages[code];
         rsp->set_content(ep);
         rsp->insert_attribute("content-length", std::to_string(ep->get_content_langth()));
-        rsp->insert_attribute("content-type", this->_mimedb[".html"]);
+        rsp->insert_attribute("content-type", "text/html");
         return rsp;
     }
 
@@ -122,13 +110,9 @@ namespace myhttpd::service::http {
 
                     auto& ep = this->_error_pages[status];
                     rsp->set_content(ep);
-                    rsp->insert_attribute("content-type", this->_mimedb[".html"]);
+                    rsp->insert_attribute("content-type", "text/html");
 
-                } /*else {
-
-                    auto suffix = get_suffix(rsp->get_request().get_url());
-                    rsp->insert_attribute("content-type", this->_mimedb[suffix]);
-                }*/
+                }
 
                 if (rsp->has_content()) {
 
@@ -200,9 +184,8 @@ namespace myhttpd::service::http {
     host::host(
         tinyxml2::XMLElement* config,
         authentication& auth,
-        std::array<std::shared_ptr<content>, 506> error_pages,
-        std::unordered_map<std::string, std::string>& mimedb) :
-        _error_pages(error_pages), _mimedb(mimedb), _auth(auth) {
+        std::array<std::shared_ptr<content>, 506> error_pages) :
+        _error_pages(error_pages), _auth(auth) {
 
         this->_default = config->Attribute("default");
         this->_name = config->Attribute("name");

@@ -32,7 +32,7 @@ namespace myhttpd::service::http {
         auto& ep = this->_error_pages[status];
         rsp->set_content(ep);
         rsp->insert_attribute("content-length", std::to_string(ep->get_content_langth()));
-        rsp->insert_attribute("content-type", this->_mimedb[".html"]);
+        rsp->insert_attribute("content-type", "text/html");
         return rsp;
     }
 
@@ -55,7 +55,7 @@ namespace myhttpd::service::http {
                             auto& ep = this->_error_pages[status];
                             rsp->set_content(ep);
                             rsp->insert_attribute("content-length", std::to_string(ep->get_content_langth()));
-                            rsp->insert_attribute("content-type", this->_mimedb[".html"]);
+                            rsp->insert_attribute("content-type", "text/html");
                         }
 
                         handler(std::move(rsp));
@@ -76,25 +76,8 @@ namespace myhttpd::service::http {
     resource::resource(tinyxml2::XMLElement* config) {
 
         this->_error_pages_init(config);
-        this->_mimedb_init();
         this->_auth_init();
         this->_hosts_init(config);
-    }
-
-    void resource::_mimedb_init() {
-
-        tinyxml2::XMLDocument mimedb_doc;
-        mimedb_doc.LoadFile("../config/myhttpd.mimedb.xml");
-        auto mime_types = mimedb_doc.RootElement();
-        auto mime_type = mime_types->FirstChildElement();
-
-        while (mime_type) {
-
-            auto suffix = mime_type->Attribute("suffix");
-            auto type = mime_type->Attribute("type");
-            this->_mimedb.insert(std::pair<std::string, std::string>(suffix, type));
-            mime_type = mime_type->NextSiblingElement();
-        }
     }
 
     void resource::_hosts_init(tinyxml2::XMLElement* config) {
@@ -105,9 +88,9 @@ namespace myhttpd::service::http {
         while (node) {
 
             std::string name = node->Attribute("name");
-            typedef access_control<host, tinyxml2::XMLElement*, authentication&, std::array<std::shared_ptr<content>, 506>,
-                std::unordered_map<std::string, std::string>&> secure_host;
-            auto host_node = std::make_unique<secure_host>(node, *(this->_auth), node, *(this->_auth), this->_error_pages, this->_mimedb);
+            typedef access_control<host, tinyxml2::XMLElement*, authentication&, 
+                std::array<std::shared_ptr<content>, 506>> secure_host;
+            auto host_node = std::make_unique<secure_host>(node, *(this->_auth), node, *(this->_auth), this->_error_pages);
             auto pair = std::pair<std::string, std::unique_ptr<host>>(name, (std::unique_ptr<host>&&)std::move(host_node));
             this->_hosts.insert(std::move(pair));
             node = node->NextSiblingElement();

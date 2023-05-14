@@ -1,5 +1,3 @@
-#include "session.hpp"
-#include "session.hpp"
 #include <functional>
 #include <boost/date_time.hpp>
 #include <boost/format.hpp>

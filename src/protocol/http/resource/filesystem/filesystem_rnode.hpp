@@ -14,6 +14,8 @@ namespace myhttpd::service::http {
     private:
         std::string _path;
 
+        std::unordered_map<std::string, std::string> _mimedb = { {"default", "application/octet-stream"} };
+
     private:
         bool _exists(std::string url);
 
@@ -30,6 +32,8 @@ namespace myhttpd::service::http {
         void _do_delete(std::unique_ptr<request> req, request_handler handler);
 
         void _do_trace(std::unique_ptr<request> req, request_handler handler);
+
+        void _mimedb_init();
 
     public:
         virtual void async_request(std::unique_ptr<request> req, request_handler handler);

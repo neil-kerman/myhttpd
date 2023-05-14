@@ -25,8 +25,6 @@ namespace myhttpd::service::http {
 
         std::unordered_map<std::string, std::unique_ptr<rnode>> _rnodes;
 
-        std::unordered_map<std::string, std::string>& _mimedb;
-
         std::array<std::shared_ptr<content>, 506> _error_pages;
 
         authentication& _auth;
@@ -42,14 +40,11 @@ namespace myhttpd::service::http {
     public:
         virtual void async_request(std::unique_ptr<request> req, request_handler handler);
 
-        /*void config(tinyxml2::XMLElement* config);*/
-
     public:
         host(
             tinyxml2::XMLElement* config,
             authentication& auth,
-            std::array<std::shared_ptr<content>, 506> error_pages,
-            std::unordered_map<std::string, std::string> &mimedb
+            std::array<std::shared_ptr<content>, 506> error_pages
         );
     };
 }

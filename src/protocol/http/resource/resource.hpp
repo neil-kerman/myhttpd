@@ -20,8 +20,6 @@ namespace myhttpd::service::http {
     private:
         std::unordered_map<std::string , std::unique_ptr<host>> _hosts;
 
-        std::unordered_map<std::string, std::string> _mimedb = { {"default", "application/octet-stream"} };
-
         std::array<std::shared_ptr<content>, 506> _error_pages;
 
         std::unique_ptr<authentication> _auth = nullptr;
@@ -32,8 +30,6 @@ namespace myhttpd::service::http {
         void _error_pages_init(tinyxml2::XMLElement* config);
 
         void _auth_init();
-
-        void _mimedb_init();
 
     private:
         std::unique_ptr<response> _make_error(unsigned status, std::unique_ptr<request> req);

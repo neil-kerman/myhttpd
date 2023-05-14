@@ -4,12 +4,12 @@
         <tcp 
             address="127.0.0.1" 
             port="80"/>
-        <tls 
+        <!--<tls 
             address="0.0.0.0" 
             port="443" 
             tls_version="tls1.3" 
         cert_file="C:\Users\19435\OneDrive\certs\bodeak.one\fullchain.pem" 
-             key_file="C:\Users\19435\OneDrive\certs\bodeak.one\privkey.pem"/>
+             key_file="C:\Users\19435\OneDrive\certs\bodeak.one\privkey.pem"/>-->
     </acceptors>
     <http>
         <resource>
