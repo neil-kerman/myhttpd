@@ -17,16 +17,16 @@ namespace myhttpd::network {
         struct mutable_buffer {
 
             char* data;
+
             const std::size_t size;
         };
 
         struct const_buffer {
 
             const char* data;
+
             const std::size_t size;
         };
-
-        typedef boost::asio::ip::tcp::endpoint endpoint;
 
         /* Read event handler */
         typedef std::function<
@@ -49,7 +49,9 @@ namespace myhttpd::network {
                 > sending_handler;
 
         /* Wait event handler */
-        typedef std::function<void (const asio_error_code code)> waiting_handler;
+        typedef std::function<void (const asio_error_code error)> waiting_handler;
+
+        typedef std::function<void(const asio_error_code error)> init_handler;
 
     public:
         virtual void async_read_some(mutable_buffer buf, reading_handler handler) = 0;
@@ -61,8 +63,6 @@ namespace myhttpd::network {
         virtual void async_send(const_buffer buf, sending_handler handler) = 0;
 
         virtual void async_wait(socket_wait_type type, waiting_handler handler) = 0;
-
-        virtual std::string get_type() = 0;
 
         virtual std::string get_remote_address() = 0;
 
@@ -76,9 +76,13 @@ namespace myhttpd::network {
 
         virtual bool is_open() = 0;
 
+        virtual bool is_secure() = 0;
+
+        virtual void async_init(boost::asio::io_context& ctx, init_handler handler) = 0;
+
     public:
         virtual ~connection() = default;
     };
 }
 
-#endif // CONNECTION_HPP
+#endif // BASE_CONNECTION_HPP

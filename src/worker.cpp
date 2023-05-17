@@ -1,5 +1,4 @@
 #include "worker.hpp"
-#include "network/handshaker_factory.hpp"
 #include "protocol/http/session.hpp"
 #include "protocol/http/manager.hpp"
 
@@ -16,44 +15,18 @@ namespace myhttpd {
         this->_service_managers.insert(std::move(pair));
     }
 
-    void worker::_init_handshakers(tinyxml2::XMLElement* config) {
-
-        auto acs_cfg = config->FirstChildElement("acceptors");
-        auto ac_cfg = acs_cfg->FirstChildElement();
-
-        /* Create handshakers */
-        while (ac_cfg) {
-
-            using namespace network;
-            auto hs = handshaker_facory::create_handshakre_instance(ac_cfg);
-            auto tag = hs->get_listener_tag();
-            auto pair = std::pair<listener_tag, std::unique_ptr<handshaker>>(tag, std::move(hs));
-            this->_handshakers.insert(std::move(pair));
-            ac_cfg = ac_cfg->NextSiblingElement();
-        }
-    }
-
-    tcp::socket worker::reset_io_context(tcp::socket soc) {
-
-        auto protocol = soc.local_endpoint().protocol();
-        auto soc_handle = soc.release();
-        auto new_soc = tcp::socket(this->_ctx);
-        new_soc.assign(protocol, soc_handle);
-        return new_soc;
-    }
-
-    void worker::transfer_socket(network::listener_tag tag, tcp::socket soc) {
+    void worker::transfer_socket(std::unique_ptr<network::connection> conn) {
         
-        auto new_soc_ptr = std::make_shared<tcp::socket>(this->reset_io_context(std::move(soc)));
+        auto new_conn = std::make_shared<std::unique_ptr<network::connection>>(std::move(conn));
         this->_ctx.post(
 
-            [tag, new_soc_ptr, this]() {
+            [this, new_conn]() {
 
-                this->_handshakers[tag]->async_handshake(std::move(*new_soc_ptr),
+                (*new_conn)->async_init(this->_ctx, 
+                
+                    [this, new_conn](const asio_error_code error) {
 
-                    [this](std::unique_ptr<network::connection> conn) {
-                        
-                        this->_service_managers["http"]->create_session(std::move(conn));
+                        this->_service_managers["http"]->create_session(std::move(*new_conn));
                     }
                 );
             }
@@ -77,6 +50,5 @@ namespace myhttpd {
     : _work_guard(this->_ctx.get_executor()) {
 
         this->_init_session_factories(config);
-        this->_init_handshakers(config);
     }
 }

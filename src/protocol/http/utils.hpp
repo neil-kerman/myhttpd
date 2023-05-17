@@ -29,7 +29,7 @@ namespace myhttpd::service::http::utils {
         );
     }
 
-    inline std::list<std::string> split(const std::string& str, const std::string& spliter) {
+    inline std::list<std::string> split(const std::string& str, const std::string spliter) {
 
         std::list<std::string> results;
         std::size_t offset = 0;
