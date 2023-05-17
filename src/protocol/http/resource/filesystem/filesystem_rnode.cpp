@@ -1,5 +1,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/date_time/posix_time/conversion.hpp>
+#include <filesystem>
 
 #include "filesystem_content.hpp"
 #include "filesystem_rnode.hpp"
@@ -86,6 +87,10 @@ namespace myhttpd::service::http {
 
 	void http::filesystem_rnode::_do_option(std::unique_ptr<request> req, request_handler handler) {
 
+		auto rsp = std::make_unique<response>(std::move(req));
+		rsp->insert_attribute("allows", "OPTION,GET,HEAD,POST,PUT,DELELTE,TRACE");
+		rsp->set_status(200);
+		handler(std::move(rsp));
 	}
 
 	void http::filesystem_rnode::_do_get(std::unique_ptr<request> req, request_handler handler) {
@@ -228,7 +233,15 @@ namespace myhttpd::service::http {
 	void http::filesystem_rnode::_do_trace(std::unique_ptr<request> req, request_handler handler) {
 
 		auto rsp = std::make_unique<response>(std::move(req));
-		rsp->set_content(req->get_content());
+
+		if (rsp->get_request().has_content()) {
+
+			auto content = rsp->get_request().get_content();
+			rsp->set_content(content);
+			rsp->insert_attribute("content-length", std::to_string(content->get_content_langth()));
+		}
+
+		rsp->set_status(200);
 		handler(std::move(rsp));
 	}
 

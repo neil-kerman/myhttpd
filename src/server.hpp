@@ -21,7 +21,7 @@ namespace myhttpd {
 
         std::unique_ptr<std::thread> _thread = nullptr;
 
-        std::list<network::listener> _listeners;
+        std::list<std::unique_ptr<network::listener>> _listeners;
 
         std::list<std::unique_ptr<worker>> _workers;
 

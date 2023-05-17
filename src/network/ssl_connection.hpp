@@ -1,17 +1,24 @@
-#ifndef TCP_CONNECTION_HPP
-#define TCP_CONNECTION_HPP
+#ifndef TLS_CONNECTION_HPP
+#define TLS_CONNECTION_HPP
 
 #include <memory>
 #include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 
-#include "connection.hpp"
+#include "tcp_connection.hpp"
 
 namespace myhttpd::network {
 
-    class default_connection: public connection {
+    typedef boost::asio::ssl::stream<asio_tcp_socket> asio_ssl_stream;
+
+    class ssl_connection: public connection {
 
     private:
-        std::unique_ptr<boost::asio::ip::tcp::socket> _stream;
+        std::unique_ptr<tcp_connection> _tcp_conn;
+
+        boost::asio::ssl::context& _ssl_ctx;
+
+        std::unique_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> _stream;
 
     public:
         virtual void async_read_some(mutable_buffer buf, reading_handler handler);
@@ -23,8 +30,6 @@ namespace myhttpd::network {
         virtual void async_send(const_buffer buf, sending_handler handler);
 
         virtual void async_wait(socket_wait_type type, waiting_handler handler);
-
-        virtual std::string get_type();
 
         virtual std::string get_remote_address();
 
@@ -38,11 +43,15 @@ namespace myhttpd::network {
 
         virtual bool is_open();
 
-    public:
-        default_connection(boost::asio::ip::tcp::socket stream);
+        virtual bool is_secure();
 
-        virtual ~default_connection() = default;
+        virtual void async_init(boost::asio::io_context& ctx, init_handler handler);
+
+    public:
+        ssl_connection(std::unique_ptr<tcp_connection> conn, boost::asio::ssl::context& tls_ctx);
+
+        virtual ~ssl_connection() = default;
     };
 }
 
-#endif // TCP_CONNECTION_HPP
+#endif // TLS_CONNECTION_HPP

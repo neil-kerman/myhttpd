@@ -1,21 +1,20 @@
 
 #include "server.hpp"
-#include "network/handshaker_factory.hpp"
-
-using namespace boost::asio::ip;
+#include "network/listener_factory.hpp"
 
 namespace myhttpd {
 
     void server::_init_listeners(tinyxml2::XMLElement* config) {
 
-        auto acs_cfg = config->FirstChildElement("acceptors");
-        auto ac_cfg = acs_cfg->FirstChildElement();
+        auto listeners_config = config->FirstChildElement("acceptors");
+        auto lis_cfg = listeners_config->FirstChildElement();
 
-        /* Create acceptors */
-        while (ac_cfg) {
+        /* Create liastener */
+        while (lis_cfg) {
             
-            this->_listeners.push_back(network::listener::create_listener(ac_cfg, this->_ctx));
-            ac_cfg = ac_cfg->NextSiblingElement();
+            auto lis = network::listener_factory::create_listenr(lis_cfg, this->_ctx);
+            this->_listeners.push_back(std::move(lis));
+            lis_cfg = lis_cfg->NextSiblingElement();
         }
     }
 
@@ -46,13 +45,13 @@ namespace myhttpd {
             worker->start();
         }
 
-        for (auto& listener : this->_listeners) {
+        for (auto& lis : this->_listeners) {
 
-            listener.start_async_accept(
+            lis->start_async_accept(
                 
-                [this, tag = listener.get_listener_tag()](boost::asio::ip::tcp::socket soc) {
+                [this](std::unique_ptr<network::connection> conn) {
                 
-                    this->_workers.front()->transfer_socket(tag, std::move(soc));
+                    this->_workers.front()->transfer_socket(std::move(conn));
                     this->_workers.push_back(std::move(this->_workers.front()));
                     this->_workers.pop_front();
                 }
