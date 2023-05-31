@@ -1,6 +1,6 @@
 #include "worker.hpp"
-#include "protocol/http/session.hpp"
-#include "protocol/http/manager.hpp"
+#include "service/http/session.hpp"
+#include "service/http/manager.hpp"
 
 namespace myhttpd {
 
@@ -8,9 +8,8 @@ namespace myhttpd {
 
     void worker::_init_session_factories(tinyxml2::XMLElement* config) {
 
-        auto http_config = config->FirstChildElement("http");
         std::unique_ptr<myhttpd::service::manager> fac =
-            std::make_unique<service::http::manager>(http_config, this->_ctx, *this);
+            std::make_unique<service::http::manager>(config, this->_ctx, *this);
         std::pair < std::string, std::unique_ptr<service::manager>> pair("http", std::move(fac));
         this->_service_managers.insert(std::move(pair));
     }

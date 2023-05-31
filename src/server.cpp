@@ -6,15 +6,14 @@ namespace myhttpd {
 
     void server::_init_listeners(tinyxml2::XMLElement* config) {
 
-        auto listeners_config = config->FirstChildElement("acceptors");
-        auto lis_cfg = listeners_config->FirstChildElement();
+        auto lis_cfg = config->FirstChildElement("listener");
 
         /* Create liastener */
         while (lis_cfg) {
             
             auto lis = network::listener_factory::create_listenr(lis_cfg, this->_ctx);
             this->_listeners.push_back(std::move(lis));
-            lis_cfg = lis_cfg->NextSiblingElement();
+            lis_cfg = lis_cfg->NextSiblingElement("listener");
         }
     }
 
@@ -27,7 +26,6 @@ namespace myhttpd {
 #else
 
         auto worker_num = std::thread::hardware_concurrency();
-        //auto worker_num = 1;
 
 #endif
 

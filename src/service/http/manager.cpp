@@ -49,7 +49,7 @@ namespace myhttpd::service::http {
         _ctx(ctx),
         _timing_wheel(ctx),
         _worker(wk),
-        _resource(config->FirstChildElement("resource")){
+        _resource(config){
 
         this->_init_id_pool();
     }

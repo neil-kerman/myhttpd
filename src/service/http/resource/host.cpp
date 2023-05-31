@@ -139,18 +139,19 @@ namespace myhttpd::service::http {
             return;
         }
 
-        auto node_config = config->FirstChildElement();
+        auto node_config = config->FirstChildElement("rnode");
 
         while (node_config) {
 
-            std::string type = node_config->Name();
+            std::string type = node_config->Attribute("type");
+            auto vpath = node_config->Attribute("virtual_path");
 
             if (type == "filesystem") {
 
 #if ENABLE_FILESYSTEM
-
-                std::string vpath = node_config->Attribute("virtual_path");
-                std::string ppath = node_config->Attribute("physical_path");
+                
+                auto* fs_config = node_config->FirstChildElement("filesystem");
+                std::string ppath = fs_config->Attribute("physical_path");
                 typedef access_control<filesystem_rnode, std::string> secure_filesystem_rnode;
                 auto node = std::make_unique<secure_filesystem_rnode>(node_config, this->_auth, ppath);
                 auto pair = std::pair<std::string, std::unique_ptr<rnode>>(vpath, (std::unique_ptr<rnode>&&)std::move(node));
@@ -161,8 +162,8 @@ namespace myhttpd::service::http {
 
 #if ENABLE_WSGI
 
-                std::string vpath = node_config->Attribute("virtual_path");
-                std::string module_path = node_config->Attribute("module_path");
+                auto* wsgi_config = node_config->FirstChildElement("wsgi");
+                std::string module_path = wsgi_config->Attribute("module_path");
                 typedef access_control<wsgi_rnode, std::string, std::string> secure_wsgi_rnode;
                 auto node = std::make_unique<secure_wsgi_rnode>(node_config, this->_auth, module_path, vpath);
                 auto pair = std::pair<std::string, std::unique_ptr<rnode>>(vpath, (std::unique_ptr<rnode>&&)std::move(node));
@@ -173,7 +174,7 @@ namespace myhttpd::service::http {
 
             }
 
-            node_config = node_config->NextSiblingElement();
+            node_config = node_config->NextSiblingElement("rnode");
         }
     }
 
@@ -189,6 +190,6 @@ namespace myhttpd::service::http {
 
         this->_default = config->Attribute("default");
         this->_name = config->Attribute("name");
-        this->_rnodes_init(config->FirstChildElement("rnodes"));
+        this->_rnodes_init(config);
     }
 }

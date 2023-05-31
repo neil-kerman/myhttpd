@@ -22,7 +22,7 @@ unset(server_sources)
 add_dependencies(server auxiliary)
 
 add_subdirectory(network)
-add_subdirectory(protocol)
+add_subdirectory(service)
 
 target_link_libraries(
     server

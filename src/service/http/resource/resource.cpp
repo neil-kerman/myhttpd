@@ -82,7 +82,6 @@ namespace myhttpd::service::http {
 
     void resource::_hosts_init(tinyxml2::XMLElement* config) {
 
-        config = config->FirstChildElement("hosts");
         auto node = config->FirstChildElement("host");
         
         while (node) {
@@ -93,7 +92,7 @@ namespace myhttpd::service::http {
             auto host_node = std::make_unique<secure_host>(node, *(this->_auth), node, *(this->_auth), this->_error_pages);
             auto pair = std::pair<std::string, std::unique_ptr<host>>(name, (std::unique_ptr<host>&&)std::move(host_node));
             this->_hosts.insert(std::move(pair));
-            node = node->NextSiblingElement();
+            node = node->NextSiblingElement("host");
         }
     }
 

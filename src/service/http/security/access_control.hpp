@@ -70,45 +70,34 @@ namespace myhttpd::service::http {
                         }
 
                         std::set<request::method> intersec_result;
+                        std::set<request::method>* ac_al_meths = nullptr;
 
                         switch (type) {
 
                         case identity_type::anonymous:
 
-                            std::set_intersection(
-                                this->_anonymous_allowable_meths.begin(), 
-                                this->_anonymous_allowable_meths.end(),
-                                base_allowed_meths.begin(), 
-                                base_allowed_meths.end(),
-                                std::inserter(intersec_result, intersec_result.begin())
-                            );
+                            ac_al_meths = &(this->_anonymous_allowable_meths);
                             break;
 
                         case identity_type::group:
 
-                            std::set_intersection(
-                                this->_group_allowable_meths.begin(), 
-                                this->_group_allowable_meths.end(),
-                                base_allowed_meths.begin(), 
-                                base_allowed_meths.end(),
-                                std::inserter(intersec_result, intersec_result.begin())
-                            );
+                            ac_al_meths = &(this->_group_allowable_meths);
                             break;
 
                         case identity_type::owner:
 
-                            std::set_intersection(
-                                this->_owner_allowable_meths.begin(),
-                                this->_owner_allowable_meths.end(),
-                                base_allowed_meths.begin(),
-                                base_allowed_meths.end(),
-                                std::inserter(intersec_result, intersec_result.begin())
-                            );
+                            ac_al_meths = &(this->_owner_allowable_meths);
                             break;
                         }
 
+                        std::set_intersection(
+                                ac_al_meths->begin(), 
+                                ac_al_meths->end(),
+                                base_allowed_meths.begin(), 
+                                base_allowed_meths.end(),
+                                std::inserter(intersec_result, intersec_result.begin())
+                            );
                         std::string modified_als_attr_val;
-
 
                         for (auto& meth : intersec_result) {
 
